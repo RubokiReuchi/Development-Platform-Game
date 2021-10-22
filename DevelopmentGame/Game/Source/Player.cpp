@@ -46,6 +46,7 @@ bool Player::Start()
 	b2FixtureDef fixture;
 	fixture.shape = &box;
 	fixture.density = 1.0f;
+	fixture.friction = 0.0f;
 	player_body->CreateFixture(&fixture);
 
 	return true;
@@ -63,23 +64,37 @@ bool Player::PreUpdate()
 // Called each loop iteration
 bool Player::Update(float dt)
 {
+	//debug
 	if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 	{
 		player_body->SetTransform({ x, 0 }, player_body->GetAngle());
 	}
 
+	// move left
 	if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 	{
-		player_body->SetTransform({ x -= speed, y }, player_body->GetAngle());
+		player_body->SetLinearVelocity({ -speed, player_body->GetLinearVelocity().y });
 	}
+	else if (app->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
+	{
+		player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
+	}
+
+	//move right
 	if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 	{
-		player_body->SetTransform({ x += speed, y }, player_body->GetAngle());
+		player_body->SetLinearVelocity({ speed, player_body->GetLinearVelocity().y });
 	}
+	else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
+	{
+		player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
+	}
+
+	//jump
 	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-
-		player_body->ApplyForce({ 0, -jumpForce }, player_body->GetWorldCenter(), true);
+		player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
+		player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
 	}
 
 	return true;
