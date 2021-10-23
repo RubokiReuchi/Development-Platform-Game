@@ -25,13 +25,14 @@ public:
 
 	b2Body* player_body;
 
+	bool inAir;
+	bool djump;
+
 private:
 	float x, y;
 	int w = 32, h = 32;
 	float speed = 10.0f;
 	float jumpForce = 500.0f;
-
-	float desiredVel = 0;
 };
 
 #endif

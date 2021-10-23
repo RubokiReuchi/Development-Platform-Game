@@ -31,10 +31,11 @@ bool Player::Awake()
 // Called before the first frame
 bool Player::Start()
 {
+	// player
 	b2BodyDef p_body;
 	p_body.type = b2_dynamicBody;
+	p_body.fixedRotation = true;
 	p_body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
-
 	
 	player_body = app->physics->world->CreateBody(&p_body);
 	player_body->SetBullet(true);
@@ -48,6 +49,12 @@ bool Player::Start()
 	fixture.density = 1.0f;
 	fixture.friction = 0.0f;
 	player_body->CreateFixture(&fixture);
+
+	// ground sensor
+	box.SetAsBox(PIXEL_TO_METERS(6), PIXEL_TO_METERS(3), b2Vec2(0, PIXEL_TO_METERS(32)), 0);
+	fixture.isSensor = true;
+	b2Fixture* sensorFixture = player_body->CreateFixture(&fixture);
+	sensorFixture->SetUserData((void*)0);
 
 	return true;
 }
@@ -93,8 +100,18 @@ bool Player::Update(float dt)
 	//jump
 	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
-		player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
+		if (!inAir)
+		{
+			player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
+			player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
+			inAir = true;
+		}
+		else if (djump)
+		{
+			player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
+			player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
+			djump = false;
+		}
 	}
 
 	return true;

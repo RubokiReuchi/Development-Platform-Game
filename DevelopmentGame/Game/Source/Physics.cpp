@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "Map.h"
 #include "Physics.h"
+#include "Player.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -39,6 +40,7 @@ bool Physics::Start()
 {
 	b2Vec2 gravity(GRAVITY_X, -GRAVITY_Y);
 	world = new b2World(gravity);
+	world->SetContactListener(this);
 
 	b2BodyDef g;
 	g.type = b2_staticBody;
@@ -51,9 +53,9 @@ bool Physics::Start()
 
 	b2FixtureDef fixture;
 	fixture.shape = &box;
-	p->CreateFixture(&fixture);
+	b2Fixture* fix = p->CreateFixture(&fixture);
 
-	b2BodyDef w;
+	/*b2BodyDef w;
 	w.type = b2_staticBody;
 	w.position.Set(PIXEL_TO_METERS(400), PIXEL_TO_METERS(500));
 
@@ -64,7 +66,9 @@ bool Physics::Start()
 
 	b2FixtureDef q_fixture;
 	q_fixture.shape = &box2;
-	q->CreateFixture(&q_fixture);
+	q->CreateFixture(&q_fixture);*/
+
+	
 
 	return true;
 }
@@ -123,4 +127,36 @@ bool Physics::CleanUp()
 {
 
 	return true;
+}
+
+void Physics::BeginContact(b2Contact* contact)
+{
+	void* fixtureUserData = contact->GetFixtureA()->GetUserData();
+	if ((int)fixtureUserData == 0)
+	{
+		app->player->inAir = false;
+		app->player->djump = true;
+	}
+
+	fixtureUserData = contact->GetFixtureB()->GetUserData();
+	if ((int)fixtureUserData == 0)
+	{
+		app->player->inAir = false;
+		app->player->djump = true;
+	}
+}
+
+void Physics::EndContact(b2Contact* contact)
+{
+	void* fixtureUserData = contact->GetFixtureA()->GetUserData();
+	if ((int)fixtureUserData == 0)
+	{
+		app->player->inAir = true;
+	}
+
+	fixtureUserData = contact->GetFixtureB()->GetUserData();
+	if ((int)fixtureUserData == 0)
+	{
+		app->player->inAir = true;
+	}
 }

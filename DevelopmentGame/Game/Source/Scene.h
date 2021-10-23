@@ -2,6 +2,7 @@
 #define __SCENE_H__
 
 #include "Module.h"
+#include "Physics.h"
 
 struct SDL_Texture;
 

@@ -13,7 +13,10 @@
 #define METERS_TO_PIXELS(m) ((int) floor(PIXELS_PER_METER * m))
 #define PIXEL_TO_METERS(p)  ((float) METER_PER_PIXEL * p)
 
-class Physics : public Module
+#define DEGTORAD 0.0174532925199432957f
+#define RADTODEG 57.295779513082320876f
+
+class Physics : public Module, public b2ContactListener
 {
 public:
 	Physics();
@@ -31,6 +34,10 @@ public:
 	bool PostUpdate();
 
 	bool CleanUp();
+
+	void BeginContact(b2Contact* contact);
+
+	void EndContact(b2Contact* contact);
 
 	bool debug;
 	b2World* world;
