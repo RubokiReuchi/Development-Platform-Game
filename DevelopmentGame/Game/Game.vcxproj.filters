@@ -57,6 +57,9 @@
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\Physics.h" />
     <ClInclude Include="Source\Background.h" />
+    <ClInclude Include="Source\Animation.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">

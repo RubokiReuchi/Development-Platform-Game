@@ -15,6 +15,99 @@
 Player::Player() : Module()
 {
 	name.Create("player");
+	int pix = 111;
+
+	// idle animation
+	idleAnimR.PushBack({ pix * 0, pix * 3, pix, pix });
+	idleAnimR.PushBack({ pix * 1, pix * 3, pix, pix });
+	idleAnimR.PushBack({ pix * 2, pix * 3, pix, pix });
+	idleAnimR.PushBack({ pix * 3, pix * 3, pix, pix });
+	idleAnimR.PushBack({ pix * 4, pix * 3, pix, pix });
+	idleAnimR.PushBack({ pix * 5, pix * 3, pix, pix });
+	idleAnimR.PushBack({ pix * 6, pix * 3, pix, pix });
+	idleAnimR.PushBack({ pix * 7, pix * 3, pix, pix });
+	idleAnimR.PushBack({ pix * 8, pix * 3, pix, pix });
+	idleAnimR.PushBack({ pix * 9, pix * 3, pix, pix });
+	idleAnimR.speed = 0.25f;
+
+	idleAnimL.PushBack({ pix * 9, pix * 3, pix, pix });
+	idleAnimL.PushBack({ pix * 8, pix * 3, pix, pix });
+	idleAnimL.PushBack({ pix * 7, pix * 3, pix, pix });
+	idleAnimL.PushBack({ pix * 6, pix * 3, pix, pix });
+	idleAnimL.PushBack({ pix * 5, pix * 3, pix, pix });
+	idleAnimL.PushBack({ pix * 4, pix * 3, pix, pix });
+	idleAnimL.PushBack({ pix * 3, pix * 3, pix, pix });
+	idleAnimL.PushBack({ pix * 2, pix * 3, pix, pix });
+	idleAnimL.PushBack({ pix * 1, pix * 3, pix, pix });
+	idleAnimL.PushBack({ pix * 0, pix * 3, pix, pix });
+	idleAnimL.speed = 0.25f;
+
+	// jump
+	jumpAnimR.PushBack({ pix * 0, pix * 4, pix, pix });
+	jumpAnimR.PushBack({ pix * 1, pix * 4, pix, pix });
+	jumpAnimR.PushBack({ pix * 2, pix * 4, pix, pix });
+	jumpAnimR.PushBack({ pix * 3, pix * 4, pix, pix });
+	jumpAnimR.PushBack({ pix * 4, pix * 4, pix, pix });
+	jumpAnimR.PushBack({ pix * 5, pix * 4, pix, pix });
+	jumpAnimR.PushBack({ pix * 6, pix * 4, pix, pix });
+	jumpAnimR.PushBack({ pix * 7, pix * 4, pix, pix });
+	jumpAnimR.loop = false;
+	jumpAnimR.speed = 0.15f;
+
+	jumpAnimL.PushBack({ pix * 7, pix * 4, pix, pix });
+	jumpAnimL.PushBack({ pix * 6, pix * 4, pix, pix });
+	jumpAnimL.PushBack({ pix * 5, pix * 4, pix, pix });
+	jumpAnimL.PushBack({ pix * 4, pix * 4, pix, pix });
+	jumpAnimL.PushBack({ pix * 3, pix * 4, pix, pix });
+	jumpAnimL.PushBack({ pix * 2, pix * 4, pix, pix });
+	jumpAnimL.PushBack({ pix * 1, pix * 4, pix, pix });
+	jumpAnimL.PushBack({ pix * 0, pix * 4, pix, pix });
+	jumpAnimL.loop = false;
+	jumpAnimL.speed = 0.15f;
+
+	// fall
+	fallAnimR.PushBack({ pix * 0, pix * 1, pix, pix });
+	fallAnimR.PushBack({ pix * 1, pix * 1, pix, pix });
+	fallAnimR.PushBack({ pix * 2, pix * 1, pix, pix });
+	fallAnimR.PushBack({ pix * 3, pix * 1, pix, pix });
+	fallAnimR.PushBack({ pix * 4, pix * 1, pix, pix });
+	fallAnimR.PushBack({ pix * 5, pix * 1, pix, pix });
+	fallAnimR.PushBack({ pix * 6, pix * 1, pix, pix });
+	fallAnimR.PushBack({ pix * 7, pix * 1, pix, pix });
+	fallAnimR.loop = false;
+	fallAnimR.speed = 0.15f;
+
+	fallAnimL.PushBack({ pix * 7, pix * 1, pix, pix });
+	fallAnimL.PushBack({ pix * 6, pix * 1, pix, pix });
+	fallAnimL.PushBack({ pix * 5, pix * 1, pix, pix });
+	fallAnimL.PushBack({ pix * 4, pix * 1, pix, pix });
+	fallAnimL.PushBack({ pix * 3, pix * 1, pix, pix });
+	fallAnimL.PushBack({ pix * 2, pix * 1, pix, pix });
+	fallAnimL.PushBack({ pix * 1, pix * 1, pix, pix });
+	fallAnimL.PushBack({ pix * 0, pix * 1, pix, pix });
+	fallAnimL.loop = false;
+	fallAnimL.speed = 0.15f;
+
+	// walk
+	walkAnimR.PushBack({ pix * 0, pix * 5, pix, pix });
+	walkAnimR.PushBack({ pix * 1, pix * 5, pix, pix });
+	walkAnimR.PushBack({ pix * 2, pix * 5, pix, pix });
+	walkAnimR.PushBack({ pix * 3, pix * 5, pix, pix });
+	walkAnimR.PushBack({ pix * 4, pix * 5, pix, pix });
+	walkAnimR.PushBack({ pix * 5, pix * 5, pix, pix });
+	walkAnimR.PushBack({ pix * 6, pix * 5, pix, pix });
+	walkAnimR.PushBack({ pix * 7, pix * 5, pix, pix });
+	walkAnimR.speed = 0.25f;
+
+	walkAnimL.PushBack({ pix * 7, pix * 5, pix, pix });
+	walkAnimL.PushBack({ pix * 6, pix * 5, pix, pix });
+	walkAnimL.PushBack({ pix * 5, pix * 5, pix, pix });
+	walkAnimL.PushBack({ pix * 4, pix * 5, pix, pix });
+	walkAnimL.PushBack({ pix * 3, pix * 5, pix, pix });
+	walkAnimL.PushBack({ pix * 2, pix * 5, pix, pix });
+	walkAnimL.PushBack({ pix * 1, pix * 5, pix, pix });
+	walkAnimL.PushBack({ pix * 0, pix * 5, pix, pix });
+	walkAnimL.speed = 0.25f;
 }
 
 // Destructor
@@ -31,6 +124,12 @@ bool Player::Awake()
 // Called before the first frame
 bool Player::Start()
 {
+	textureR = app->tex->Load("Assets/textures/Player.png");
+	textureL = app->tex->Load("Assets/textures/PlayerInv.png");
+
+	currentAnimation = &idleAnimR;
+	lookLeft = false;
+
 	// player
 	b2BodyDef p_body;
 	p_body.type = b2_dynamicBody;
@@ -54,7 +153,7 @@ bool Player::Start()
 	box.SetAsBox(PIXEL_TO_METERS(6), PIXEL_TO_METERS(3), b2Vec2(0, PIXEL_TO_METERS(32)), 0);
 	fixture.isSensor = true;
 	b2Fixture* sensorFixture = player_body->CreateFixture(&fixture);
-	sensorFixture->SetUserData((void*)0);
+	sensorFixture->SetUserData((void*)2);
 
 	return true;
 }
@@ -74,33 +173,59 @@ bool Player::Update(float dt)
 	//debug
 	if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 	{
-		player_body->SetTransform({ x, 0 }, player_body->GetAngle());
+		player_body->SetTransform({ 10, 0 }, player_body->GetAngle());
 	}
 
 	// move left
 	if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 	{
 		player_body->SetLinearVelocity({ -speed, player_body->GetLinearVelocity().y });
+		lookLeft = true;
+
+		if (currentAnimation != &walkAnimL && !inAir)
+		{
+			walkAnimL.Reset();
+			currentAnimation = &walkAnimL;
+		}
 	}
 	else if (app->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
 	{
 		player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
+		
+		if (currentAnimation != &idleAnimL && !inAir)
+		{
+			idleAnimL.Reset();
+			currentAnimation = &idleAnimL;
+		}
 	}
 
 	//move right
 	if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 	{
 		player_body->SetLinearVelocity({ speed, player_body->GetLinearVelocity().y });
+		lookLeft = false;
+
+		if (currentAnimation != &walkAnimR && !inAir)
+		{
+			walkAnimR.Reset();
+			currentAnimation = &walkAnimR;
+		}
 	}
 	else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
 	{
 		player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
+
+		if (currentAnimation != &idleAnimR && !inAir)
+		{
+			idleAnimR.Reset();
+			currentAnimation = &idleAnimR;
+		}
 	}
 
 	//jump
 	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		if (!inAir)
+ 		if (!inAir)
 		{
 			player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
 			player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
@@ -113,6 +238,67 @@ bool Player::Update(float dt)
 			djump = false;
 		}
 	}
+	
+	if (player_body->GetLinearVelocity().y < 0 && inAir)
+	{
+		if (lookLeft)
+		{
+			if (currentAnimation != &jumpAnimL)
+			{
+				jumpAnimL.Reset();
+				currentAnimation = &jumpAnimL;
+			}
+		}
+		else
+		{
+			if (currentAnimation != &jumpAnimR)
+			{
+				jumpAnimR.Reset();
+				currentAnimation = &jumpAnimR;
+			}
+		}
+		
+	}
+	else if (player_body->GetLinearVelocity().y > 0 && inAir)
+	{
+		if (lookLeft)
+		{
+			if (currentAnimation != &fallAnimL)
+			{
+				fallAnimL.Reset();
+				currentAnimation = &fallAnimL;
+			}
+		}
+		else
+		{
+			if (currentAnimation != &fallAnimR)
+			{
+				fallAnimR.Reset();
+				currentAnimation = &fallAnimR;
+			}
+		}
+	}
+	else if (player_body->GetLinearVelocity().x == 0 &&  player_body->GetLinearVelocity().y == 0)
+	{
+		if (lookLeft)
+		{
+			if (currentAnimation != &idleAnimL)
+			{
+				idleAnimL.Reset();
+				currentAnimation = &idleAnimL;
+			}
+		}
+		else
+		{
+			if (currentAnimation != &idleAnimR)
+			{
+				idleAnimR.Reset();
+				currentAnimation = &idleAnimR;
+			}
+		}
+	}
+
+	currentAnimation->Update();
 
 	return true;
 }
@@ -120,6 +306,16 @@ bool Player::Update(float dt)
 // Called each loop iteration
 bool Player::PostUpdate()
 {
+	SDL_Rect rect = currentAnimation->GetCurrentFrame();
+	 
+	if (lookLeft)
+	{
+		app->render->DrawTexture(textureL, METERS_TO_PIXELS(x - 55.5f), METERS_TO_PIXELS(y - 70.0f), &rect);
+	}
+	else
+	{
+		app->render->DrawTexture(textureR, METERS_TO_PIXELS(x - 55.5f), METERS_TO_PIXELS(y - 70.0f), &rect);
+	}
 
 	return true;
 }

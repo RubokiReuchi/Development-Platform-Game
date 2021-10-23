@@ -29,8 +29,6 @@ bool Background::Start()
 {
 	r = { 0, 0, 1280, 1280 };
 	texture = app->tex->Load("Assets/textures/background.png");
-	
-	app->render->DrawTexture(texture, 0, 0, &r);
 
 	return true;
 }
