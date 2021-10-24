@@ -20,6 +20,7 @@ class Background;
 class Map;
 class Physics;
 class Player;
+class Menu;
 class Frontground;
 
 class App
@@ -94,6 +95,7 @@ public:
 	Map* map;
 	Physics* physics;
 	Player* player;
+	Menu* menu;
 	Frontground* frontground;
 
 private:

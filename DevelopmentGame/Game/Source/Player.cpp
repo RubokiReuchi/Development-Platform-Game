@@ -173,12 +173,6 @@ bool Player::PreUpdate()
 // Called each loop iteration
 bool Player::Update(float dt)
 {
-	//debug
-	if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
-	{
-		player_body->SetTransform({ 10, 0 }, player_body->GetAngle());
-	}
-
 	// move left
 	if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 	{

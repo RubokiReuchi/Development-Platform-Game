@@ -9,6 +9,7 @@
 #include "Map.h"
 #include "Physics.h"
 #include "Player.h"
+#include "Menu.h"
 #include "Frontground.h"
 
 #include "Defs.h"
@@ -32,6 +33,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	map = new Map();
 	physics = new Physics();
 	player = new Player();
+	menu = new Menu();
 	frontground = new Frontground();
 
 	// Ordered for awake / Start / Update
@@ -45,6 +47,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(map);
 	AddModule(physics);
 	AddModule(player);
+	AddModule(menu);
 	AddModule(frontground);
 
 	// Render last to swap buffer
