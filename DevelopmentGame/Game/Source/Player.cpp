@@ -8,6 +8,7 @@
 #include "Map.h"
 #include "Physics.h"
 #include "Player.h"
+#include "Menu.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -173,129 +174,132 @@ bool Player::PreUpdate()
 // Called each loop iteration
 bool Player::Update(float dt)
 {
-	// move left
-	if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+	if (!app->menu->GetGameState())
 	{
-		player_body->SetLinearVelocity({ -speed, player_body->GetLinearVelocity().y });
-		lookLeft = true;
+		// move left
+		if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+		{
+			player_body->SetLinearVelocity({ -speed, player_body->GetLinearVelocity().y });
+			lookLeft = true;
 
-		if (currentAnimation != &walkAnimL && !inAir)
-		{
-			walkAnimL.Reset();
-			currentAnimation = &walkAnimL;
-		}
-	}
-	else if (app->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
-	{
-		player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
-		
-		if (currentAnimation != &idleAnimL && !inAir)
-		{
-			idleAnimL.Reset();
-			currentAnimation = &idleAnimL;
-		}
-	}
-
-	//move right
-	if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-	{
-		player_body->SetLinearVelocity({ speed, player_body->GetLinearVelocity().y });
-		lookLeft = false;
-
-		if (currentAnimation != &walkAnimR && !inAir)
-		{
-			walkAnimR.Reset();
-			currentAnimation = &walkAnimR;
-		}
-	}
-	else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
-	{
-		player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
-
-		if (currentAnimation != &idleAnimR && !inAir)
-		{
-			idleAnimR.Reset();
-			currentAnimation = &idleAnimR;
-		}
-	}
-
-	//jump
-	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-	{
- 		if (!inAir)
-		{
-			player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
-			player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
-			inAir = true;
-		}
-		else if (djump)
-		{
-			player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
-			player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
-			djump = false;
-		}
-	}
-	
-	if (player_body->GetLinearVelocity().y < 0 && inAir)
-	{
-		if (lookLeft)
-		{
-			if (currentAnimation != &jumpAnimL)
+			if (currentAnimation != &walkAnimL && !inAir)
 			{
-				jumpAnimL.Reset();
-				currentAnimation = &jumpAnimL;
+				walkAnimL.Reset();
+				currentAnimation = &walkAnimL;
 			}
 		}
-		else
+		else if (app->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
 		{
-			if (currentAnimation != &jumpAnimR)
-			{
-				jumpAnimR.Reset();
-				currentAnimation = &jumpAnimR;
-			}
-		}
-		
-	}
-	else if (player_body->GetLinearVelocity().y > 0 && inAir)
-	{
-		if (lookLeft)
-		{
-			if (currentAnimation != &fallAnimL)
-			{
-				fallAnimL.Reset();
-				currentAnimation = &fallAnimL;
-			}
-		}
-		else
-		{
-			if (currentAnimation != &fallAnimR)
-			{
-				fallAnimR.Reset();
-				currentAnimation = &fallAnimR;
-			}
-		}
-	}
-	else if (player_body->GetLinearVelocity().x == 0 &&  player_body->GetLinearVelocity().y == 0)
-	{
-		if (lookLeft)
-		{
-			if (currentAnimation != &idleAnimL)
+			player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
+
+			if (currentAnimation != &idleAnimL && !inAir)
 			{
 				idleAnimL.Reset();
 				currentAnimation = &idleAnimL;
 			}
 		}
-		else
+
+		//move right
+		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 		{
-			if (currentAnimation != &idleAnimR)
+			player_body->SetLinearVelocity({ speed, player_body->GetLinearVelocity().y });
+			lookLeft = false;
+
+			if (currentAnimation != &walkAnimR && !inAir)
+			{
+				walkAnimR.Reset();
+				currentAnimation = &walkAnimR;
+			}
+		}
+		else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
+		{
+			player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
+
+			if (currentAnimation != &idleAnimR && !inAir)
 			{
 				idleAnimR.Reset();
 				currentAnimation = &idleAnimR;
 			}
 		}
-	}
 
-	currentAnimation->Update();
+		//jump
+		if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+		{
+			if (!inAir)
+			{
+				player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
+				player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
+				inAir = true;
+			}
+			else if (djump)
+			{
+				player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
+				player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
+				djump = false;
+			}
+		}
+
+		if (player_body->GetLinearVelocity().y < 0 && inAir)
+		{
+			if (lookLeft)
+			{
+				if (currentAnimation != &jumpAnimL)
+				{
+					jumpAnimL.Reset();
+					currentAnimation = &jumpAnimL;
+				}
+			}
+			else
+			{
+				if (currentAnimation != &jumpAnimR)
+				{
+					jumpAnimR.Reset();
+					currentAnimation = &jumpAnimR;
+				}
+			}
+
+		}
+		else if (player_body->GetLinearVelocity().y > 0 && inAir)
+		{
+			if (lookLeft)
+			{
+				if (currentAnimation != &fallAnimL)
+				{
+					fallAnimL.Reset();
+					currentAnimation = &fallAnimL;
+				}
+			}
+			else
+			{
+				if (currentAnimation != &fallAnimR)
+				{
+					fallAnimR.Reset();
+					currentAnimation = &fallAnimR;
+				}
+			}
+		}
+		else if (player_body->GetLinearVelocity().x == 0 && player_body->GetLinearVelocity().y == 0)
+		{
+			if (lookLeft)
+			{
+				if (currentAnimation != &idleAnimL)
+				{
+					idleAnimL.Reset();
+					currentAnimation = &idleAnimL;
+				}
+			}
+			else
+			{
+				if (currentAnimation != &idleAnimR)
+				{
+					idleAnimR.Reset();
+					currentAnimation = &idleAnimR;
+				}
+			}
+		}
+
+		currentAnimation->Update();
+	}
 
 	return true;
 }

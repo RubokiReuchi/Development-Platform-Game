@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Input.h"
 #include "Scene.h"
+#include "Frontground.h"
 #include "Menu.h"
 
 #include "Defs.h"
@@ -42,10 +43,10 @@ bool Menu::Start()
 		buttons[i].rect.y = ((int)win_h / (NUM_BUTTONS + 1)) * (i + 1);
 	}
 
-	buttons[0].tex = app->tex->Load("Assets/textures/Continue_text.png");
-	buttons[1].tex = app->tex->Load("Assets/textures/Continue_text.png");
-	buttons[2].tex = app->tex->Load("Assets/textures/Continue_text.png");
-	buttons[3].tex = app->tex->Load("Assets/textures/Continue_text.png");
+	buttons[0].tex = app->tex->Load("Assets/textures/Continue_text.png"); // continue
+	buttons[1].tex = app->tex->Load("Assets/textures/Continue_text.png"); // save
+	buttons[2].tex = app->tex->Load("Assets/textures/Continue_text.png"); // load
+	buttons[3].tex = app->tex->Load("Assets/textures/Continue_text.png"); // quit
 
 	return true;
 }
@@ -55,19 +56,24 @@ bool Menu::PreUpdate()
 {
 	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 	{
-		// freeze game
 		paused = !paused;
+
+		buttons[chosed = 0].state = 1;
+		for (size_t i = 1; i < NUM_BUTTONS; i++)
+		{
+			buttons[i].state = 0;
+		}
 	}
 
-	if (paused)
+	if (paused && !loading)
 	{
-		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
+		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_BUTTONS - 1))
 		{
 			buttons[chosed].state = 0;
 			chosed++;
 			buttons[chosed].state = 1;
 		}
-		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && chosed > 0)
 		{
 			buttons[chosed].state = 0;
 			chosed--;
@@ -81,27 +87,43 @@ bool Menu::PreUpdate()
 // Called each loop iteration
 bool Menu::Update(float dt)
 {
-	if (paused)
+	if (paused && !loading)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
 		{
-			buttons[chosed].state = 2;
-
 			switch (chosed)
 			{
-			case 0:
+			case 0: 
+				paused = false;
 				break;
 			case 1:
+				app->SaveGameRequest();
 				break;
 			case 2:
+				app->frontground->FadeToBlack();
+				loading = true;
 				break;
 			case 3:
-				break;
-			default:
+				return false;
 				break;
 			}
+
+			buttons[chosed].state = 1;
 		}
 	}
+
+	// fade at load
+	if (loading)
+	{
+		load_cd--;
+		if (load_cd <= 0)
+		{
+			app->LoadGameRequest();
+			load_cd = 120;
+			loading = false;
+		}
+	}
+	
 
 	return true;
 }
@@ -119,16 +141,12 @@ bool Menu::PostUpdate()
 			{
 				app->render->DrawRectangle(buttons[i].rect, idleColorR, idleColorG, idleColorB);
 			}
-			else if (buttons[i].state == 1)
+			else
 			{
 				app->render->DrawRectangle(buttons[i].rect, inColorR, inColorG, inColorB);
 			}
-			else
-			{
-				app->render->DrawRectangle(buttons[i].rect, clickedColorR, clickedColorG, clickedColorB);
-			}
 
-			app->render->DrawTexture(buttons[i].tex, buttons[i].rect.x, buttons[i].rect.y);
+			app->render->DrawTexture(buttons[i].tex, buttons[i].rect.x + 10, buttons[i].rect.y + 10);
 		}
 	}
 	
@@ -141,4 +159,9 @@ bool Menu::CleanUp()
 {
 
 	return true;
+}
+
+bool Menu::GetGameState()
+{
+	return paused;
 }

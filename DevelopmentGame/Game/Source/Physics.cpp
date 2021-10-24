@@ -8,6 +8,7 @@
 #include "Map.h"
 #include "Physics.h"
 #include "Player.h"
+#include "Menu.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -76,7 +77,15 @@ bool Physics::Start()
 // Called each loop iteration
 bool Physics::PreUpdate()
 {
-	world->Step(1.0f / 60.0f, 6, 2);
+	if (!app->menu->GetGameState())
+	{
+		world->Step(1.0f / 60.0f, 6, 2);
+	}
+	else
+	{
+		world->Step(0, 6, 2);
+	}
+	
 
 	return true;
 }
