@@ -20,6 +20,7 @@ class Background;
 class Map;
 class Physics;
 class Player;
+class Frontground;
 
 class App
 {
@@ -54,13 +55,15 @@ public:
 
     // L02: DONE 1: Create methods to request Load / Save
 	void LoadGameRequest();
-	void SaveGameRequest() const;
+	void SaveGameRequest();
+	bool LoadGame();
+	bool SaveGame();
 
 private:
 
 	// Load config file
 	// NOTE: It receives config document
-	pugi::xml_node LoadConfig(pugi::xml_document&) const;
+	bool LoadConfig();
 
 	// Call modules before each loop iteration
 	void PrepareUpdate();
@@ -77,9 +80,6 @@ private:
 	// Call modules after each loop iteration
 	bool PostUpdate();
 
-	// Load / Save
-	bool LoadGame();
-	bool SaveGame() const;
 
 public:
 
@@ -94,6 +94,7 @@ public:
 	Map* map;
 	Physics* physics;
 	Player* player;
+	Frontground* frontground;
 
 private:
 
@@ -104,17 +105,17 @@ private:
 
 	List<Module *> modules;
 
-	// L01: DONE 2: Create new variables from pugui namespace
-	// NOTE: Redesigned LoadConfig() to avoid storing this variables
-	//pugi::xml_document configFile;
-	//pugi::xml_node config;
-	//pugi::xml_node configApp;
+	pugi::xml_document configFile;
+	pugi::xml_node config;
+	pugi::xml_node configApp;
 
 	uint frames;
 	float dt;
 
 	mutable bool saveGameRequested;
 	bool loadGameRequested;
+
+	pugi::xml_document saveGame;
 };
 
 extern App* app;

@@ -24,6 +24,9 @@ public:
 
 	bool CleanUp();
 
+	bool LoadState(pugi::xml_node&);
+	bool SaveState(pugi::xml_node&);
+
 	b2Body* player_body;
 
 	bool inAir = true;

@@ -130,6 +130,9 @@ bool Player::Start()
 	currentAnimation = &idleAnimR;
 	lookLeft = false;
 
+	// player Save Data
+	
+
 	// player
 	b2BodyDef p_body;
 	p_body.type = b2_dynamicBody;
@@ -323,6 +326,25 @@ bool Player::PostUpdate()
 // Called before quitting
 bool Player::CleanUp()
 {
+
+	return true;
+}
+
+bool Player::LoadState(pugi::xml_node& data)
+{
+	x = data.child("position").attribute("x").as_int();
+	y = data.child("position").attribute("y").as_int();
+
+	player_body->SetTransform({ x, y }, player_body->GetAngle());
+
+	return true;
+}
+
+bool Player::SaveState(pugi::xml_node& data)
+{
+	LOG("saving......");
+	data.child("position").attribute("x").set_value(x);
+	data.child("position").attribute("y").set_value(y);
 
 	return true;
 }
