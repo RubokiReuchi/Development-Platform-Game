@@ -9,7 +9,7 @@
  <layer id="1" name="Capa de patrones 1" width="40" height="30">
   <properties>
    <property name="Draw" type="int" value="1"/>
-   <property name="Navigation" type="int" value="0"/>
+   <property name="Collision" type="int" value="0"/>
   </properties>
   <data>
    <tile/>
@@ -1217,7 +1217,7 @@
  <layer id="2" name="Death" width="40" height="30">
   <properties>
    <property name="Draw" type="int" value="0"/>
-   <property name="Navigation" type="int" value="2"/>
+   <property name="Collision" type="int" value="2"/>
   </properties>
   <data>
    <tile/>
@@ -2425,7 +2425,7 @@
  <layer id="3" name="Platforms" width="40" height="30">
   <properties>
    <property name="Draw" type="int" value="0"/>
-   <property name="Navigation" type="int" value="1"/>
+   <property name="Collision" type="int" value="1"/>
   </properties>
   <data>
    <tile/>
