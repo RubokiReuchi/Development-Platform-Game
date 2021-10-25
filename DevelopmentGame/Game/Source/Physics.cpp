@@ -78,6 +78,7 @@ bool Physics::PostUpdate()
 	if (!debug)
 		return true;
 
+	Uint8 c_r, c_g, c_b;
 	for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
 	{
 		for (b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
@@ -90,13 +91,45 @@ bool Physics::PostUpdate()
 			{
 				v = b->GetWorldPoint(polygonShape->GetVertex(i));
 				if (i > 0)
-					app->render->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 0, 0);
+				{
+					void* userData = f->GetUserData();
+					
+					switch ((int)userData)
+					{
+					case 0:
+						c_r = 0;
+						c_g = 0;
+						c_b = 255;
+						break;
+					case 1:
+						c_r = 255;
+						c_g = 128;
+						c_b = 0;
+						break;
+					case 2:
+						c_r = 128;
+						c_g = 0;
+						c_b = 255;
+						break;
+					case 3:
+						c_r = 0;
+						c_g = 255;
+						c_b = 0;
+						break;
+					case 4:
+						c_r = 255;
+						c_g = 0;
+						c_b = 0;
+						break;
+					}
+					app->render->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), c_r, c_g, c_b);
+				}
 
 				prev = v;
 			}
 
 			v = b->GetWorldPoint(polygonShape->GetVertex(0));
-			app->render->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 0, 0);
+			app->render->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), c_r, c_g, c_b);
 		}
 	}
 
@@ -114,24 +147,24 @@ bool Physics::CreateBox(int x, int y, int w, int h, bool hit)
 {
 	b2BodyDef g;
 	g.type = b2_staticBody;
-	g.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	g.position.Set(PIXELS_TO_METERS(x), PIXELS_TO_METERS(y));
 
 	b2Body* p = world->CreateBody(&g);
 
 	b2PolygonShape box;
-	box.SetAsBox(PIXEL_TO_METERS(w), PIXEL_TO_METERS(h));
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h));
 
 	b2FixtureDef fixture;
 	fixture.shape = &box;
 	b2Fixture* fix = p->CreateFixture(&fixture);
 
-	if (hit)
+	if (!hit)
 	{
-		fix->SetUserData((void*)2);
+		fix->SetUserData((void*)3); // grounds and walls
 	}
 	else
 	{
-		fix->SetUserData((void*)0);
+		fix->SetUserData((void*)4); // hit elements
 	}
 
 	return true;
@@ -142,27 +175,31 @@ void Physics::BeginContact(b2Contact* contact)
 	void* fixtureUserDataA = contact->GetFixtureA()->GetUserData();
 	void* fixtureUserDataB = contact->GetFixtureB()->GetUserData();
 
-	if ((int)fixtureUserDataA == 1)
+	if ((int)fixtureUserDataA == 2)
 	{
-		app->player->inAir = false;
-		app->player->djump = true;
-
-		if ((int)fixtureUserDataB == 2)
+		if ((int)fixtureUserDataB == 3)
+		{
+			app->player->inAir = false;
+			app->player->djump = true;
+		}
+		else if ((int)fixtureUserDataB == 4)
 		{
 			// player death
-			app->player->player_body->ApplyForceToCenter({ 0 ,500 }, true);
+			app->player->Death();
 		}
 	}
 
-	if ((int)fixtureUserDataB == 1)
+	if ((int)fixtureUserDataB == 2)
 	{
-		app->player->inAir = false;
-		app->player->djump = true;
-
-		if ((int)fixtureUserDataA == 2)
+		if ((int)fixtureUserDataA == 3)
+		{
+			app->player->inAir = false;
+			app->player->djump = true;
+		}
+		else if ((int)fixtureUserDataA == 4)
 		{
 			// player death
-			app->player->player_body->ApplyForceToCenter({ 0 ,500 }, true);
+			app->player->Death();
 		}
 	}
 }
@@ -172,13 +209,19 @@ void Physics::EndContact(b2Contact* contact)
 	void* fixtureUserDataA = contact->GetFixtureA()->GetUserData();
 	void* fixtureUserDataB = contact->GetFixtureB()->GetUserData();
 
-	if ((int)fixtureUserDataA == 1)
+	if ((int)fixtureUserDataA == 2)
 	{
-		app->player->inAir = true;
+		if ((int)fixtureUserDataB == 3)
+		{
+			app->player->inAir = true;
+		}
 	}
 
-	if ((int)fixtureUserDataB == 1)
+	if ((int)fixtureUserDataB == 2)
 	{
-		app->player->inAir = true;
+		if ((int)fixtureUserDataA == 3)
+		{
+			app->player->inAir = true;
+		}
 	}
 }

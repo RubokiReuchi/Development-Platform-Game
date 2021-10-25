@@ -3,7 +3,8 @@
 
 #include "Module.h"
 
-#define NUM_BUTTONS 4
+#define NUM_PAUSE_BUTTONS 4
+#define NUM_DEAD_BUTTONS 2
 
 struct Button {
 	SDL_Rect rect = { 0, 0, 220, 70 };
@@ -33,12 +34,15 @@ public:
 
 	bool GetGameState();
 
+	bool dead;
+
 private:
 	SDL_Rect r;
 	bool paused;
 
 	int chosed;
-	Button buttons[NUM_BUTTONS];
+	Button pause_buttons[NUM_PAUSE_BUTTONS];
+	Button dead_buttons[NUM_DEAD_BUTTONS];
 
 	Uint8 idleColorR = 18;
 	Uint8 idleColorG = 188;

@@ -6,6 +6,7 @@
 #include "Scene.h"
 #include "Frontground.h"
 #include "Menu.h"
+#include "Player.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -31,22 +32,30 @@ bool Menu::Start()
 {
 	r = { 0, 0, 1280, 1280 };
 	paused = false;
+	dead = false;
 
-	buttons[0].state = 1;
+	pause_buttons[0].state = 1;
+	dead_buttons[0].state = 1;
 	chosed = 0;
 	uint win_w, win_h;
 	app->win->GetWindowSize(win_w, win_h);
 
-	for (size_t i = 0; i < NUM_BUTTONS; i++)
+	for (size_t i = 0; i < NUM_PAUSE_BUTTONS; i++)
 	{
-		buttons[i].rect.x = ((int)win_w / 2) - (buttons[0].rect.w / 2);
-		buttons[i].rect.y = ((int)win_h / (NUM_BUTTONS + 1)) * (i + 1);
+		pause_buttons[i].rect.x = ((int)win_w / 2) - (pause_buttons[i].rect.w / 2);
+		pause_buttons[i].rect.y = ((int)win_h / (NUM_PAUSE_BUTTONS + 1)) * (i + 1);
 	}
 
-	buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // continue
-	buttons[1].tex = app->tex->Load("Assets/textures/Save.png"); // save
-	buttons[2].tex = app->tex->Load("Assets/textures/Load.png"); // load
-	buttons[3].tex = app->tex->Load("Assets/textures/Exit.png"); // quit
+	for (size_t i = 0; i < NUM_DEAD_BUTTONS; i++)
+	{
+		dead_buttons[i].rect.x = ((int)win_w / 2) - (dead_buttons[i].rect.w / 2);
+		dead_buttons[i].rect.y = ((int)win_h / (NUM_PAUSE_BUTTONS + 3)) * (i + 2);
+	}
+
+	pause_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // continue
+	pause_buttons[1].tex = app->tex->Load("Assets/textures/Save.png"); // save
+	pause_buttons[2].tex = dead_buttons[0].tex = app->tex->Load("Assets/textures/Load.png"); // load
+	pause_buttons[3].tex = dead_buttons[1].tex = app->tex->Load("Assets/textures/Exit.png"); // quit
 
 	return true;
 }
@@ -54,30 +63,46 @@ bool Menu::Start()
 // Called each loop iteration
 bool Menu::PreUpdate()
 {
-	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead)
 	{
 		paused = !paused;
 
-		buttons[chosed = 0].state = 1;
-		for (size_t i = 1; i < NUM_BUTTONS; i++)
+		pause_buttons[chosed = 0].state = 1;
+		for (size_t i = 1; i < NUM_PAUSE_BUTTONS; i++)
 		{
-			buttons[i].state = 0;
+			pause_buttons[i].state = 0;
 		}
 	}
 
-	if (paused && !loading)
+	if (paused && !loading && !dead)
 	{
-		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_BUTTONS - 1))
+		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_PAUSE_BUTTONS - 1))
 		{
-			buttons[chosed].state = 0;
+			pause_buttons[chosed].state = 0;
 			chosed++;
-			buttons[chosed].state = 1;
+			pause_buttons[chosed].state = 1;
 		}
 		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && chosed > 0)
 		{
-			buttons[chosed].state = 0;
+			pause_buttons[chosed].state = 0;
 			chosed--;
-			buttons[chosed].state = 1;
+			pause_buttons[chosed].state = 1;
+		}
+	}
+
+	if (dead && !loading)
+	{
+		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_DEAD_BUTTONS - 1))
+		{
+			dead_buttons[chosed].state = 0;
+			chosed++;
+			dead_buttons[chosed].state = 1;
+		}
+		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && chosed > 0)
+		{
+			dead_buttons[chosed].state = 0;
+			chosed--;
+			dead_buttons[chosed].state = 1;
 		}
 	}
 
@@ -87,7 +112,8 @@ bool Menu::PreUpdate()
 // Called each loop iteration
 bool Menu::Update(float dt)
 {
-	if (paused && !loading)
+	// pause buttons
+	if (paused && !loading && !dead)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
 		{
@@ -108,7 +134,7 @@ bool Menu::Update(float dt)
 				break;
 			}
 
-			buttons[chosed].state = 1;
+			pause_buttons[chosed].state = 1;
 		}
 	}
 
@@ -124,6 +150,25 @@ bool Menu::Update(float dt)
 		}
 	}
 	
+	// dead buttons
+	if (dead && !loading)
+	{
+		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		{
+			switch (chosed)
+			{
+			case 0:
+				app->frontground->FadeToBlack();
+				loading = true;
+				break;
+			case 1:
+				return false;
+				break;
+			}
+
+			dead_buttons[chosed].state = 1;
+		}
+	}
 
 	return true;
 }
@@ -135,21 +180,39 @@ bool Menu::PostUpdate()
 	{
 		app->render->DrawRectangle(r, 0, 0, 0, 200);
 
-		for (size_t i = 0; i < NUM_BUTTONS; i++)
+		for (size_t i = 0; i < NUM_PAUSE_BUTTONS; i++)
 		{
-			if (buttons[i].state == 0)
+			if (pause_buttons[i].state == 0)
 			{
-				app->render->DrawRectangle(buttons[i].rect, idleColorR, idleColorG, idleColorB);
+				app->render->DrawRectangle(pause_buttons[i].rect, idleColorR, idleColorG, idleColorB);
 			}
 			else
 			{
-				app->render->DrawRectangle(buttons[i].rect, inColorR, inColorG, inColorB);
+				app->render->DrawRectangle(pause_buttons[i].rect, inColorR, inColorG, inColorB);
 			}
 
-			app->render->DrawTexture(buttons[i].tex, buttons[i].rect.x + 10, buttons[i].rect.y + 10);
+			app->render->DrawTexture(pause_buttons[i].tex, pause_buttons[i].rect.x + 10, pause_buttons[i].rect.y + 10);
 		}
 	}
-	
+
+	if (dead)
+	{
+		app->render->DrawRectangle(r, 0, 0, 0, 200);
+
+		for (size_t i = 0; i < NUM_DEAD_BUTTONS; i++)
+		{
+			if (dead_buttons[i].state == 0)
+			{
+				app->render->DrawRectangle(dead_buttons[i].rect, idleColorR, idleColorG, idleColorB);
+			}
+			else
+			{
+				app->render->DrawRectangle(dead_buttons[i].rect, inColorR, inColorG, inColorB);
+			}
+
+			app->render->DrawTexture(dead_buttons[i].tex, dead_buttons[i].rect.x + 10, dead_buttons[i].rect.y + 10);
+		}
+	}
 
 	return true;
 }

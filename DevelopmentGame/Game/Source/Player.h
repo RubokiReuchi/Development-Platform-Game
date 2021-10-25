@@ -32,6 +32,8 @@ public:
 	bool inAir = true;
 	bool djump = true;
 
+	bool Death();
+
 private:
 	float x, y;
 	int w = 20, h = 32;
@@ -52,8 +54,11 @@ public:
 	Animation fallAnimL;
 	Animation walkAnimR;
 	Animation walkAnimL;
+	Animation deathAnimL;
+	Animation deathAnimR;
 
 	bool lookLeft;
+	int death_cd = 120;
 
 };
 

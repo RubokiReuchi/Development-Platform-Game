@@ -109,6 +109,34 @@ Player::Player() : Module()
 	walkAnimL.PushBack({ pix * 1, pix * 5, pix, pix });
 	walkAnimL.PushBack({ pix * 0, pix * 5, pix, pix });
 	walkAnimL.speed = 0.25f;
+
+	// death
+	deathAnimR.PushBack({ pix * 0, pix * 0, pix, pix });
+	deathAnimR.PushBack({ pix * 1, pix * 0, pix, pix });
+	deathAnimR.PushBack({ pix * 2, pix * 0, pix, pix });
+	deathAnimR.PushBack({ pix * 3, pix * 0, pix, pix });
+	deathAnimR.PushBack({ pix * 4, pix * 0, pix, pix });
+	deathAnimR.PushBack({ pix * 5, pix * 0, pix, pix });
+	deathAnimR.PushBack({ pix * 6, pix * 0, pix, pix });
+	deathAnimR.PushBack({ pix * 7, pix * 0, pix, pix });
+	deathAnimR.PushBack({ pix * 8, pix * 0, pix, pix });
+	deathAnimR.PushBack({ pix * 9, pix * 0, pix, pix });
+	deathAnimR.loop = false;
+	deathAnimR.speed = 0.05f;
+
+	deathAnimL.PushBack({ pix * 9, pix * 0, pix, pix });
+	deathAnimL.PushBack({ pix * 8, pix * 0, pix, pix });
+	deathAnimL.PushBack({ pix * 7, pix * 0, pix, pix });
+	deathAnimL.PushBack({ pix * 6, pix * 0, pix, pix });
+	deathAnimL.PushBack({ pix * 5, pix * 0, pix, pix });
+	deathAnimL.PushBack({ pix * 4, pix * 0, pix, pix });
+	deathAnimL.PushBack({ pix * 3, pix * 0, pix, pix });
+	deathAnimL.PushBack({ pix * 2, pix * 0, pix, pix });
+	deathAnimL.PushBack({ pix * 1, pix * 0, pix, pix });
+	deathAnimL.PushBack({ pix * 0, pix * 0, pix, pix });
+	deathAnimL.loop = false;
+	deathAnimL.speed = 0.05f;
+
 }
 
 // Destructor
@@ -138,26 +166,28 @@ bool Player::Start()
 	b2BodyDef p_body;
 	p_body.type = b2_dynamicBody;
 	p_body.fixedRotation = true;
-	p_body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	p_body.position.Set(PIXELS_TO_METERS(x), PIXELS_TO_METERS(y));
 	
 	player_body = app->physics->world->CreateBody(&p_body);
 	player_body->SetBullet(true);
 	player_body->SetFixedRotation(true);
 
 	b2PolygonShape box;
-	box.SetAsBox(PIXEL_TO_METERS(w), PIXEL_TO_METERS(h));
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h));
 
 	b2FixtureDef fixture;
 	fixture.shape = &box;
 	fixture.density = 1.0f;
 	fixture.friction = 0.0f;
-	player_body->CreateFixture(&fixture);
+	b2Fixture* bodyFixture = player_body->CreateFixture(&fixture);
+	bodyFixture->SetSensor(false);
+	bodyFixture->SetUserData((void*)1); // player collision
 
 	// ground sensor
-	box.SetAsBox(PIXEL_TO_METERS(6), PIXEL_TO_METERS(3), b2Vec2(0, PIXEL_TO_METERS(32)), 0);
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(2), b2Vec2(0, PIXELS_TO_METERS(33)), 0);
 	fixture.isSensor = true;
 	b2Fixture* sensorFixture = player_body->CreateFixture(&fixture);
-	sensorFixture->SetUserData((void*)1);
+	sensorFixture->SetUserData((void*)2); // ground sensor
 
 	return true;
 }
@@ -174,7 +204,7 @@ bool Player::PreUpdate()
 // Called each loop iteration
 bool Player::Update(float dt)
 {
-	if (!app->menu->GetGameState())
+	if (!app->menu->GetGameState() && (currentAnimation != &deathAnimL && currentAnimation != &deathAnimR))
 	{
 		// move left
 		if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
@@ -301,6 +331,20 @@ bool Player::Update(float dt)
 		currentAnimation->Update();
 	}
 
+	if (currentAnimation == &deathAnimL || currentAnimation == &deathAnimR)
+	{
+		player_body->SetLinearVelocity({ 0 , 0 });
+		currentAnimation->Update();
+
+		death_cd--;
+		if (death_cd <= 0)
+		{
+			// death screen
+			app->menu->dead = true;
+			death_cd = 120;
+		}
+	}
+
 	return true;
 }
 
@@ -335,6 +379,12 @@ bool Player::LoadState(pugi::xml_node& data)
 
 	player_body->SetTransform({ x, y }, player_body->GetAngle());
 
+	currentAnimation = &idleAnimR;
+	if (app->menu->dead)
+	{
+		app->menu->dead = false;
+	}
+
 	return true;
 }
 
@@ -342,6 +392,22 @@ bool Player::SaveState(pugi::xml_node& data)
 {
 	data.child("position").attribute("x").set_value(x);
 	data.child("position").attribute("y").set_value(y);
+
+	return true;
+}
+
+bool Player::Death()
+{
+	if (app->player->lookLeft)
+	{
+		deathAnimL.Reset();
+		app->player->currentAnimation = &app->player->deathAnimL;
+	}
+	else
+	{
+		deathAnimR.Reset();
+		app->player->currentAnimation = &app->player->deathAnimR;
+	}
 
 	return true;
 }
