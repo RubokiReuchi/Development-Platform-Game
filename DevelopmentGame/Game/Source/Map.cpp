@@ -55,17 +55,17 @@ void Map::Draw()
 	mapLayerItem = mapData.layers.start;
 
 	while (mapLayerItem != NULL) {
-
+		
 		for (int x = 0; x < mapLayerItem->data->width; x++)
 		{
 			for (int y = 0; y < mapLayerItem->data->height; y++)
 			{
 				// L04: DONE 9: Complete the draw function
 				int gid = mapLayerItem->data->Get(x, y);
-
+				
 				if (gid > 0) {
 					TileSet* tileset = GetTilesetFromTileId(gid);
-
+					
 					SDL_Rect r = tileset->GetTileRect(gid);
 					iPoint pos = MapToWorld(x, y);
 

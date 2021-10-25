@@ -63,7 +63,8 @@ bool Menu::Start()
 // Called each loop iteration
 bool Menu::PreUpdate()
 {
-	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead)
+	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead 
+		&& app->player->currentAnimation != &app->player->deathAnimL && app->player->currentAnimation != &app->player->deathAnimR)
 	{
 		paused = !paused;
 

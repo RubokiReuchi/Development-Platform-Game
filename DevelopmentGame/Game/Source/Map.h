@@ -153,6 +153,8 @@ private:
 	// L06: TODO 3: Pick the right Tileset based on a tile id
 	TileSet* GetTilesetFromTileId(int id) const;
 
+	int c_tiles = 1;
+
 public:
 
     // L03: DONE 1: Add your struct for map info
