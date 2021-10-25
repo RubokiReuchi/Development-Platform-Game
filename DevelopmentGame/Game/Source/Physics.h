@@ -44,6 +44,8 @@ public:
 	bool debug;
 	b2World* world;
 
+	int on_collosion;
+
 };
 
 #endif

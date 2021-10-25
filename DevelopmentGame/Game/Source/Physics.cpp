@@ -43,6 +43,8 @@ bool Physics::Start()
 	world = new b2World(gravity);
 	world->SetContactListener(this);
 
+	on_collosion = 0;
+
 	return true;
 }
 
@@ -58,6 +60,15 @@ bool Physics::PreUpdate()
 		world->Step(0, 6, 2);
 	}
 	
+	if (on_collosion > 0)
+	{
+		app->player->inAir = false;
+		app->player->djump = true;
+	}
+	else
+	{
+		app->player->inAir = true;
+	}
 
 	return true;
 }
@@ -184,8 +195,7 @@ void Physics::BeginContact(b2Contact* contact)
 	{
 		if ((int)fixtureUserDataB == 3)
 		{
-			app->player->inAir = false;
-			app->player->djump = true;
+			on_collosion++;
 		}
 		else if ((int)fixtureUserDataB == 4)
 		{
@@ -198,8 +208,7 @@ void Physics::BeginContact(b2Contact* contact)
 	{
 		if ((int)fixtureUserDataA == 3)
 		{
-			app->player->inAir = false;
-			app->player->djump = true;
+			on_collosion++;
 		}
 		else if ((int)fixtureUserDataA == 4)
 		{
@@ -218,7 +227,7 @@ void Physics::EndContact(b2Contact* contact)
 	{
 		if ((int)fixtureUserDataB == 3)
 		{
-			app->player->inAir = true;
+			on_collosion--;
 		}
 	}
 
@@ -226,7 +235,7 @@ void Physics::EndContact(b2Contact* contact)
 	{
 		if ((int)fixtureUserDataA == 3)
 		{
-			app->player->inAir = true;
+			on_collosion--;
 		}
 	}
 }

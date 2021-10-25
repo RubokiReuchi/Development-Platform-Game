@@ -35,7 +35,7 @@ public:
 	bool Death();
 
 private:
-	float x, y;
+	float x = 4.5f, y = 15.5f;
 	int w = 20, h = 32;
 	float speed = 10.0f;
 	float jumpForce = 500.0f;
