@@ -56,38 +56,38 @@ void Map::Draw()
 
 	while (mapLayerItem != NULL) {
 
-		if (mapLayerItem->data->properties.GetProperty("Draw") == 1)
+		for (int x = 0; x < mapLayerItem->data->width; x++)
 		{
-			for (int x = 0; x < mapLayerItem->data->width; x++)
+			for (int y = 0; y < mapLayerItem->data->height; y++)
 			{
-				for (int y = 0; y < mapLayerItem->data->height; y++)
-				{
-					// L04: DONE 9: Complete the draw function
-					int gid = mapLayerItem->data->Get(x, y);
+				// L04: DONE 9: Complete the draw function
+				int gid = mapLayerItem->data->Get(x, y);
 
-					if (gid > 0) {
-						TileSet* tileset = GetTilesetFromTileId(gid);
+				if (gid > 0) {
+					TileSet* tileset = GetTilesetFromTileId(gid);
 
-						SDL_Rect r = tileset->GetTileRect(gid);
-						iPoint pos = MapToWorld(x, y);
+					SDL_Rect r = tileset->GetTileRect(gid);
+					iPoint pos = MapToWorld(x, y);
 
+					if (mapLayerItem->data->properties.GetProperty("Draw") == 1)
+					{
 						app->render->DrawTexture(tileset->texture,
 							pos.x,
 							pos.y,
 							&r);
+					}
 
-						if (!collision_loaded)
+					if (!collision_loaded)
+					{
+						if (mapLayerItem->data->properties.GetProperty("Collision") == 1)
 						{
-							if (mapLayerItem->data->properties.GetProperty("Navigation") == 1)
-							{
-								// crear cubo
-								app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, false);
-							}
-							else if (mapLayerItem->data->properties.GetProperty("Navigation") == 2)
-							{
-								// crear cubo
-								app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, true);
-							}
+							// crear cubo
+							app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, false);
+						}
+						else if (mapLayerItem->data->properties.GetProperty("Collision") == 2)
+						{
+							// crear cubo
+							app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, true);
 						}
 					}
 				}
