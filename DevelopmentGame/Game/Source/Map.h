@@ -43,12 +43,22 @@ struct Properties
 {
 	struct Property
 	{
-		//...
+		SString name;
+		int value;
 	};
 	
 	~Properties()
 	{
+		ListItem<Property*>* item;
+		item = list.start;
 
+		while (item != NULL)
+		{
+			RELEASE(item->data);
+			item = item->next;
+		}
+
+		list.clear();
 	}
 
 	// L06: TODO 7: Method to ask for the value of a custom property
@@ -152,6 +162,8 @@ private:
 
     SString folder;
     bool mapLoaded;
+
+	bool collision_loaded;
 };
 
 #endif // __MAP_H__

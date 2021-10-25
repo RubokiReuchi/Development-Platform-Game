@@ -157,7 +157,7 @@ bool Player::Start()
 	box.SetAsBox(PIXEL_TO_METERS(6), PIXEL_TO_METERS(3), b2Vec2(0, PIXEL_TO_METERS(32)), 0);
 	fixture.isSensor = true;
 	b2Fixture* sensorFixture = player_body->CreateFixture(&fixture);
-	sensorFixture->SetUserData((void*)2);
+	sensorFixture->SetUserData((void*)1);
 
 	return true;
 }
@@ -340,7 +340,6 @@ bool Player::LoadState(pugi::xml_node& data)
 
 bool Player::SaveState(pugi::xml_node& data)
 {
-	LOG("saving......");
 	data.child("position").attribute("x").set_value(x);
 	data.child("position").attribute("y").set_value(y);
 

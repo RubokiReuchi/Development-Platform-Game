@@ -43,10 +43,10 @@ bool Menu::Start()
 		buttons[i].rect.y = ((int)win_h / (NUM_BUTTONS + 1)) * (i + 1);
 	}
 
-	buttons[0].tex = app->tex->Load("Assets/textures/Continue_text.png"); // continue
-	buttons[1].tex = app->tex->Load("Assets/textures/Continue_text.png"); // save
-	buttons[2].tex = app->tex->Load("Assets/textures/Continue_text.png"); // load
-	buttons[3].tex = app->tex->Load("Assets/textures/Continue_text.png"); // quit
+	buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // continue
+	buttons[1].tex = app->tex->Load("Assets/textures/Save.png"); // save
+	buttons[2].tex = app->tex->Load("Assets/textures/Load.png"); // load
+	buttons[3].tex = app->tex->Load("Assets/textures/Exit.png"); // quit
 
 	return true;
 }
@@ -89,7 +89,7 @@ bool Menu::Update(float dt)
 {
 	if (paused && !loading)
 	{
-		if (app->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
+		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
 		{
 			switch (chosed)
 			{

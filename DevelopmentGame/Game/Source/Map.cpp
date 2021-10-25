@@ -1,8 +1,8 @@
-
 #include "App.h"
 #include "Render.h"
 #include "Textures.h"
 #include "Map.h"
+#include "Physics.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -11,7 +11,8 @@
 
 Map::Map() : Module(), mapLoaded(false)
 {
-    //name.Create("map");
+    name.Create("map");
+	collision_loaded = false;
 }
 
 // Destructor
@@ -21,7 +22,14 @@ Map::~Map()
 // L06: TODO 7: Ask for the value of a custom property
 int Properties::GetProperty(const char* value, int defaultValue) const
 {
-	//...
+	ListItem<Property*>* item = list.start;
+
+	while (item)
+	{
+		if (item->data->name == value)
+			return item->data->value;
+		item = item->next;
+	}
 
 	return defaultValue;
 }
@@ -48,34 +56,48 @@ void Map::Draw()
 
 	while (mapLayerItem != NULL) {
 
-		for (int x = 0; x < mapLayerItem->data->width; x++)
+		if (mapLayerItem->data->properties.GetProperty("Draw") == 1)
 		{
-			for (int y = 0; y < mapLayerItem->data->height; y++)
+			for (int x = 0; x < mapLayerItem->data->width; x++)
 			{
-				// L04: DONE 9: Complete the draw function
-				int gid = mapLayerItem->data->Get(x, y);
+				for (int y = 0; y < mapLayerItem->data->height; y++)
+				{
+					// L04: DONE 9: Complete the draw function
+					int gid = mapLayerItem->data->Get(x, y);
 
-				if (gid > 0) {
+					if (gid > 0) {
+						TileSet* tileset = GetTilesetFromTileId(gid);
 
-					//L06: TODO 4: Obtain the tile set using GetTilesetFromTileId
-					//now we always use the first tileset in the list
-					//TileSet* tileset = mapData.tilesets.start->data;
-					TileSet* tileset = GetTilesetFromTileId(gid);
+						SDL_Rect r = tileset->GetTileRect(gid);
+						iPoint pos = MapToWorld(x, y);
 
-					SDL_Rect r = tileset->GetTileRect(gid);
-					iPoint pos = MapToWorld(x, y);
+						app->render->DrawTexture(tileset->texture,
+							pos.x,
+							pos.y,
+							&r);
 
-					app->render->DrawTexture(tileset->texture,
-						pos.x,
-						pos.y,
-						&r);
+						if (!collision_loaded)
+						{
+							if (mapLayerItem->data->properties.GetProperty("Navigation") == 1)
+							{
+								// crear cubo
+								app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, false);
+							}
+							else if (mapLayerItem->data->properties.GetProperty("Navigation") == 2)
+							{
+								// crear cubo
+								app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, true);
+							}
+						}
+					}
 				}
-
 			}
 		}
 
 		mapLayerItem = mapLayerItem->next;
 	}
+
+	collision_loaded = true;
 }
 
 // L04: DONE 8: Create a method that translates x,y coordinates from map positions to world positions
@@ -360,7 +382,7 @@ bool Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 	}
 	else
 	{
-		// L03: DONE 4: Load Tileset image
+		// Load Tileset image
 		SString tmp("%s%s", folder.GetString(), image.attribute("source").as_string());
 		set->texture = app->tex->Load(tmp.GetString());
 	}
@@ -378,8 +400,8 @@ bool Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 	layer->width = node.attribute("width").as_int();
 	layer->height = node.attribute("height").as_int();
 
-	//L06: TODO 6 Call Load Properties
-	//..
+	// Call Load Properties
+	LoadProperties(node, layer->properties);
 
 	//Reserve the memory for the tile array
 	layer->data = new uint[layer->width * layer->height];
@@ -417,6 +439,15 @@ bool Map::LoadAllLayers(pugi::xml_node mapNode) {
 bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 {
 	bool ret = false;
+
+	for (pugi::xml_node propertieNode = node.child("properties").child("property"); propertieNode; propertieNode = propertieNode.next_sibling("property"))
+	{
+		Properties::Property* p = new Properties::Property();
+		p->name = propertieNode.attribute("name").as_string();
+		p->value = propertieNode.attribute("value").as_int();
+
+		properties.list.add(p);
+	}
 	
 	return ret;
 }

@@ -32,8 +32,8 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-	// L03: DONE: Load map
-	//app->map->Load("hello.tmx");
+	// Load Map
+	app->map->Load("level1.tmx");
 	
 	// Load music
 	app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
@@ -54,7 +54,7 @@ bool Scene::Update(float dt)
 		app->frontground->FadeToBlack();
 
 	// Draw map
-	app->map->Draw();
+	//app->map->Draw();
 
 	// L03: DONE 7: Set the window title with map/tileset info
 	SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
@@ -72,7 +72,9 @@ bool Scene::PostUpdate()
 {
 	bool ret = true;
 
-	if(app->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)
+	app->map->Draw();
+
+	if (app->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)
 		ret = false;
 
 	return ret;

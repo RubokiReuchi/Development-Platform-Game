@@ -43,34 +43,6 @@ bool Physics::Start()
 	world = new b2World(gravity);
 	world->SetContactListener(this);
 
-	b2BodyDef g;
-	g.type = b2_staticBody;
-	g.position.Set(PIXEL_TO_METERS(400), PIXEL_TO_METERS(500));
-
-	b2Body* p = world->CreateBody(&g);
-
-	b2PolygonShape box;
-	box.SetAsBox(PIXEL_TO_METERS(250), PIXEL_TO_METERS(32));
-
-	b2FixtureDef fixture;
-	fixture.shape = &box;
-	b2Fixture* fix = p->CreateFixture(&fixture);
-
-	b2BodyDef w;
-	w.type = b2_staticBody;
-	w.position.Set(PIXEL_TO_METERS(400), PIXEL_TO_METERS(500));
-
-	b2Body* q = world->CreateBody(&w);
-
-	b2PolygonShape box2;
-	box2.SetAsBox(PIXEL_TO_METERS(32), PIXEL_TO_METERS(250));
-
-	b2FixtureDef q_fixture;
-	q_fixture.shape = &box2;
-	q->CreateFixture(&q_fixture);
-
-	
-
 	return true;
 }
 
@@ -138,33 +110,74 @@ bool Physics::CleanUp()
 	return true;
 }
 
-void Physics::BeginContact(b2Contact* contact)
+bool Physics::CreateBox(int x, int y, int w, int h, bool hit)
 {
-	void* fixtureUserData = contact->GetFixtureA()->GetUserData();
-	if ((int)fixtureUserData == 2)
+	b2BodyDef g;
+	g.type = b2_staticBody;
+	g.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* p = world->CreateBody(&g);
+
+	b2PolygonShape box;
+	box.SetAsBox(PIXEL_TO_METERS(w), PIXEL_TO_METERS(h));
+
+	b2FixtureDef fixture;
+	fixture.shape = &box;
+	b2Fixture* fix = p->CreateFixture(&fixture);
+
+	if (hit)
 	{
-		app->player->inAir = false;
-		app->player->djump = true;
+		fix->SetUserData((void*)2);
+	}
+	else
+	{
+		fix->SetUserData((void*)0);
 	}
 
-	fixtureUserData = contact->GetFixtureB()->GetUserData();
-	if ((int)fixtureUserData == 2)
+	return true;
+}
+
+void Physics::BeginContact(b2Contact* contact)
+{
+	void* fixtureUserDataA = contact->GetFixtureA()->GetUserData();
+	void* fixtureUserDataB = contact->GetFixtureB()->GetUserData();
+
+	if ((int)fixtureUserDataA == 1)
 	{
 		app->player->inAir = false;
 		app->player->djump = true;
+
+		if ((int)fixtureUserDataB == 2)
+		{
+			// player death
+			app->player->player_body->ApplyForceToCenter({ 0 ,500 }, true);
+		}
+	}
+
+	if ((int)fixtureUserDataB == 1)
+	{
+		app->player->inAir = false;
+		app->player->djump = true;
+
+		if ((int)fixtureUserDataA == 2)
+		{
+			// player death
+			app->player->player_body->ApplyForceToCenter({ 0 ,500 }, true);
+		}
 	}
 }
 
 void Physics::EndContact(b2Contact* contact)
 {
-	void* fixtureUserData = contact->GetFixtureA()->GetUserData();
-	if ((int)fixtureUserData == 2)
+	void* fixtureUserDataA = contact->GetFixtureA()->GetUserData();
+	void* fixtureUserDataB = contact->GetFixtureB()->GetUserData();
+
+	if ((int)fixtureUserDataA == 1)
 	{
 		app->player->inAir = true;
 	}
 
-	fixtureUserData = contact->GetFixtureB()->GetUserData();
-	if ((int)fixtureUserData == 2)
+	if ((int)fixtureUserDataB == 1)
 	{
 		app->player->inAir = true;
 	}
