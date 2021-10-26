@@ -27,7 +27,7 @@ bool Frontground::Awake()
 // Called before the first frame
 bool Frontground::Start()
 {
-	r = { 0, 0, 1280, 1280 };
+	r = { 0, 0, 2560, 1440 };
 
 	return true;
 }

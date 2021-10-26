@@ -35,10 +35,10 @@ public:
 	bool Death();
 
 private:
-	float x = 4.5f, y = 15.5f;
+	float x = 8.2f, y = 22.5f;
 	int w = 20, h = 32;
-	float speed = 10.0f;
-	float jumpForce = 500.0f;
+	float speed = 5.0f;
+	float jumpForce = 400.0f;
 
 public:
 	SDL_Texture* textureR = NULL;

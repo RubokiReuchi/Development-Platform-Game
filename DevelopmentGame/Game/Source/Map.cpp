@@ -82,12 +82,17 @@ void Map::Draw()
 						if (mapLayerItem->data->properties.GetProperty("Collision") == 1)
 						{
 							// crear cubo
-							app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, false);
+							app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, 3);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 2)
 						{
 							// crear cubo
-							app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, true);
+							app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, 4);
+						}
+						else if (mapLayerItem->data->properties.GetProperty("Collision") == 3)
+						{
+							// crear cubo
+							app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, 5);
 						}
 					}
 				}

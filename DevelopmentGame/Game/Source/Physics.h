@@ -35,7 +35,7 @@ public:
 
 	bool CleanUp();
 
-	bool CreateBox(int x, int y, int w, int h, bool hit);
+	bool CreateBox(int x, int y, int w, int h, int collision);
 
 	void BeginContact(b2Contact* contact);
 

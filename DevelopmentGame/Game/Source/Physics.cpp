@@ -132,6 +132,11 @@ bool Physics::PostUpdate()
 						c_g = 0;
 						c_b = 0;
 						break;
+					case 5:
+						c_r = 255;
+						c_g = 200;
+						c_b = 0;
+						break;
 					default:
 						c_r = 0;
 						c_g = 0;
@@ -159,7 +164,7 @@ bool Physics::CleanUp()
 	return true;
 }
 
-bool Physics::CreateBox(int x, int y, int w, int h, bool hit)
+bool Physics::CreateBox(int x, int y, int w, int h, int collision)
 {
 	b2BodyDef g;
 	g.type = b2_staticBody;
@@ -172,16 +177,10 @@ bool Physics::CreateBox(int x, int y, int w, int h, bool hit)
 
 	b2FixtureDef fixture;
 	fixture.shape = &box;
+	if (collision == 5) fixture.isSensor = true;
 	b2Fixture* fix = p->CreateFixture(&fixture);
 
-	if (!hit)
-	{
-		fix->SetUserData((void*)3); // grounds and walls
-	}
-	else
-	{
-		fix->SetUserData((void*)4); // hit elements
-	}
+	fix->SetUserData((void*)collision);
 
 	return true;
 }
@@ -202,6 +201,10 @@ void Physics::BeginContact(b2Contact* contact)
 			// player death
 			app->player->Death();
 		}
+		else if ((int)fixtureUserDataB == 5)
+		{
+			// show complete level key
+		}
 	}
 
 	if ((int)fixtureUserDataB == 2)
@@ -214,6 +217,10 @@ void Physics::BeginContact(b2Contact* contact)
 		{
 			// player death
 			app->player->Death();
+		}
+		else if ((int)fixtureUserDataA == 5)
+		{
+			// show complete level key
 		}
 	}
 }
@@ -229,6 +236,10 @@ void Physics::EndContact(b2Contact* contact)
 		{
 			on_collosion--;
 		}
+		else if ((int)fixtureUserDataB == 5)
+		{
+			// hide complete level key
+		}
 	}
 
 	if ((int)fixtureUserDataB == 2)
@@ -236,6 +247,10 @@ void Physics::EndContact(b2Contact* contact)
 		if ((int)fixtureUserDataA == 3)
 		{
 			on_collosion--;
+		}
+		else if ((int)fixtureUserDataA == 5)
+		{
+			// hide complete level key
 		}
 	}
 }

@@ -41,7 +41,6 @@ int main(int argc, char* args[])
 			LOG("CREATION PHASE ===============================");
 
 			app = new App(argc, args);
-
 			if(app != NULL)
 				state = AWAKE;
 			else
@@ -89,6 +88,7 @@ int main(int argc, char* args[])
 			if(app->CleanUp() == true)
 			{
 				RELEASE(app);
+				SDL_ShowCursor(1);
 				result = EXIT_SUCCESS;
 				state = EXIT;
 			}

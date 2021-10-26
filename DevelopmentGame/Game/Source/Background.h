@@ -22,8 +22,18 @@ public:
 
 	bool CleanUp();
 
-	SDL_Rect r;
-	SDL_Texture* texture;
+	SDL_Rect sky_r;
+	SDL_Texture* sky_texture;
+	SDL_Rect n_mountain_r;
+	SDL_Texture* n_mountain_texture;
+	SDL_Rect f_mountain_r;
+	SDL_Texture* f_mountain_texture;
+	SDL_Rect clouds_r;
+	SDL_Texture* clouds_texture;
+
+	int n_mountain_parallaxX = 0;
+	int f_mountain_parallaxX = 0;
+	int clouds_parallaxX = 0;
 };
 
 #endif

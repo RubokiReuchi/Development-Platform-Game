@@ -184,7 +184,7 @@ bool Player::Start()
 	bodyFixture->SetUserData((void*)1); // player collision
 
 	// ground sensor
-	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(2), b2Vec2(0, PIXELS_TO_METERS(33)), 0);
+	box.SetAsBox(PIXELS_TO_METERS((w - 2)), PIXELS_TO_METERS(2), b2Vec2(0, PIXELS_TO_METERS(33)), 0);
 	fixture.isSensor = true;
 	b2Fixture* sensorFixture = player_body->CreateFixture(&fixture);
 	sensorFixture->SetUserData((void*)2); // ground sensor
