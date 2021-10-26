@@ -55,15 +55,15 @@ bool Background::Update(float dt)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 		{
-			n_mountain_parallaxX += 1;
-			f_mountain_parallaxX += 2;
-			clouds_parallaxX += 3;
+			//n_mountain_parallaxX += 0;
+			f_mountain_parallaxX += 1;
+			clouds_parallaxX += 2;
 		}
 		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 		{
-			n_mountain_parallaxX -= 1;
-			f_mountain_parallaxX -= 2;
-			clouds_parallaxX -= 3;
+			//n_mountain_parallaxX -= 0;
+			f_mountain_parallaxX -= 1;
+			clouds_parallaxX -= 2;
 		}
 	}
 
@@ -81,8 +81,8 @@ bool Background::PostUpdate()
 	app->render->DrawTexture(f_mountain_texture, 2560 + f_mountain_parallaxX, 640, &f_mountain_r); // parallax
 	app->render->DrawTexture(f_mountain_texture, -2560 + f_mountain_parallaxX, 640, &f_mountain_r); // parallax
 	app->render->DrawTexture(n_mountain_texture, 0 + n_mountain_parallaxX, 720, &n_mountain_r);
-	app->render->DrawTexture(n_mountain_texture, 2560 + n_mountain_parallaxX, 720, &n_mountain_r); // parallax
-	app->render->DrawTexture(n_mountain_texture, -2560 + n_mountain_parallaxX, 720, &n_mountain_r); // parallax
+	//app->render->DrawTexture(n_mountain_texture, 2560 + n_mountain_parallaxX, 720, &n_mountain_r); // parallax
+	//app->render->DrawTexture(n_mountain_texture, -2560 + n_mountain_parallaxX, 720, &n_mountain_r); // parallax
 	
 	return true;
 }

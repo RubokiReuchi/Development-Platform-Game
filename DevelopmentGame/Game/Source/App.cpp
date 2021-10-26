@@ -111,7 +111,7 @@ bool App::Start()
 		item = item->next;
 	}
 
-	SDL_ShowCursor(0);
+	//SDL_ShowCursor(0);
 
 	return ret;
 }

@@ -46,6 +46,9 @@ public:
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
 
+	int monitorX;
+	float screenScale;
+
 public:
 
 	SDL_Renderer* renderer;

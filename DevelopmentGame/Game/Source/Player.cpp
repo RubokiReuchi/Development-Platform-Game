@@ -166,7 +166,7 @@ bool Player::Start()
 	b2BodyDef p_body;
 	p_body.type = b2_dynamicBody;
 	p_body.fixedRotation = true;
-	p_body.position.Set(x, y); // why no pixels to meters???
+	p_body.position.Set(x, y);
 	
 	player_body = app->physics->world->CreateBody(&p_body);
 	player_body->SetBullet(true);

@@ -196,7 +196,10 @@ void Physics::BeginContact(b2Contact* contact)
 		{
 			on_collosion++;
 		}
-		else if ((int)fixtureUserDataB == 4)
+	}
+	else if ((int)fixtureUserDataA == 1)
+	{
+		if ((int)fixtureUserDataB == 4)
 		{
 			// player death
 			app->player->Death();
@@ -213,7 +216,10 @@ void Physics::BeginContact(b2Contact* contact)
 		{
 			on_collosion++;
 		}
-		else if ((int)fixtureUserDataA == 4)
+	}
+	else if ((int)fixtureUserDataB == 2)
+	{
+		if ((int)fixtureUserDataA == 4)
 		{
 			// player death
 			app->player->Death();
@@ -236,7 +242,10 @@ void Physics::EndContact(b2Contact* contact)
 		{
 			on_collosion--;
 		}
-		else if ((int)fixtureUserDataB == 5)
+	}
+	else if ((int)fixtureUserDataA == 1)
+	{
+		if ((int)fixtureUserDataB == 5)
 		{
 			// hide complete level key
 		}
@@ -248,7 +257,10 @@ void Physics::EndContact(b2Contact* contact)
 		{
 			on_collosion--;
 		}
-		else if ((int)fixtureUserDataA == 5)
+	}
+	else if ((int)fixtureUserDataB == 1)
+	{
+		if ((int)fixtureUserDataA == 5)
 		{
 			// hide complete level key
 		}
