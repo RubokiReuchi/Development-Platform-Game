@@ -49,13 +49,16 @@ bool Menu::Start()
 	for (size_t i = 0; i < NUM_DEAD_BUTTONS; i++)
 	{
 		dead_buttons[i].rect.x = ((int)win_w / 2) - (dead_buttons[i].rect.w / 2);
-		dead_buttons[i].rect.y = ((int)win_h / (NUM_PAUSE_BUTTONS + 3)) * (i + 2);
+		dead_buttons[i].rect.y = ((int)win_h / (NUM_PAUSE_BUTTONS + 3)) * (i + 2.5f);
 	}
 
 	pause_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // continue
 	pause_buttons[1].tex = app->tex->Load("Assets/textures/Save.png"); // save
 	pause_buttons[2].tex = dead_buttons[0].tex = app->tex->Load("Assets/textures/Load.png"); // load
 	pause_buttons[3].tex = dead_buttons[1].tex = app->tex->Load("Assets/textures/Exit.png"); // quit
+	
+	gameOver = app->tex->Load("Assets/textures/Game_Over.png"); 
+	cat = app->tex->Load("Assets/textures/Dead_Image.png"); 
 
 	return true;
 }
@@ -199,6 +202,9 @@ bool Menu::PostUpdate()
 	if (dead)
 	{
 		app->render->DrawRectangle(r, 0, 0, 0, 200);
+
+		app->render->DrawTexture(gameOver, 0, 75);
+		app->render->DrawTexture(cat, 950, 800);
 
 		for (size_t i = 0; i < NUM_DEAD_BUTTONS; i++)
 		{

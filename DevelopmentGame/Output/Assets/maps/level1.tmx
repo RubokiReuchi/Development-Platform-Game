@@ -32500,7 +32500,7 @@
   <properties>
    <property name="Collision" type="int" value="3"/>
    <property name="Draw" type="int" value="0"/>
-   <property name="Heigth" type="int" value="3"/>
+   <property name="Height" type="int" value="3"/>
    <property name="Width" type="int" value="2"/>
   </properties>
   <data>
@@ -36110,7 +36110,7 @@
   <properties>
    <property name="Collision" type="int" value="3"/>
    <property name="Draw" type="int" value="0"/>
-   <property name="Heigth" type="int" value="3"/>
+   <property name="Height" type="int" value="3"/>
    <property name="Width" type="int" value="3"/>
   </properties>
   <data>

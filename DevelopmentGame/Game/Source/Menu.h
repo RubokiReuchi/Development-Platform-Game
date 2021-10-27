@@ -44,6 +44,9 @@ private:
 	Button pause_buttons[NUM_PAUSE_BUTTONS];
 	Button dead_buttons[NUM_DEAD_BUTTONS];
 
+	SDL_Texture* gameOver = NULL;
+	SDL_Texture* cat = NULL;
+
 	Uint8 idleColorR = 18;
 	Uint8 idleColorG = 188;
 	Uint8 idleColorB = 13;

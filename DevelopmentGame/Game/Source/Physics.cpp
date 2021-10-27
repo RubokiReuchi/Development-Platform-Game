@@ -22,7 +22,7 @@
 Physics::Physics() : Module()
 {
 	name.Create("physics");
-	debug = true;
+	debug = false;
 }
 
 // Destructor
@@ -76,6 +76,10 @@ bool Physics::PreUpdate()
 // Called each loop iteration
 bool Physics::Update(float dt)
 {
+	if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
+	{
+		debug = !debug;
+	}
 
 	return true;
 }
@@ -83,9 +87,6 @@ bool Physics::Update(float dt)
 // Called each loop iteration
 bool Physics::PostUpdate()
 {
-	if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
-		debug = !debug;
-
 	if (!debug)
 		return true;
 
