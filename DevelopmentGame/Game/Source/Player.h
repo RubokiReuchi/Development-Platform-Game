@@ -34,6 +34,8 @@ public:
 
 	bool Death();
 
+	void SetPosition(int new_x, int new_y);
+
 private:
 	float x = 8.2f, y = 22.5f;
 	int w = 20, h = 32;

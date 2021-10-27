@@ -51,7 +51,7 @@ bool Physics::Start()
 // Called each loop iteration
 bool Physics::PreUpdate()
 {
-	if (!app->menu->GetGameState())
+	if (!app->menu->GetGameState() && !app->scene->GetStartScreenState())
 	{
 		world->Step(1.0f / 60.0f, 6, 2);
 	}
@@ -76,7 +76,7 @@ bool Physics::PreUpdate()
 // Called each loop iteration
 bool Physics::Update(float dt)
 {
-	if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
+	if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
 	{
 		debug = !debug;
 	}

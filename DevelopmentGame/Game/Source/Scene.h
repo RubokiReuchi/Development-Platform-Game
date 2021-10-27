@@ -33,8 +33,15 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	bool GetStartScreenState();
+
+	bool PassLevel(int c_level);
+
 private:
-	SDL_Texture* img;
+	SDL_Texture* start_screen;
+
+	int current_level = 0;
+
 };
 
 #endif // __SCENE_H__

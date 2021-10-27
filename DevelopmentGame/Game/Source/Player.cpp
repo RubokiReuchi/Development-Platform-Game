@@ -204,7 +204,8 @@ bool Player::PreUpdate()
 // Called each loop iteration
 bool Player::Update(float dt)
 {
-	if (!app->menu->GetGameState() && (currentAnimation != &deathAnimL && currentAnimation != &deathAnimR))
+	if (!app->menu->GetGameState() && (currentAnimation != &deathAnimL &&
+		currentAnimation != &deathAnimR) && !app->scene->GetStartScreenState())
 	{
 		// move left
 		if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
@@ -353,15 +354,18 @@ bool Player::PostUpdate()
 {
 	SDL_Rect rect = currentAnimation->GetCurrentFrame();
 	 
-	if (lookLeft)
+	if (!app->scene->GetStartScreenState())
 	{
-		app->render->DrawTexture(textureL, METERS_TO_PIXELS(x - 55.5f), METERS_TO_PIXELS(y - 70.0f), &rect);
+		if (lookLeft)
+		{
+			app->render->DrawTexture(textureL, METERS_TO_PIXELS(x - 55.5f), METERS_TO_PIXELS(y - 70.0f), &rect);
+		}
+		else
+		{
+			app->render->DrawTexture(textureR, METERS_TO_PIXELS(x - 55.5f), METERS_TO_PIXELS(y - 70.0f), &rect);
+		}
 	}
-	else
-	{
-		app->render->DrawTexture(textureR, METERS_TO_PIXELS(x - 55.5f), METERS_TO_PIXELS(y - 70.0f), &rect);
-	}
-
+	
 	return true;
 }
 
@@ -410,4 +414,12 @@ bool Player::Death()
 	}
 
 	return true;
+}
+
+void Player::SetPosition(int new_x, int new_y)
+{
+	x = new_x;
+	y = new_y;
+
+	player_body->SetTransform({ x, y }, player_body->GetAngle());
 }
