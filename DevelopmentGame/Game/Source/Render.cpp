@@ -1,6 +1,7 @@
 #include "App.h"
 #include "Window.h"
 #include "Render.h"
+#include "Scene.h"
 #include "Player.h"
 
 #include "Defs.h"
@@ -44,8 +45,8 @@ bool Render::Awake(pugi::xml_node& config)
 	}
 	else
 	{
-		camera.w = 2560;//app->win->screenSurface->w;
-		camera.h = 1440;//app->win->screenSurface->h;
+		camera.w = app->win->screenSurface->w;
+		camera.h = app->win->screenSurface->h;
 		camera.x = 0;
 		camera.y = 0;
 	}
@@ -74,10 +75,18 @@ bool Render::PreUpdate()
 
 bool Render::Update(float dt)
 {
-	int X = METERS_TO_PIXELS(app->player->GetPosition().x);
-	if ((METERS_TO_PIXELS(app->player->GetPosition().x) > camera.w / 2) && (app->player->GetPosition().x < PIXELS_TO_METERS(camera.w * 3 / 2)))
+	if (!app->scene->godmode)
 	{
-		camera.x = -METERS_TO_PIXELS(app->player->GetPosition().x) + (camera.w / 2);
+		camera.x = -METERS_TO_PIXELS(app->player->GetPosition().x) + (2560 / 2);
+	}
+
+	if (camera.x > 0)
+	{
+		camera.x = 0;
+	}
+	else if (camera.x < -camera.w)
+	{
+		camera.x = -camera.w;
 	}
 
 	return true;
@@ -258,13 +267,4 @@ bool Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uin
 void Render::MoveCamera(int movement)
 {
 	camera.x -= movement;
-
-	if (camera.x > 0)
-	{
-		camera.x = 0;
-	}
-	else if (camera.x < -camera.w)
-	{
-		camera.x = -camera.w;
-	}
 }

@@ -37,12 +37,12 @@ public:
 
 	bool PassLevel(int c_level);
 
+	bool godmode;
+
 private:
 	SDL_Texture* start_screen;
 
 	int current_level = 0;
-
-	bool godmode;
 
 };
 

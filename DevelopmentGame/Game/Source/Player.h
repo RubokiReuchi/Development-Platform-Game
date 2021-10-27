@@ -35,9 +35,9 @@ public:
 	bool Death();
 	fPoint GetPosition();
 	void SetPosition(int new_x, int new_y);
-
-private:
 	float x = 8.2f, y = 22.5f;
+private:
+	//float x = 8.2f, y = 22.5f;
 	int w = 20, h = 32;
 	float speed = 5.0f;
 	float jumpForce = 400.0f;
