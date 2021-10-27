@@ -151,6 +151,7 @@ bool Menu::Update(float dt)
 			app->LoadGameRequest();
 			load_cd = 120;
 			loading = false;
+			paused = false;
 		}
 	}
 	
@@ -208,11 +209,13 @@ bool Menu::PostUpdate()
 	{
 		app->render->DrawRectangle(r, 0, 0, 0, 200);
 
-		app->render->DrawTexture(gameOver, 0, 75);
-		app->render->DrawTexture(cat, 950, 800);
+		app->render->DrawTexture(gameOver, 0 + c_x, 75);
+		app->render->DrawTexture(cat, 950 + c_x, 800);
 
 		for (size_t i = 0; i < NUM_DEAD_BUTTONS; i++)
 		{
+			dead_buttons[i].rect.x = ((int)win_w / 2) - (dead_buttons[i].rect.w / 2) + c_x;
+
 			if (dead_buttons[i].state == 0)
 			{
 				app->render->DrawRectangle(dead_buttons[i].rect, idleColorR, idleColorG, idleColorB);

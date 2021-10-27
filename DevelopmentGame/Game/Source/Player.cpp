@@ -342,8 +342,11 @@ bool Player::Update(float dt)
 		{
 			// death screen
 			app->menu->dead = true;
-			death_cd = 120;
 		}
+	}
+	else
+	{
+		death_cd = 120;
 	}
 
 	return true;
@@ -381,7 +384,8 @@ bool Player::LoadState(pugi::xml_node& data)
 	x = data.child("position").attribute("x").as_int();
 	y = data.child("position").attribute("y").as_int();
 
-	player_body->SetTransform({ x, y }, player_body->GetAngle());
+	player_body->SetTransform({ x + PIXELS_TO_METERS(w), y }, player_body->GetAngle());
+	player_body->ApplyForceToCenter({ 0, 200 }, true);
 
 	currentAnimation = &idleAnimR;
 	if (app->menu->dead)

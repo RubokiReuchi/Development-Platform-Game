@@ -11,6 +11,7 @@
 Frontground::Frontground() : Module()
 {
 	name.Create("frontground");
+	a = 0;
 }
 
 // Destructor
@@ -68,6 +69,7 @@ bool Frontground::Update(float dt)
 	{
 		go_black = false;
 		FadeFromBlack();
+		
 	}
 	else if (a <= 0)
 	{
