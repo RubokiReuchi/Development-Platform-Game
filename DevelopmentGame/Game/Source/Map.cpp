@@ -84,18 +84,28 @@ void Map::Draw()
 						
 						if (mapLayerItem->data->properties.GetProperty("Collision") == 1)
 						{
-							// crear cubo
+							// collision ground
 							app->physics->CreateBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 3);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 2)
 						{
-							// crear cubo
+							// collision death
 							app->physics->CreateBox(pos.x + ((r.w * width) / 2), (pos.y + ((r.h * height) / 2)) + (r.h / 2), (r.w * width) / 2, (r.h * height) / 2, 4);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 3)
 						{
-							// crear cubo
+							// collision saves
 							app->physics->CreateBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 5);
+						}
+						else if (mapLayerItem->data->properties.GetProperty("Collision") == 4)
+						{
+							// collision complete
+							app->physics->CreateBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 6);
+						}
+						else if (mapLayerItem->data->properties.GetProperty("Collision") == 5)
+						{
+							// collision water wells
+							app->physics->CreateBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 7);
 						}
 					}
 				}

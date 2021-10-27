@@ -46,6 +46,8 @@ public:
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
 
+	void MoveCamera(int movement);
+
 	int monitorX;
 	float screenScale;
 

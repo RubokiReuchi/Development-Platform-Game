@@ -15,6 +15,7 @@
 Scene::Scene() : Module()
 {
 	name.Create("scene");
+	godmode = false;
 }
 
 // Destructor
@@ -78,9 +79,8 @@ bool Scene::Update(float dt)
 	}
 	else if (app->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN)
 	{
-
+		godmode = !godmode;
 	}
-
 
 	// Draw map
 	if (start_screen != NULL)
@@ -95,6 +95,18 @@ bool Scene::Update(float dt)
 				   app->map->mapData.tilesets.count());
 
 	app->win->SetTitle(title.GetString());
+
+	if (godmode)
+	{
+		if (app->input->GetKey(SDL_SCANCODE_LEFT))
+		{
+			app->render->MoveCamera(-5);
+		}
+		if (app->input->GetKey(SDL_SCANCODE_RIGHT))
+		{
+			app->render->MoveCamera(5);
+		}
+	}
 
 	return true;
 }

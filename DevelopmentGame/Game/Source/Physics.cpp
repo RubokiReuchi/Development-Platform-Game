@@ -138,6 +138,16 @@ bool Physics::PostUpdate()
 						c_g = 200;
 						c_b = 0;
 						break;
+					case 6:
+						c_r = 200;
+						c_g = 200;
+						c_b = 200;
+						break;
+					case 7:
+						c_r = 100;
+						c_g = 100;
+						c_b = 100;
+						break;
 					default:
 						c_r = 0;
 						c_g = 0;
@@ -179,6 +189,8 @@ bool Physics::CreateBox(int x, int y, int w, int h, int collision)
 	b2FixtureDef fixture;
 	fixture.shape = &box;
 	if (collision == 5) fixture.isSensor = true;
+	else if (collision == 6) fixture.isSensor = true;
+	else if (collision == 7) fixture.isSensor = true;
 	b2Fixture* fix = p->CreateFixture(&fixture);
 
 	fix->SetUserData((void*)collision);
@@ -207,7 +219,15 @@ void Physics::BeginContact(b2Contact* contact)
 		}
 		else if ((int)fixtureUserDataB == 5)
 		{
-			// show complete level key
+			// save level
+		}
+		else if ((int)fixtureUserDataB == 6)
+		{
+			// complete level
+		}
+		else if ((int)fixtureUserDataB == 7)
+		{
+			// water well
 		}
 	}
 
@@ -227,7 +247,15 @@ void Physics::BeginContact(b2Contact* contact)
 		}
 		else if ((int)fixtureUserDataA == 5)
 		{
-			// show complete level key
+			// save level
+		}
+		else if ((int)fixtureUserDataA == 6)
+		{
+			// complete level
+		}
+		else if ((int)fixtureUserDataA == 7)
+		{
+			// water well
 		}
 	}
 }
@@ -248,7 +276,15 @@ void Physics::EndContact(b2Contact* contact)
 	{
 		if ((int)fixtureUserDataB == 5)
 		{
-			// hide complete level key
+			// hide save level
+		}
+		else if ((int)fixtureUserDataB == 6)
+		{
+			//  hide complete level
+		}
+		else if ((int)fixtureUserDataB == 7)
+		{
+			// hide water well
 		}
 	}
 
@@ -263,7 +299,15 @@ void Physics::EndContact(b2Contact* contact)
 	{
 		if ((int)fixtureUserDataA == 5)
 		{
-			// hide complete level key
+			// hide save level
+		}
+		else if ((int)fixtureUserDataA == 6)
+		{
+			// hide complete level
+		}
+		else if ((int)fixtureUserDataA == 7)
+		{
+			// hide water well
 		}
 	}
 }

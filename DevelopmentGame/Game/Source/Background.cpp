@@ -29,7 +29,7 @@ bool Background::Awake()
 // Called before the first frame
 bool Background::Start()
 {
-	sky_r = { 0, 0, 2560, 1440 };
+	sky_r = { 0, 0, 2560 * 2, 1440 };
 	sky_texture = app->tex->Load("Assets/textures/sky_solid_color.png");
 	n_mountain_r = { 0, 0, 2560, 720 };
 	n_mountain_texture = app->tex->Load("Assets/textures/n_mountain.png");
@@ -58,6 +58,7 @@ bool Background::Update(float dt)
 			//n_mountain_parallaxX += 0;
 			f_mountain_parallaxX += 1;
 			clouds_parallaxX += 2;
+			
 		}
 		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 		{
@@ -73,16 +74,16 @@ bool Background::Update(float dt)
 // Called each loop iteration
 bool Background::PostUpdate()
 {
-	app->render->DrawTexture(sky_texture, 0, 0, &sky_r);
-	app->render->DrawTexture(clouds_texture, 0 + clouds_parallaxX, 50, &clouds_r);
-	app->render->DrawTexture(clouds_texture, 2560 + clouds_parallaxX, 50, &clouds_r); // parallax
-	app->render->DrawTexture(clouds_texture, -2560 + clouds_parallaxX, 50, &clouds_r); // parallax
-	app->render->DrawTexture(f_mountain_texture, 0 + f_mountain_parallaxX, 640, &f_mountain_r);
-	app->render->DrawTexture(f_mountain_texture, 2560 + f_mountain_parallaxX, 640, &f_mountain_r); // parallax
-	app->render->DrawTexture(f_mountain_texture, -2560 + f_mountain_parallaxX, 640, &f_mountain_r); // parallax
-	app->render->DrawTexture(n_mountain_texture, 0 + n_mountain_parallaxX, 720, &n_mountain_r);
-	//app->render->DrawTexture(n_mountain_texture, 2560 + n_mountain_parallaxX, 720, &n_mountain_r); // parallax
-	//app->render->DrawTexture(n_mountain_texture, -2560 + n_mountain_parallaxX, 720, &n_mountain_r); // parallax
+	int c_x = -app->render->camera.x;
+	app->render->DrawTexture(sky_texture, c_x, 0, &sky_r);
+	app->render->DrawTexture(clouds_texture, c_x + clouds_parallaxX, 50, &clouds_r);
+	app->render->DrawTexture(clouds_texture, c_x + 2560 + clouds_parallaxX, 50, &clouds_r); // parallax
+	app->render->DrawTexture(clouds_texture, c_x + 5120 + clouds_parallaxX, 50, &clouds_r); // parallax
+	app->render->DrawTexture(f_mountain_texture, c_x + f_mountain_parallaxX, 640, &f_mountain_r);
+	app->render->DrawTexture(f_mountain_texture, c_x + 2560 + f_mountain_parallaxX, 640, &f_mountain_r); // parallax
+	app->render->DrawTexture(f_mountain_texture, c_x + 5120 + f_mountain_parallaxX, 640, &f_mountain_r); // parallax
+	app->render->DrawTexture(n_mountain_texture, n_mountain_parallaxX, 720, &n_mountain_r);
+	app->render->DrawTexture(n_mountain_texture, 2560 + n_mountain_parallaxX, 720, &n_mountain_r);
 	
 	return true;
 }

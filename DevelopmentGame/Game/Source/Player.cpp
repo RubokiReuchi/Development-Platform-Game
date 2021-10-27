@@ -416,6 +416,11 @@ bool Player::Death()
 	return true;
 }
 
+fPoint Player::GetPosition()
+{
+	return { x, y };
+}
+
 void Player::SetPosition(int new_x, int new_y)
 {
 	x = new_x;

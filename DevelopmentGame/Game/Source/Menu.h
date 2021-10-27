@@ -56,6 +56,8 @@ private:
 
 	int load_cd = 120;
 	bool loading = false;
+
+	uint win_w, win_h;
 	
 };
 

@@ -33,7 +33,7 @@ public:
 	bool djump = true;
 
 	bool Death();
-
+	fPoint GetPosition();
 	void SetPosition(int new_x, int new_y);
 
 private:

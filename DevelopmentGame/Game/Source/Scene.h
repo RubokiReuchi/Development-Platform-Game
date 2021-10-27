@@ -42,6 +42,8 @@ private:
 
 	int current_level = 0;
 
+	bool godmode;
+
 };
 
 #endif // __SCENE_H__

@@ -31,13 +31,13 @@ bool Menu::Awake()
 bool Menu::Start()
 {
 	r = { 0, 0, 2560, 1440 };
+
 	paused = false;
 	dead = false;
 
 	pause_buttons[0].state = 1;
 	dead_buttons[0].state = 1;
 	chosed = 0;
-	uint win_w, win_h;
 	app->win->GetWindowSize(win_w, win_h);
 
 	for (size_t i = 0; i < NUM_PAUSE_BUTTONS; i++)
@@ -180,12 +180,17 @@ bool Menu::Update(float dt)
 // Called each loop iteration
 bool Menu::PostUpdate()
 {
+	int c_x = -app->render->camera.x;
+	r.x = c_x;
+
 	if (paused)
 	{
 		app->render->DrawRectangle(r, 0, 0, 0, 200);
 
 		for (size_t i = 0; i < NUM_PAUSE_BUTTONS; i++)
 		{
+			pause_buttons[i].rect.x = ((int)win_w / 2) - (pause_buttons[i].rect.w / 2) + c_x;
+
 			if (pause_buttons[i].state == 0)
 			{
 				app->render->DrawRectangle(pause_buttons[i].rect, idleColorR, idleColorG, idleColorB);
