@@ -79,20 +79,23 @@ void Map::Draw()
 
 					if (!collision_loaded)
 					{
+						int width = mapLayerItem->data->properties.GetProperty("Width");
+						int height = mapLayerItem->data->properties.GetProperty("Height");
+						
 						if (mapLayerItem->data->properties.GetProperty("Collision") == 1)
 						{
 							// crear cubo
-							app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, 3);
+							app->physics->CreateBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 3);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 2)
 						{
 							// crear cubo
-							app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h), r.w / 2, r.h / 2, 4);
+							app->physics->CreateBox(pos.x + ((r.w * width) / 2), (pos.y + ((r.h * height) / 2)) + (r.h / 2), (r.w * width) / 2, (r.h * height) / 2, 4);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 3)
 						{
 							// crear cubo
-							app->physics->CreateBox(pos.x + (r.w / 2), pos.y + (r.h / 2), r.w / 2, r.h / 2, 5);
+							app->physics->CreateBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 5);
 						}
 					}
 				}
