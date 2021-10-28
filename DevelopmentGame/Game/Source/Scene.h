@@ -35,14 +35,16 @@ public:
 
 	bool GetStartScreenState();
 
-	bool PassLevel(int c_level);
+	bool PassLevel(int dest_level);
+
+	bool ReturnStartScreen();
 
 	bool godmode;
 
+	int current_level = 0;
+
 private:
 	SDL_Texture* start_screen;
-
-	int current_level = 0;
 
 };
 

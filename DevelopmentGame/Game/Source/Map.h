@@ -129,6 +129,8 @@ public:
     // Load new map
     bool Load(const char* path);
 
+	bool CleanMaps();
+
 	// L04: DONE 8: Create a method that translates x,y coordinates from map positions to world positions
 	iPoint MapToWorld(int x, int y) const;
 
@@ -160,12 +162,13 @@ public:
     // L03: DONE 1: Add your struct for map info
 	MapData mapData;
 
+	bool collision_loaded;
+
 private:
 
     SString folder;
     bool mapLoaded;
 
-	bool collision_loaded;
 };
 
 #endif // __MAP_H__

@@ -48,7 +48,7 @@ bool Scene::PreUpdate()
 
 	if (start_screen != NULL && app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)  
 	{
-		PassLevel(0);
+		PassLevel(1);
 	}
 
 	return true;
@@ -59,11 +59,11 @@ bool Scene::Update(float dt)
 {
 	if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 	{
-		PassLevel(0);
+		PassLevel(1);
 	}
 	else if (app->input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN)
 	{
-		PassLevel(1);
+		PassLevel(2);
 	}
 	else if (app->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
 	{
@@ -151,27 +151,26 @@ bool Scene::GetStartScreenState()
 	}
 }
 
-bool Scene::PassLevel(int c_level)
+bool Scene::PassLevel(int dest_level)
 {
-	switch (c_level)
+	if (start_screen != NULL)
 	{
-	case 0:
-		app->frontground->FadeFromBlack();
-		if (start_screen != NULL)
-		{
-			app->frontground->FadeFromBlack();
-		}
-		else
-		{
-			app->frontground->FadeToBlack();
-		}
-		app->player->SetPosition(8.2f, 22.5f);
-		app->map->Load("level1.tmx");
-		current_level = 1;
-		break;
+		app->frontground->SetA_Black();
+		app->frontground->FadeFromBlack(dest_level);
+	}
+	else
+	{
+		app->frontground->FadeToBlack(dest_level);
 	}
 
 	start_screen = NULL;
+
+	return true;
+}
+
+bool Scene::ReturnStartScreen()
+{
+	start_screen = app->tex->Load("Assets/textures/Start_screen.png");
 
 	return true;
 }

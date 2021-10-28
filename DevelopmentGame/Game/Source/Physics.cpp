@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "Player.h"
 #include "Menu.h"
+#include "Frontground.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -79,6 +80,26 @@ bool Physics::Update(float dt)
 	if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
 	{
 		debug = !debug;
+	}
+
+	if (app->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
+	{
+		if (inScareCrow)
+		{
+			app->SaveGameRequest();
+		}
+		else if (inStatue)
+		{
+			app->scene->PassLevel(app->scene->current_level + 1);
+			app->frontground->SetPressE_Hide(true);
+			inStatue = false;
+		}
+		else if (inWaterWell)
+		{
+			// sound
+			app->frontground->SetPressE_Hide(true);
+			inWaterWell = false;
+		}
 	}
 
 	return true;
@@ -175,7 +196,7 @@ bool Physics::CleanUp()
 	return true;
 }
 
-bool Physics::CreateBox(int x, int y, int w, int h, int collision)
+bool Physics::CreateMapBox(int x, int y, int w, int h, int collision)
 {
 	b2BodyDef g;
 	g.type = b2_staticBody;
@@ -194,6 +215,23 @@ bool Physics::CreateBox(int x, int y, int w, int h, int collision)
 	b2Fixture* fix = p->CreateFixture(&fixture);
 
 	fix->SetUserData((void*)collision);
+
+	return true;
+}
+
+bool Physics::CleanMapBoxes()
+{
+	for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
+	{
+		for (b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
+		{
+			if ((int)f->GetUserData() >= 3)
+			{
+				b->DestroyFixture(f);
+				world->DestroyBody(b);
+			}
+		}
+	}
 
 	return true;
 }
@@ -220,14 +258,23 @@ void Physics::BeginContact(b2Contact* contact)
 		else if ((int)fixtureUserDataB == 5)
 		{
 			// save level
+			app->frontground->SetPressE_Hide(false);
+			inScareCrow = true;
 		}
 		else if ((int)fixtureUserDataB == 6)
 		{
 			// complete level
+			if (!statueUsed)
+			{
+				app->frontground->SetPressE_Hide(false);
+				inStatue = true;
+			}
 		}
 		else if ((int)fixtureUserDataB == 7)
 		{
 			// water well
+			app->frontground->SetPressE_Hide(false);
+			inWaterWell = true;
 		}
 	}
 
@@ -248,14 +295,23 @@ void Physics::BeginContact(b2Contact* contact)
 		else if ((int)fixtureUserDataA == 5)
 		{
 			// save level
+			app->frontground->SetPressE_Hide(false);
+			inScareCrow = true;
 		}
 		else if ((int)fixtureUserDataA == 6)
 		{
 			// complete level
+			if (!statueUsed)
+			{
+				app->frontground->SetPressE_Hide(false);
+				inStatue = true;
+			}
 		}
 		else if ((int)fixtureUserDataA == 7)
 		{
 			// water well
+			app->frontground->SetPressE_Hide(false);
+			inWaterWell = true;
 		}
 	}
 }
@@ -277,14 +333,20 @@ void Physics::EndContact(b2Contact* contact)
 		if ((int)fixtureUserDataB == 5)
 		{
 			// hide save level
+			app->frontground->SetPressE_Hide(true);
+			inScareCrow = false;
 		}
 		else if ((int)fixtureUserDataB == 6)
 		{
 			//  hide complete level
+			app->frontground->SetPressE_Hide(true);
+			inStatue = false;
 		}
 		else if ((int)fixtureUserDataB == 7)
 		{
 			// hide water well
+			app->frontground->SetPressE_Hide(true);
+			inWaterWell = false;
 		}
 	}
 
@@ -300,14 +362,20 @@ void Physics::EndContact(b2Contact* contact)
 		if ((int)fixtureUserDataA == 5)
 		{
 			// hide save level
+			app->frontground->SetPressE_Hide(true);
+			inScareCrow = false;
 		}
 		else if ((int)fixtureUserDataA == 6)
 		{
 			// hide complete level
+			app->frontground->SetPressE_Hide(true);
+			inStatue = false;
 		}
 		else if ((int)fixtureUserDataA == 7)
 		{
 			// hide water well
+			app->frontground->SetPressE_Hide(true);
+			inWaterWell = false;
 		}
 	}
 }

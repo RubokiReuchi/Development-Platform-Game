@@ -85,27 +85,27 @@ void Map::Draw()
 						if (mapLayerItem->data->properties.GetProperty("Collision") == 1)
 						{
 							// collision ground
-							app->physics->CreateBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 3);
+							app->physics->CreateMapBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 3);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 2)
 						{
 							// collision death
-							app->physics->CreateBox(pos.x + ((r.w * width) / 2), (pos.y + ((r.h * height) / 2)) + (r.h / 2), (r.w * width) / 2, (r.h * height) / 2, 4);
+							app->physics->CreateMapBox(pos.x + ((r.w * width) / 2), (pos.y + ((r.h * height) / 2)) + (r.h / 2), (r.w * width) / 2, (r.h * height) / 2, 4);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 3)
 						{
 							// collision saves
-							app->physics->CreateBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 5);
+							app->physics->CreateMapBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 5);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 4)
 						{
 							// collision complete
-							app->physics->CreateBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 6);
+							app->physics->CreateMapBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 6);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 5)
 						{
 							// collision water wells
-							app->physics->CreateBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 7);
+							app->physics->CreateMapBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 7);
 						}
 					}
 				}
@@ -316,6 +316,14 @@ bool Map::Load(const char* filename)
     mapLoaded = ret;
 
     return ret;
+}
+
+bool Map::CleanMaps()
+{
+	mapData.tilesets.clear();
+	mapData.layers.clear();
+
+	return true;
 }
 
 // L03: TODO: Load map general properties

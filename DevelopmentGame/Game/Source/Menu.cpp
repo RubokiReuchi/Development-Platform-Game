@@ -130,7 +130,7 @@ bool Menu::Update(float dt)
 				app->SaveGameRequest();
 				break;
 			case 2:
-				app->frontground->FadeToBlack();
+				app->frontground->FadeToBlack(-1);
 				loading = true;
 				break;
 			case 3:
@@ -163,7 +163,7 @@ bool Menu::Update(float dt)
 			switch (chosed)
 			{
 			case 0:
-				app->frontground->FadeToBlack();
+				app->frontground->FadeToBlack(-1);
 				loading = true;
 				break;
 			case 1:

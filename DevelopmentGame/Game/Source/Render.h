@@ -48,9 +48,6 @@ public:
 
 	void MoveCamera(int movement);
 
-	int monitorX;
-	float screenScale;
-
 public:
 
 	SDL_Renderer* renderer;

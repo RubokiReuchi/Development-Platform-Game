@@ -35,7 +35,9 @@ public:
 
 	bool CleanUp();
 
-	bool CreateBox(int x, int y, int w, int h, int collision);
+	bool CreateMapBox(int x, int y, int w, int h, int collision);
+
+	bool CleanMapBoxes();
 
 	void BeginContact(b2Contact* contact);
 
@@ -46,6 +48,10 @@ public:
 
 	int on_collosion;
 
+	bool inScareCrow = false;
+	bool inWaterWell = false;
+	bool inStatue = false;
+	bool statueUsed = false;
 };
 
 #endif

@@ -22,9 +22,24 @@ public:
 
 	bool CleanUp();
 
-	bool FadeToBlack();
+	void SetA_Black()
+	{
+		a = 255;
+	}
 
-	bool FadeFromBlack();
+	void SetA_Null()
+	{
+		a = 0;
+	}
+
+	bool FadeToBlack(int dest_level); // if -1 --> no level change
+
+	bool FadeFromBlack(int dest_level); // if -1 --> no level change
+
+	void SetPressE_Hide(bool hide)
+	{
+		press_e_hide = hide;
+	}
 
 private:
 	SDL_Rect r;
@@ -33,6 +48,11 @@ private:
 	bool go_black = false;
 	bool return_black = false;
 	int fade_speed = 2;
+
+	int destination_level = -1;
+
+	SDL_Texture* press_e;
+	bool press_e_hide = true;
 };
 
 #endif

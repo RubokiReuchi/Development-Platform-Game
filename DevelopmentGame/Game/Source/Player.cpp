@@ -431,4 +431,5 @@ void Player::SetPosition(int new_x, int new_y)
 	y = new_y;
 
 	player_body->SetTransform({ x, y }, player_body->GetAngle());
+	player_body->ApplyForceToCenter({ 0, 50 }, true);
 }
