@@ -81,9 +81,9 @@ bool Render::Update(float dt)
 	{
 		camera.x = 0;
 	}
-	else if (camera.x < -camera.w)
+	else if (camera.x < -2560)
 	{
-		camera.x = -camera.w;
+		camera.x = -2560;
 	}
 
 	SDL_RenderSetLogicalSize(renderer, 2560, 1440);
