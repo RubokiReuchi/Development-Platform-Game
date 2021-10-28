@@ -46,6 +46,11 @@ bool Physics::Start()
 
 	on_collosion = 0;
 
+	save_sound = app->audio->LoadFx("Assets/audio/fx/save_sound.wav");;
+	water_well_sound = app->audio->LoadFx("Assets/audio/fx/water_well_sound.wav");;
+	level_complete_sound = app->audio->LoadFx("Assets/audio/fx/level_complete_sound.wav");
+	death_sound = app->audio->LoadFx("Assets/audio/fx/death_sound.wav");
+
 	return true;
 }
 
@@ -87,16 +92,18 @@ bool Physics::Update(float dt)
 		if (inScareCrow)
 		{
 			app->SaveGameRequest();
+			app->audio->PlayFx(save_sound);
 		}
 		else if (inStatue)
 		{
 			app->scene->PassLevel(app->scene->current_level + 1);
 			app->frontground->SetPressE_Hide(true);
+			app->audio->PlayFx(level_complete_sound);
 			inStatue = false;
 		}
 		else if (inWaterWell)
 		{
-			// sound
+			app->audio->PlayFx(water_well_sound);
 			app->frontground->SetPressE_Hide(true);
 			inWaterWell = false;
 		}
@@ -250,10 +257,11 @@ void Physics::BeginContact(b2Contact* contact)
 	}
 	else if ((int)fixtureUserDataA == 1)
 	{
-		if ((int)fixtureUserDataB == 4)
+		if ((int)fixtureUserDataB == 4 && !app->scene->godmode)
 		{
 			// player death
 			app->player->Death();
+			app->audio->PlayFx(death_sound);
 		}
 		else if ((int)fixtureUserDataB == 5)
 		{
@@ -287,10 +295,11 @@ void Physics::BeginContact(b2Contact* contact)
 	}
 	else if ((int)fixtureUserDataB == 2)
 	{
-		if ((int)fixtureUserDataA == 4)
+		if ((int)fixtureUserDataA == 4 && !app->scene->godmode)
 		{
 			// player death
 			app->player->Death();
+			app->audio->PlayFx(death_sound);
 		}
 		else if ((int)fixtureUserDataA == 5)
 		{

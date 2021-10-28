@@ -52,6 +52,12 @@ public:
 	bool inWaterWell = false;
 	bool inStatue = false;
 	bool statueUsed = false;
+
+	uint save_sound;
+	uint water_well_sound;
+	uint level_complete_sound;
+	uint death_sound;
+
 };
 
 #endif

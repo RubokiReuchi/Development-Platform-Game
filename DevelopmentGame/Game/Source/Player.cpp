@@ -159,6 +159,9 @@ bool Player::Start()
 	currentAnimation = &idleAnimR;
 	lookLeft = false;
 
+	walk_sound = app->audio->LoadFx("Assets/audio/fx/step_sound.wav");
+	jump_sound = app->audio->LoadFx("Assets/audio/fx/jump_sound.wav");
+
 	// player Save Data
 	
 
@@ -218,6 +221,8 @@ bool Player::Update(float dt)
 				walkAnimL.Reset();
 				currentAnimation = &walkAnimL;
 			}
+
+			//app->audio->PlayFx(walk_sound);
 		}
 		else if (app->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
 		{
@@ -253,6 +258,16 @@ bool Player::Update(float dt)
 			}
 		}
 
+		if (!inAir && player_body->GetLinearVelocity().x != 0)
+		{
+			walk_cd--;
+			if (walk_cd <= 0)
+			{
+				app->audio->PlayFx(walk_sound);
+				walk_cd = 20;
+			}
+		}
+
 		//jump
 		if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 		{
@@ -260,12 +275,14 @@ bool Player::Update(float dt)
 			{
 				player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
 				player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
+				app->audio->PlayFx(jump_sound);
 				inAir = true;
 			}
 			else if (djump)
 			{
 				player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
 				player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
+				app->audio->PlayFx(jump_sound);
 				djump = false;
 			}
 		}

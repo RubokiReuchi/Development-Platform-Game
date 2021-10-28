@@ -59,6 +59,10 @@ public:
 	Animation deathAnimL;
 	Animation deathAnimR;
 
+	uint walk_sound;
+	uint jump_sound;
+	int walk_cd = 20;
+
 	bool lookLeft;
 	int death_cd = 120;
 
