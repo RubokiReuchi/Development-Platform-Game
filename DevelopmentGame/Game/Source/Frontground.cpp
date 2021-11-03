@@ -32,7 +32,7 @@ bool Frontground::Start()
 {
 	r = { 0, 0, 2560, 1440 };
 
-	press_e = app->tex->Load("Assets/textures/Save.png");
+	press_e = app->tex->Load("Assets/textures/PressE.png");
 
 	return true;
 }
@@ -91,7 +91,8 @@ bool Frontground::PostUpdate()
 
 	if (!press_e_hide)
 	{
-		app->render->DrawTexture(press_e, c_x + 1280, 1000);
+		app->render->DrawRectangle({ c_x + 1280 , 1100, 200, 50 }, 255, 255, 255, 150);
+		app->render->DrawTexture(press_e, c_x + 1280, 1100);
 	}
 
 	app->render->DrawRectangle(r, 0, 0, 0, a);
