@@ -37,7 +37,7 @@ bool Scene::Start()
 	start_screen = app->tex->Load("Assets/textures/Start_screen.png");
 	
 	// Load music
-	//app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+	app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
 
 	return true;
 }
@@ -67,7 +67,7 @@ bool Scene::Update(float dt)
 	}
 	else if (app->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
 	{
-		PassLevel(current_level - 1);
+		PassLevel(current_level);
 	}
 	else if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 	{
