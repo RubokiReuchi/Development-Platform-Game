@@ -57686,11 +57686,11 @@
    <tile/>
   </data>
  </layer>
- <layer id="16" name="Wall 5x33" width="160" height="45" visible="0">
+ <layer id="16" name="Wall 5x32" width="160" height="45">
   <properties>
    <property name="Collision" type="int" value="1"/>
    <property name="Draw" type="int" value="0"/>
-   <property name="Height" type="int" value="33"/>
+   <property name="Height" type="int" value="32"/>
    <property name="Width" type="int" value="5"/>
   </properties>
   <data>
