@@ -21,8 +21,6 @@
 // Constructor
 App::App(int argc, char* args[]) : argc(argc), args(args)
 {
-	frames = 0;
-
 	win = new Window();
 	input = new Input();
 	render = new Render();
@@ -84,6 +82,7 @@ bool App::Awake()
 	{
 		title.Create(configApp.child("title").child_value());
 		win->SetTitle(title.GetString());
+		maxFrameRate = configApp.child("frame_rate").attribute("fps").as_int() * (16/60);
 
 		ListItem<Module*>* item;
 		item = modules.start;
@@ -101,6 +100,10 @@ bool App::Awake()
 // Called before the first frame
 bool App::Start()
 {
+	startupTime.Start();
+	lastSecFrameTime.Start();
+	frameDuration = new PerfTimer();
+
 	bool ret = true;
 	ListItem<Module*>* item;
 	item = modules.start;
@@ -163,6 +166,11 @@ bool App::LoadConfig()
 // ---------------------------------------------
 void App::PrepareUpdate()
 {
+	frameCount++;
+	lastSecFrameCount++;
+
+	dt = frameDuration->ReadMs();
+	frameDuration->Start();
 }
 
 // ---------------------------------------------
@@ -170,6 +178,31 @@ void App::FinishUpdate()
 {
 	if (loadGameRequested == true) LoadGame();
 	if (saveGameRequested == true) SaveGame();
+
+	// game time
+	float secondsSinceStartup = startupTime.ReadSec();
+
+	if (lastSecFrameTime.Read() > 1000) {
+		lastSecFrameTime.Start();
+		framesPerSecond = lastSecFrameCount;
+		lastSecFrameCount = 0;
+		averageFps = (averageFps + framesPerSecond) / 2;
+	}
+
+	static char title[256];
+	sprintf_s(title, 256, "Av.FPS: %.2f Last sec frames: %i Last dt: %.3f Time since startup: %.3f Frame Count: %I64u ",
+		averageFps, framesPerSecond, dt, secondsSinceStartup, frameCount);
+
+	float delay = float(maxFrameRate) - frameDuration->ReadMs();
+
+	PerfTimer* delayt = new PerfTimer();
+	delayt->Start();
+	if (maxFrameRate > 0 && delay > 0)
+	{
+		SDL_Delay(delay);
+	}
+
+	app->win->SetTitle(title);
 }
 
 // Call modules before each loop iteration

@@ -21,6 +21,8 @@
     <ClCompile Include="Source\Background.cpp" />
     <ClCompile Include="Source\Frontground.cpp" />
     <ClCompile Include="Source\Menu.cpp" />
+    <ClCompile Include="Source\PerfTimer.cpp" />
+    <ClCompile Include="Source\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Window.h" />
@@ -64,6 +66,8 @@
     </ClInclude>
     <ClInclude Include="Source\Frontground.h" />
     <ClInclude Include="Source\Menu.h" />
+    <ClInclude Include="Source\PerfTimer.h" />
+    <ClInclude Include="Source\Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">

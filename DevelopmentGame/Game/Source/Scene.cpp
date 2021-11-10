@@ -88,14 +88,6 @@ bool Scene::Update(float dt)
 		app->map->Draw();
 	}
 
-	// L03: DONE 7: Set the window title with map/tileset info
-	SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
-				   app->map->mapData.width, app->map->mapData.height,
-				   app->map->mapData.tileWidth, app->map->mapData.tileHeight,
-				   app->map->mapData.tilesets.count());
-
-	app->win->SetTitle(title.GetString());
-
 	if (godmode)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_LEFT))
