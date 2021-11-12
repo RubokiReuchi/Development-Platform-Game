@@ -22,6 +22,7 @@ class Background;
 class Map;
 class Physics;
 class Player;
+class Bullets;
 class Menu;
 class Frontground;
 
@@ -97,6 +98,7 @@ public:
 	Map* map;
 	Physics* physics;
 	Player* player;
+	Bullets* bullets;
 	Menu* menu;
 	Frontground* frontground;
 

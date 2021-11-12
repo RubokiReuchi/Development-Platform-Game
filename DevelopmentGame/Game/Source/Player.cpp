@@ -162,9 +162,6 @@ bool Player::Start()
 	walk_sound = app->audio->LoadFx("Assets/audio/fx/step_sound.wav");
 	jump_sound = app->audio->LoadFx("Assets/audio/fx/jump_sound.wav");
 
-	// player Save Data
-	
-
 	// player
 	b2BodyDef p_body;
 	p_body.type = b2_dynamicBody;
@@ -210,6 +207,20 @@ bool Player::Update(float dt)
 	if (!app->menu->GetGameState() && (currentAnimation != &deathAnimL &&
 		currentAnimation != &deathAnimR) && !app->scene->GetStartScreenState())
 	{
+		// shot
+		if (app->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_DOWN)
+		{
+			if (lookLeft)
+			{
+				app->bullets->SpawnBullet(x, y, -1);
+			}
+			else
+			{
+				app->bullets->SpawnBullet(x, y, 1);
+			}
+			
+		}
+
 		// move left
 		if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 		{

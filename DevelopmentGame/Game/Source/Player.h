@@ -3,6 +3,7 @@
 
 #include "Module.h"
 #include "Physics.h"
+#include "Bullets.h"
 #include "Animation.h"
 
 class Player : public Module
