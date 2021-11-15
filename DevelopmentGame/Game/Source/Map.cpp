@@ -42,7 +42,99 @@ bool Map::Awake(pugi::xml_node& config)
 
     folder.Create(config.child("folder").child_value());
 
+	//Initialize the path
+	frontier.Push(iPoint(19, 4));
+	visited.Add(iPoint(19, 4));
+
     return ret;
+}
+
+void Map::ResetPath()
+{
+	frontier.Clear();
+	visited.Clear();
+
+	frontier.Push(iPoint(19, 4));
+	visited.Add(iPoint(19, 4));
+}
+
+void Map::DrawPath()
+{
+	iPoint point;
+
+	// Draw visited
+	ListItem<iPoint>* item = visited.start;
+
+	while (item)
+	{
+		point = item->data;
+		TileSet* tileset = GetTilesetFromTileId(26);
+
+		SDL_Rect rec = tileset->GetTileRect(26);
+		iPoint pos = MapToWorld(point.x, point.y);
+
+		app->render->DrawTexture(tileset->texture, pos.x, pos.y, &rec);
+
+		item = item->next;
+	}
+
+	// Draw frontier
+	for (uint i = 0; i < frontier.Count(); ++i)
+	{
+		point = *(frontier.Peek(i));
+		TileSet* tileset = GetTilesetFromTileId(25);
+
+		SDL_Rect rec = tileset->GetTileRect(25);
+		iPoint pos = MapToWorld(point.x, point.y);
+
+		app->render->DrawTexture(tileset->texture, pos.x, pos.y, &rec);
+	}
+
+}
+
+bool Map::IsWalkable(int x, int y) const
+{
+	bool isWalkable;
+	// L10: TODO 3: return true only if x and y are within map limits
+	// and the tile is walkable (tile id 0 in the navigation layer)
+	MapLayer* layer = mapData.layers.start->next->data;
+	int tileId = layer->Get(x, y);
+
+	if (x >= 0 && x < 25 && y >= 0 && y < 25 && tileId != 26)
+	{
+		isWalkable = true;
+	}
+	else
+	{
+		isWalkable = false;
+	}
+
+	return isWalkable;
+}
+
+void Map::PropagateBFS()
+{
+	// L10: TODO 1: If frontier queue contains elements
+	// pop the last one and calculate its 4 neighbors
+	iPoint tmp;
+	if (frontier.Pop(tmp))
+	{
+		iPoint p[4];
+		p[0] = iPoint(tmp.x - 1, tmp.y);
+		p[1] = iPoint(tmp.x + 1, tmp.y);
+		p[2] = iPoint(tmp.x, tmp.y - 1);
+		p[3] = iPoint(tmp.x, tmp.y + 1);
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			if (visited.Find(p[i]) == -1 && IsWalkable(p[i].x, p[i].y))
+			{
+				frontier.Push(p[i]);
+				visited.Add(p[i]);
+			}
+		}
+
+	}
 }
 
 // Draw the map (all requried layers)
@@ -206,7 +298,7 @@ bool Map::CleanUp()
 		RELEASE(item->data);
 		item = item->next;
 	}
-	mapData.tilesets.clear();
+	mapData.tilesets.Clear();
 
 	// L04: DONE 2: clean up all layer data
 	// Remove all layers
@@ -218,7 +310,7 @@ bool Map::CleanUp()
 		RELEASE(item2->data);
 		item2 = item2->next;
 	}
-	mapData.layers.clear();
+	mapData.layers.Clear();
 
     return true;
 }
@@ -320,8 +412,8 @@ bool Map::Load(const char* filename)
 
 bool Map::CleanMaps()
 {
-	mapData.tilesets.clear();
-	mapData.layers.clear();
+	mapData.tilesets.Clear();
+	mapData.layers.Clear();
 
 	return true;
 }
@@ -371,7 +463,7 @@ bool Map::LoadTileSets(pugi::xml_node mapFile) {
 		TileSet* set = new TileSet();
 		if (ret == true) ret = LoadTilesetDetails(tileset, set);
 		if (ret == true) ret = LoadTilesetImage(tileset, set);
-		mapData.tilesets.add(set);
+		mapData.tilesets.Add(set);
 	}
 
 	return ret;
@@ -455,7 +547,7 @@ bool Map::LoadAllLayers(pugi::xml_node mapNode) {
 		ret = LoadLayer(layerNode, mapLayer);
 
 		//add the layer to the map
-		mapData.layers.add(mapLayer);
+		mapData.layers.Add(mapLayer);
 	}
 
 	return ret;
@@ -472,7 +564,7 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 		p->name = propertieNode.attribute("name").as_string();
 		p->value = propertieNode.attribute("value").as_int();
 
-		properties.list.add(p);
+		properties.list.Add(p);
 	}
 	
 	return ret;

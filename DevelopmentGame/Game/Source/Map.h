@@ -3,7 +3,9 @@
 
 #include "Module.h"
 #include "List.h"
+#include "PQueue.h"
 #include "Point.h"
+#include "DynArray.h"
 
 #include "PugiXml\src\pugixml.hpp"
 
@@ -58,7 +60,7 @@ struct Properties
 			item = item->next;
 		}
 
-		list.clear();
+		list.Clear();
 	}
 
 	// L06: TODO 7: Method to ask for the value of a custom property
@@ -137,6 +139,14 @@ public:
 	// L05: DONE 2: Add orthographic world to map coordinates
 	iPoint WorldToMap(int x, int y) const;
 
+	// L10: BFS Pathfinding methods
+	void ResetPath();
+	void DrawPath();
+	bool IsWalkable(int x, int y) const;
+
+	// Propagation methods
+	void PropagateBFS();
+
 private:
 
 	// L03: Methods to load all required map data
@@ -168,6 +178,9 @@ private:
 
     SString folder;
     bool mapLoaded;
+
+	Queue<iPoint> frontier;
+	List<iPoint> visited;
 
 };
 
