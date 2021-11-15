@@ -9,11 +9,8 @@
 #include "Map.h"
 #include "Physics.h"
 #include "Player.h"
-#include "Bullets.h"
 #include "Menu.h"
 #include "Frontground.h"
-
-#include "Optick/include/optick.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -34,7 +31,6 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	map = new Map();
 	physics = new Physics();
 	player = new Player();
-	bullets = new Bullets();
 	menu = new Menu();
 	frontground = new Frontground();
 
@@ -49,7 +45,6 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(map);
 	AddModule(physics);
 	AddModule(player);
-	AddModule(bullets);
 	AddModule(menu);
 	AddModule(frontground);
 
@@ -171,8 +166,6 @@ bool App::LoadConfig()
 // ---------------------------------------------
 void App::PrepareUpdate()
 {
-	OPTICK_EVENT("PrepareUpdate");
-
 	frameCount++;
 	lastSecFrameCount++;
 
@@ -183,8 +176,6 @@ void App::PrepareUpdate()
 // ---------------------------------------------
 void App::FinishUpdate()
 {
-	OPTICK_EVENT("FinishUpdate");
-
 	if (loadGameRequested == true) LoadGame();
 	if (saveGameRequested == true) SaveGame();
 
@@ -217,8 +208,6 @@ void App::FinishUpdate()
 // Call modules before each loop iteration
 bool App::PreUpdate()
 {
-	OPTICK_EVENT("PreUpdate");
-
 	bool ret = true;
 
 	ListItem<Module*>* item;
@@ -241,8 +230,6 @@ bool App::PreUpdate()
 // Call modules on each loop iteration
 bool App::DoUpdate()
 {
-	OPTICK_EVENT("DoUpdate");
-
 	bool ret = true;
 	ListItem<Module*>* item;
 	item = modules.start;
@@ -265,8 +252,6 @@ bool App::DoUpdate()
 // Call modules after each loop iteration
 bool App::PostUpdate()
 {
-	OPTICK_EVENT("PostUpdate");
-
 	bool ret = true;
 	ListItem<Module*>* item;
 	Module* pModule = NULL;
