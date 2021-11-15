@@ -39,8 +39,8 @@ public:
 private:
 	//float x = 8.2f, y = 22.5f;
 	int w = 20, h = 32;
-	float speed = 5.0f;
-	float jumpForce = 400.0f;
+	float speed = 0.3f;
+	float jumpForce = 23.5f;
 
 public:
 	SDL_Texture* textureR = NULL;

@@ -78,7 +78,7 @@ private:
 	bool PreUpdate();
 
 	// Call modules on each loop iteration
-	bool DoUpdate();
+	bool DoUpdate(float dt);
 
 	// Call modules after each loop iteration
 	bool PostUpdate();

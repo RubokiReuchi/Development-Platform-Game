@@ -132,7 +132,7 @@ bool App::Update()
 		ret = PreUpdate();
 
 	if(ret == true)
-		ret = DoUpdate();
+		ret = DoUpdate(dt);
 
 	if(ret == true)
 		ret = PostUpdate();
@@ -228,7 +228,7 @@ bool App::PreUpdate()
 }
 
 // Call modules on each loop iteration
-bool App::DoUpdate()
+bool App::DoUpdate(float dt)
 {
 	bool ret = true;
 	ListItem<Module*>* item;

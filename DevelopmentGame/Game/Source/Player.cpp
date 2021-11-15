@@ -207,13 +207,16 @@ bool Player::PreUpdate()
 // Called each loop iteration
 bool Player::Update(float dt)
 {
+	float fixedSpeed = speed * dt;
+	float fixedJumpForce = jumpForce * dt;
+
 	if (!app->menu->GetGameState() && (currentAnimation != &deathAnimL &&
 		currentAnimation != &deathAnimR) && !app->scene->GetStartScreenState())
 	{
 		// move left
 		if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 		{
-			player_body->SetLinearVelocity({ -speed, player_body->GetLinearVelocity().y });
+			player_body->SetLinearVelocity({ -fixedSpeed, player_body->GetLinearVelocity().y });
 			lookLeft = true;
 
 			if (currentAnimation != &walkAnimL && !inAir)
@@ -238,7 +241,7 @@ bool Player::Update(float dt)
 		//move right
 		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 		{
-			player_body->SetLinearVelocity({ speed, player_body->GetLinearVelocity().y });
+			player_body->SetLinearVelocity({ fixedSpeed, player_body->GetLinearVelocity().y });
 			lookLeft = false;
 
 			if (currentAnimation != &walkAnimR && !inAir)
@@ -274,14 +277,14 @@ bool Player::Update(float dt)
 			if (!inAir)
 			{
 				player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
-				player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
+				player_body->ApplyForceToCenter({ 0, -fixedJumpForce }, true);
 				app->audio->PlayFx(jump_sound);
 				inAir = true;
 			}
 			else if (djump)
 			{
 				player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
-				player_body->ApplyForceToCenter({ 0, -jumpForce }, true);
+				player_body->ApplyForceToCenter({ 0, -fixedJumpForce }, true);
 				app->audio->PlayFx(jump_sound);
 				djump = false;
 			}
