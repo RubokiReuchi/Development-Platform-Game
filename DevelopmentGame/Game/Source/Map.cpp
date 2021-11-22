@@ -90,51 +90,176 @@ void Map::DrawPath()
 		app->render->DrawTexture(tileset->texture, pos.x, pos.y, &rec);
 	}
 
+	// Draw path
+	for (uint i = 0; i < path.Count(); ++i)
+	{
+		iPoint pos = MapToWorld(path[i].x, path[i].y);
+		app->render->DrawTexture(tileX, pos.x, pos.y);
+	}
+
+}
+
+int Map::MovementCost(int x, int y) const
+{
+	int ret = -1;
+
+	if ((x >= 0) && (x < mapData.width) && (y >= 0) && (y < mapData.height))
+	{
+		int id = mapData.layers.start->next->data->Get(x, y);
+
+		if (id == 26) ret = 20;
+		else ret = 1;
+	}
+
+	return ret;
 }
 
 bool Map::IsWalkable(int x, int y) const
 {
-	bool isWalkable;
-	// L10: TODO 3: return true only if x and y are within map limits
-	// and the tile is walkable (tile id 0 in the navigation layer)
-	MapLayer* layer = mapData.layers.start->next->data;
-	int tileId = layer->Get(x, y);
+	bool isWalkable = false;
+	if (x >= 0 && y >= 0 && x < mapData.width && y < mapData.height) {
 
-	if (x >= 0 && x < 25 && y >= 0 && y < 25 && tileId != 26)
-	{
-		isWalkable = true;
-	}
-	else
-	{
-		isWalkable = false;
+		//gets the second layer
+		MapLayer* layer = mapData.layers.start->next->data;
+		int tileId = layer->Get(x, y);
+		if (tileId != 26) isWalkable = true;
 	}
 
 	return isWalkable;
 }
 
+void Map::ComputePath(int x, int y)
+{
+	path.Clear();
+	iPoint goal = WorldToMap(x, y);
+
+	path.PushBack(goal);
+	int index = visited.Find(goal);
+
+	while ((index >= 0) && (goal != breadcrumbs[index]))
+	{
+		goal = breadcrumbs[index];
+		path.PushBack(goal);
+		index = visited.Find(goal);
+	}
+
+}
+
+void Map::ComputePathAStar(int x, int y)
+{
+	path.Clear();
+	goalAStar = WorldToMap(x, y);
+
+	path.PushBack(goalAStar);
+	int index = visited.Find(goalAStar);
+
+	while ((index >= 0) && (goalAStar != breadcrumbs[index]))
+	{
+		goalAStar = breadcrumbs[index];
+		path.PushBack(goalAStar);
+		index = visited.Find(goalAStar);
+	}
+}
+
 void Map::PropagateBFS()
 {
-	// L10: TODO 1: If frontier queue contains elements
-	// pop the last one and calculate its 4 neighbors
-	iPoint tmp;
-	if (frontier.Pop(tmp))
+	iPoint curr;
+	if (frontier.Pop(curr))
 	{
-		iPoint p[4];
-		p[0] = iPoint(tmp.x - 1, tmp.y);
-		p[1] = iPoint(tmp.x + 1, tmp.y);
-		p[2] = iPoint(tmp.x, tmp.y - 1);
-		p[3] = iPoint(tmp.x, tmp.y + 1);
+		iPoint neighbors[4];
+		neighbors[0].Create(curr.x + 1, curr.y + 0);
+		neighbors[1].Create(curr.x + 0, curr.y + 1);
+		neighbors[2].Create(curr.x - 1, curr.y + 0);
+		neighbors[3].Create(curr.x + 0, curr.y - 1);
 
-		for (size_t i = 0; i < 4; i++)
+		for (uint i = 0; i < 4; ++i)
 		{
-			if (visited.Find(p[i]) == -1 && IsWalkable(p[i].x, p[i].y))
+			if (IsWalkable(neighbors[i].x, neighbors[i].y))
 			{
-				frontier.Push(p[i]);
-				visited.Add(p[i]);
+				if (visited.Find(neighbors[i]) == -1)
+				{
+					frontier.Push(neighbors[i], 0);
+					visited.Add(neighbors[i]);
+
+					// L11: DONE 1: Record the direction to the previous node 
+					// with the new list "breadcrumps"
+					breadcrumbs.Add(curr);
+				}
 			}
 		}
-
 	}
+}
+
+void Map::PropagateDijkstra()
+{
+	costSoFar[visited.start->data.x][visited.start->data.y] = 0;
+
+	iPoint curr;
+	if (frontier.Pop(curr))
+	{
+		// L10: DONE 2: For each neighbor, if not visited, add it
+		// to the frontier queue and visited list
+		iPoint neighbors[4];
+		neighbors[0].Create(curr.x + 1, curr.y + 0);
+		neighbors[1].Create(curr.x + 0, curr.y + 1);
+		neighbors[2].Create(curr.x - 1, curr.y + 0);
+		neighbors[3].Create(curr.x + 0, curr.y - 1);
+
+		for (uint i = 0; i < 4; ++i)
+		{
+			if (MovementCost(neighbors[i].x, neighbors[i].y) > 0)
+			{
+				int cost = MovementCost(neighbors[i].x, neighbors[i].y);
+
+				if (visited.Find(neighbors[i]) == -1 || cost < costSoFar[visited.start->data.x][visited.start->data.y])
+				{
+					costSoFar[neighbors[i].x][neighbors[i].y] = cost;
+					frontier.Push(neighbors[i], cost);
+					visited.Add(neighbors[i]);
+
+
+					breadcrumbs.Add(curr);
+				}
+			}
+		}
+	}
+
+}
+
+void Map::PropagateAStar(int heuristic)
+{
+	costSoFar[visited.start->data.x][visited.start->data.y] = 0;
+
+	iPoint curr;
+	if (frontier.Pop(curr))
+	{
+		iPoint neighbors[4];
+		neighbors[0].Create(curr.x + 1, curr.y + 0);
+		neighbors[1].Create(curr.x + 0, curr.y + 1);
+		neighbors[2].Create(curr.x - 1, curr.y + 0);
+		neighbors[3].Create(curr.x + 0, curr.y - 1);
+
+		for (uint i = 0; i < 4; ++i)
+		{
+			if (MovementCost(neighbors[i].x, neighbors[i].y) > 0)
+			{
+				int cost = MovementCost(neighbors[i].x, neighbors[i].y);
+				cost += costSoFar[visited.start->data.x][visited.start->data.y];
+
+				if (visited.Find(neighbors[i]) == -1 || cost < costSoFar[visited.start->data.x][visited.start->data.y])
+				{
+					int priority = cost + neighbors[i].DistanceManhattan(goalAStar);
+					costSoFar[neighbors[i].x][neighbors[i].y] = cost;
+
+					frontier.Push(neighbors[i], priority);
+					visited.Add(neighbors[i]);
+
+					breadcrumbs.Add(curr);
+				}
+			}
+		}
+	}
+
 }
 
 // Draw the map (all requried layers)

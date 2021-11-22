@@ -53,12 +53,12 @@ public:
 		return tmp;
 	}
 
-	void Push(const tdata& item)
+	void Push(const tdata& item, int priority)
 	{
-		QueueItem<tdata>* pDataItem;
-		pDataItem = new QueueItem<tdata>(item);
+		PQueueItem<tdata>* pDataItem;
+		pDataItem = new PQueueItem < tdata >(item, priority);
 
-		QueueItem<tdata>* last = GetLast();
+		PQueueItem<tdata>* last = GetLast();
 
 		if (last == NULL)
 		{
@@ -66,7 +66,20 @@ public:
 		}
 		else
 		{
-			last->next = pDataItem;
+			PQueueItem<tdata>* prev = start;
+			PQueueItem<tdata>* tmp = start;
+
+			while (tmp && tmp->priority <= priority)
+			{
+				prev = tmp;
+				tmp = tmp->next;
+			}
+
+			pDataItem->next = tmp;
+			if (tmp == start)
+				start = pDataItem;
+			else
+				prev->next = pDataItem;
 		}
 	}
 
