@@ -42,224 +42,7 @@ bool Map::Awake(pugi::xml_node& config)
 
     folder.Create(config.child("folder").child_value());
 
-	//Initialize the path
-	frontier.Push(iPoint(19, 4));
-	visited.Add(iPoint(19, 4));
-
     return ret;
-}
-
-void Map::ResetPath()
-{
-	frontier.Clear();
-	visited.Clear();
-
-	frontier.Push(iPoint(19, 4));
-	visited.Add(iPoint(19, 4));
-}
-
-void Map::DrawPath()
-{
-	iPoint point;
-
-	// Draw visited
-	ListItem<iPoint>* item = visited.start;
-
-	while (item)
-	{
-		point = item->data;
-		TileSet* tileset = GetTilesetFromTileId(26);
-
-		SDL_Rect rec = tileset->GetTileRect(26);
-		iPoint pos = MapToWorld(point.x, point.y);
-
-		app->render->DrawTexture(tileset->texture, pos.x, pos.y, &rec);
-
-		item = item->next;
-	}
-
-	// Draw frontier
-	for (uint i = 0; i < frontier.Count(); ++i)
-	{
-		point = *(frontier.Peek(i));
-		TileSet* tileset = GetTilesetFromTileId(25);
-
-		SDL_Rect rec = tileset->GetTileRect(25);
-		iPoint pos = MapToWorld(point.x, point.y);
-
-		app->render->DrawTexture(tileset->texture, pos.x, pos.y, &rec);
-	}
-
-	// Draw path
-	for (uint i = 0; i < path.Count(); ++i)
-	{
-		iPoint pos = MapToWorld(path[i].x, path[i].y);
-		app->render->DrawTexture(tileX, pos.x, pos.y);
-	}
-
-}
-
-int Map::MovementCost(int x, int y) const
-{
-	int ret = -1;
-
-	if ((x >= 0) && (x < mapData.width) && (y >= 0) && (y < mapData.height))
-	{
-		int id = mapData.layers.start->next->data->Get(x, y);
-
-		if (id == 26) ret = 20;
-		else ret = 1;
-	}
-
-	return ret;
-}
-
-bool Map::IsWalkable(int x, int y) const
-{
-	bool isWalkable = false;
-	if (x >= 0 && y >= 0 && x < mapData.width && y < mapData.height) {
-
-		//gets the second layer
-		MapLayer* layer = mapData.layers.start->next->data;
-		int tileId = layer->Get(x, y);
-		if (tileId != 26) isWalkable = true;
-	}
-
-	return isWalkable;
-}
-
-void Map::ComputePath(int x, int y)
-{
-	path.Clear();
-	iPoint goal = WorldToMap(x, y);
-
-	path.PushBack(goal);
-	int index = visited.Find(goal);
-
-	while ((index >= 0) && (goal != breadcrumbs[index]))
-	{
-		goal = breadcrumbs[index];
-		path.PushBack(goal);
-		index = visited.Find(goal);
-	}
-
-}
-
-void Map::ComputePathAStar(int x, int y)
-{
-	path.Clear();
-	goalAStar = WorldToMap(x, y);
-
-	path.PushBack(goalAStar);
-	int index = visited.Find(goalAStar);
-
-	while ((index >= 0) && (goalAStar != breadcrumbs[index]))
-	{
-		goalAStar = breadcrumbs[index];
-		path.PushBack(goalAStar);
-		index = visited.Find(goalAStar);
-	}
-}
-
-void Map::PropagateBFS()
-{
-	iPoint curr;
-	if (frontier.Pop(curr))
-	{
-		iPoint neighbors[4];
-		neighbors[0].Create(curr.x + 1, curr.y + 0);
-		neighbors[1].Create(curr.x + 0, curr.y + 1);
-		neighbors[2].Create(curr.x - 1, curr.y + 0);
-		neighbors[3].Create(curr.x + 0, curr.y - 1);
-
-		for (uint i = 0; i < 4; ++i)
-		{
-			if (IsWalkable(neighbors[i].x, neighbors[i].y))
-			{
-				if (visited.Find(neighbors[i]) == -1)
-				{
-					frontier.Push(neighbors[i], 0);
-					visited.Add(neighbors[i]);
-
-					// L11: DONE 1: Record the direction to the previous node 
-					// with the new list "breadcrumps"
-					breadcrumbs.Add(curr);
-				}
-			}
-		}
-	}
-}
-
-void Map::PropagateDijkstra()
-{
-	costSoFar[visited.start->data.x][visited.start->data.y] = 0;
-
-	iPoint curr;
-	if (frontier.Pop(curr))
-	{
-		// L10: DONE 2: For each neighbor, if not visited, add it
-		// to the frontier queue and visited list
-		iPoint neighbors[4];
-		neighbors[0].Create(curr.x + 1, curr.y + 0);
-		neighbors[1].Create(curr.x + 0, curr.y + 1);
-		neighbors[2].Create(curr.x - 1, curr.y + 0);
-		neighbors[3].Create(curr.x + 0, curr.y - 1);
-
-		for (uint i = 0; i < 4; ++i)
-		{
-			if (MovementCost(neighbors[i].x, neighbors[i].y) > 0)
-			{
-				int cost = MovementCost(neighbors[i].x, neighbors[i].y);
-
-				if (visited.Find(neighbors[i]) == -1 || cost < costSoFar[visited.start->data.x][visited.start->data.y])
-				{
-					costSoFar[neighbors[i].x][neighbors[i].y] = cost;
-					frontier.Push(neighbors[i], cost);
-					visited.Add(neighbors[i]);
-
-
-					breadcrumbs.Add(curr);
-				}
-			}
-		}
-	}
-
-}
-
-void Map::PropagateAStar(int heuristic)
-{
-	costSoFar[visited.start->data.x][visited.start->data.y] = 0;
-
-	iPoint curr;
-	if (frontier.Pop(curr))
-	{
-		iPoint neighbors[4];
-		neighbors[0].Create(curr.x + 1, curr.y + 0);
-		neighbors[1].Create(curr.x + 0, curr.y + 1);
-		neighbors[2].Create(curr.x - 1, curr.y + 0);
-		neighbors[3].Create(curr.x + 0, curr.y - 1);
-
-		for (uint i = 0; i < 4; ++i)
-		{
-			if (MovementCost(neighbors[i].x, neighbors[i].y) > 0)
-			{
-				int cost = MovementCost(neighbors[i].x, neighbors[i].y);
-				cost += costSoFar[visited.start->data.x][visited.start->data.y];
-
-				if (visited.Find(neighbors[i]) == -1 || cost < costSoFar[visited.start->data.x][visited.start->data.y])
-				{
-					int priority = cost + neighbors[i].DistanceManhattan(goalAStar);
-					costSoFar[neighbors[i].x][neighbors[i].y] = cost;
-
-					frontier.Push(neighbors[i], priority);
-					visited.Add(neighbors[i]);
-
-					breadcrumbs.Add(curr);
-				}
-			}
-		}
-	}
-
 }
 
 // Draw the map (all requried layers)
@@ -692,5 +475,48 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 		properties.list.Add(p);
 	}
 	
+	return ret;
+}
+
+bool Map::CreateWalkabilityMap(int& width, int& height, uchar** buffer) const
+{
+	bool ret = false;
+	ListItem<MapLayer*>* item;
+	item = mapData.layers.start;
+
+	for (item = mapData.layers.start; item != NULL; item = item->next)
+	{
+		MapLayer* layer = item->data;
+
+		if (layer->properties.GetProperty("Navigation", 0) == 0)
+			continue;
+
+		uchar* map = new uchar[layer->width * layer->height];
+		memset(map, 1, layer->width * layer->height);
+
+		for (int y = 0; y < mapData.height; ++y)
+		{
+			for (int x = 0; x < mapData.width; ++x)
+			{
+				int i = (y * layer->width) + x;
+
+				int tileId = layer->Get(x, y);
+				TileSet* tileset = (tileId > 0) ? GetTilesetFromTileId(tileId) : NULL;
+
+				if (tileset != NULL)
+				{
+					map[i] = (tileId - tileset->firstgid) > 0 ? 0 : 1;
+				}
+			}
+		}
+
+		*buffer = map;
+		width = mapData.width;
+		height = mapData.height;
+		ret = true;
+
+		break;
+	}
+
 	return ret;
 }

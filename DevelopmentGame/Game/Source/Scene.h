@@ -46,6 +46,12 @@ public:
 private:
 	SDL_Texture* start_screen;
 
+	SDL_Texture* pathTex;
+	SDL_Texture* originTex;
+
+	iPoint origin;
+	bool originSelected = false;
+
 };
 
 #endif // __SCENE_H__

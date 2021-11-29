@@ -141,19 +141,7 @@ public:
 	// L05: DONE 2: Add orthographic world to map coordinates
 	iPoint WorldToMap(int x, int y) const;
 
-	// L10: BFS Pathfinding methods
-	void ResetPath();
-	void DrawPath();
-	bool IsWalkable(int x, int y) const;
-
-	int MovementCost(int x, int y) const;
-	void ComputePath(int x, int y);
-	void ComputePathAStar(int x, int y);
-
-	// Propagation methods
-	void PropagateBFS();
-	void PropagateDijkstra();
-	void PropagateAStar(int heuristic);
+	bool CreateWalkabilityMap(int& width, int& height, uchar** buffer) const;
 
 private:
 
@@ -186,20 +174,6 @@ private:
 
     SString folder;
     bool mapLoaded;
-
-	// BPS
-	Queue<iPoint> frontier;
-	List<iPoint> visited;
-
-	//
-	List<iPoint> breadcrumbs;
-	uint costSoFar[COST_MAP_SIZE][COST_MAP_SIZE];
-	DynArray<iPoint> path;
-
-	iPoint goalAStar;			// Store goal target tile
-	bool finishAStar = false;	// Detect when reached goal
-
-	SDL_Texture* tileX = nullptr;
 
 };
 

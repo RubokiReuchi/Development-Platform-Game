@@ -51,7 +51,7 @@ public:
 	}
 
 	// Get Size
-	unsigned int count() const
+	unsigned int Count() const
 	{
 		return size;
 	}
@@ -120,8 +120,8 @@ public:
 	// Destroy and free all mem
 	void Clear()
 	{
-		ListItem<tdata>*   p_data;
-		ListItem<tdata>*   p_next;
+		ListItem<tdata>* p_data;
+		ListItem<tdata>* p_next;
 		p_data = start;
 
 		while(p_data != NULL)

@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "Background.h"
 #include "Map.h"
+#include "Pathfinding.h"
 #include "Physics.h"
 #include "Player.h"
 #include "Menu.h"
@@ -29,6 +30,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	scene = new Scene();
 	background = new Background();
 	map = new Map();
+	pathfinding = new PathFinding();
 	physics = new Physics();
 	player = new Player();
 	menu = new Menu();
@@ -43,6 +45,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(background);
 	AddModule(scene);
 	AddModule(map);
+	AddModule(pathfinding);
 	AddModule(physics);
 	AddModule(player);
 	AddModule(menu);
@@ -113,8 +116,6 @@ bool App::Start()
 		ret = item->data->Start();
 		item = item->next;
 	}
-
-	//SDL_ShowCursor(0);
 
 	return ret;
 }

@@ -20,6 +20,7 @@ class Audio;
 class Scene;
 class Background;
 class Map;
+class PathFinding;
 class Physics;
 class Player;
 class Menu;
@@ -95,6 +96,7 @@ public:
 	Scene* scene;
 	Background* background;
 	Map* map;
+	PathFinding* pathfinding;
 	Physics* physics;
 	Player* player;
 	Menu* menu;

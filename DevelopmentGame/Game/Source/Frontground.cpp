@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Map.h"
+#include "Pathfinding.h"
 #include "Player.h"
 #include "Frontground.h"
 
@@ -134,14 +135,30 @@ bool Frontground::FadeFromBlack(int dest_level)
 			app->player->SetPosition(8.2f, 22.5f);
 			app->SaveGameRequest();
 			app->player->lookLeft = false;
-			app->map->Load("level1.tmx");
+			if (app->map->Load("level1.tmx") == true)
+			{
+				int w, h;
+				uchar* data = NULL;
+
+				if (app->map->CreateWalkabilityMap(w, h, &data)) app->pathfinding->SetMap(w, h, data);
+
+				RELEASE_ARRAY(data);
+			}
 			app->scene->current_level = 1;
 			break;
 		case 2:
 			app->player->SetPosition(48.0f, 4.0f);
 			app->SaveGameRequest();
 			app->player->lookLeft = true;
-			app->map->Load("level2.tmx");
+			if (app->map->Load("level2.tmx") == true)
+			{
+				int w, h;
+				uchar* data = NULL;
+
+				if (app->map->CreateWalkabilityMap(w, h, &data)) app->pathfinding->SetMap(w, h, data);
+
+				RELEASE_ARRAY(data);
+			}
 			app->scene->current_level = 2;
 			break;
 		}

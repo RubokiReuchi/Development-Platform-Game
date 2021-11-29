@@ -6,6 +6,7 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Map.h"
+#include "Pathfinding.h"
 #include "Frontground.h"
 #include "Player.h"
 
@@ -49,6 +50,27 @@ bool Scene::PreUpdate()
 	if (start_screen != NULL && app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)  
 	{
 		PassLevel(1);
+	}
+	else
+	{
+		int mouseX, mouseY;
+		app->input->GetMousePosition(mouseX, mouseY);
+		iPoint p = app->render->ScreenToWorld(mouseX, mouseY);
+		p = app->map->WorldToMap(p.x, p.y);
+
+		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_DOWN)
+		{
+			if (originSelected == true)
+			{
+				app->pathfinding->CreatePath(origin, p);
+				originSelected = false;
+			}
+			else
+			{
+				origin = p;
+				originSelected = true;
+			}
+		}
 	}
 
 	return true;
