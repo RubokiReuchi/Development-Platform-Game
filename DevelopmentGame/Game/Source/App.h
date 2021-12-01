@@ -24,8 +24,11 @@ class PathFinding;
 class Physics;
 class Player;
 class Coins;
+class Fonts;
 class Menu;
 class Frontground;
+
+
 
 class App
 {
@@ -101,6 +104,7 @@ public:
 	Physics* physics;
 	Player* player;
 	Coins* coins;
+	Fonts* fonts;
 	Menu* menu;
 	Frontground* frontground;
 

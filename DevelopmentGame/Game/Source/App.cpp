@@ -11,8 +11,10 @@
 #include "Physics.h"
 #include "Player.h"
 #include "Coins.h"
+#include "Fonts.h"
 #include "Menu.h"
 #include "Frontground.h"
+
 
 #include "Defs.h"
 #include "Log.h"
@@ -35,8 +37,10 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	physics = new Physics();
 	player = new Player();
 	coins = new Coins();
+	fonts = new Fonts();
 	menu = new Menu();
 	frontground = new Frontground();
+
 
 	// Ordered for awake / Start / Update
 	// Reverse order of CleanUp
@@ -51,6 +55,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(physics);
 	AddModule(player);
 	AddModule(coins);
+	AddModule(fonts);
 	AddModule(menu);
 	AddModule(frontground);
 

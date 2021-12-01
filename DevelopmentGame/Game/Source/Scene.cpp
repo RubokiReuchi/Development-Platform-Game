@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "Map.h"
 #include "Pathfinding.h"
+#include "Fonts.h"
 #include "Frontground.h"
 #include "Player.h"
 

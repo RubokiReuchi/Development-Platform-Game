@@ -91,6 +91,7 @@
   <ItemGroup>
     <ClCompile Include="Source\Background.cpp" />
     <ClCompile Include="Source\Coins.cpp" />
+    <ClCompile Include="Source\Fonts.cpp" />
     <ClCompile Include="Source\Frontground.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\App.cpp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\Background.h" />
     <ClInclude Include="Source\Coins.h" />
+    <ClInclude Include="Source\Fonts.h" />
     <ClInclude Include="Source\Frontground.h" />
     <ClInclude Include="Source\Map.h" />
     <ClInclude Include="Source\Menu.h" />
