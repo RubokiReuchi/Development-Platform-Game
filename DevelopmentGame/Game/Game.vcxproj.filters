@@ -24,6 +24,7 @@
     <ClCompile Include="Source\PerfTimer.cpp" />
     <ClCompile Include="Source\Timer.cpp" />
     <ClCompile Include="Source\Pathfinding.cpp" />
+    <ClCompile Include="Source\Coins.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Window.h" />
@@ -73,6 +74,7 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\Pathfinding.h" />
+    <ClInclude Include="Source\Coins.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">

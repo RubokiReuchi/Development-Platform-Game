@@ -3,6 +3,7 @@
 #include "Textures.h"
 #include "Map.h"
 #include "Physics.h"
+#include "Coins.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -106,6 +107,11 @@ void Map::Draw()
 						{
 							// collision water wells
 							app->physics->CreateMapBox(pos.x + ((r.w * width) / 2), pos.y + ((r.h * height) / 2), (r.w * width) / 2, (r.h * height) / 2, 7);
+						}
+						else if (mapLayerItem->data->properties.GetProperty("Collision") == 6)
+						{
+							// collision water wells
+							app->coins->CreateCoin(pos.x, pos.y);
 						}
 					}
 				}
@@ -263,7 +269,7 @@ bool Map::Load(const char* filename)
     {
         // L03: TODO 5: LOG all the data loaded iterate all tilesets and LOG everything
 		 
-		LOG("Successfully parsed map XML file: %s", filename);
+		/*LOG("Successfully parsed map XML file: %s", filename);
 		LOG("width: %d", mapData.width);
 		LOG("height: %d", mapData.height);
 		LOG("tile width: %d", mapData.tileWidth);
@@ -275,14 +281,14 @@ bool Map::Load(const char* filename)
 		else if (mapData.type == MAPTYPE_ISOMETRIC)
 		{
 			LOG("orientation: isometric");
-		}
+		}*/
 
 		ListItem<TileSet*>* tileset;
 		tileset = mapData.tilesets.start;
 		int tilesetCtr = 0;
 		while (tileset != NULL)
 		{
-			LOG("Tileset %d", tilesetCtr +1);
+			/*LOG("Tileset %d", tilesetCtr + 1);
 			LOG("name: %s", tileset->data->name.GetString());
 			LOG("first gid: %d", tileset->data->firstgid);
 			LOG("margin: %d", tileset->data->margin);
@@ -290,7 +296,7 @@ bool Map::Load(const char* filename)
 			LOG("tile width: %d", tileset->data->tileWidth);
 			LOG("tile height: %d", tileset->data->tileHeight);
 			LOG("width: %d", tileset->data->texWidth);
-			LOG("height: %d", tileset->data->texHeight);
+			LOG("height: %d", tileset->data->texHeight);*/
 
 			tileset = tileset->next;
 			tilesetCtr++;
@@ -303,10 +309,10 @@ bool Map::Load(const char* filename)
 
 		while (layer != NULL)
 		{
-			LOG("Layer %d", layerCtr + 1);
+			/*LOG("Layer %d", layerCtr + 1);
 			LOG("name: %s", layer->data->name.GetString());
 			LOG("width: %d", layer->data->width);
-			LOG("height: %d", layer->data->height);
+			LOG("height: %d", layer->data->height);*/
 			
 			layerCtr++;
 			layer = layer->next;
