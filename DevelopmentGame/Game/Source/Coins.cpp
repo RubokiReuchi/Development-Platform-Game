@@ -9,7 +9,7 @@
 
 Coins::Coins() : Module()
 {
-	name.Create("scene");
+	name.Create("coins");
 
 	int pix = 32;
 
