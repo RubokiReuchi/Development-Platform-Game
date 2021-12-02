@@ -11,4 +11,9 @@
 	<player>
 		<position x="8" y="22.0156193" />
 	</player>
+	<enemies value="2">
+		<position0 x="10" y="10" state="0" />
+		<position1 x="20" y="20" state="0"/>
+		<position2 x="30" y="30" state="0"/>
+	</enemies>
 </game_state>

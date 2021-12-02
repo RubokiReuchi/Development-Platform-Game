@@ -10,6 +10,7 @@
 #include "Pathfinding.h"
 #include "Physics.h"
 #include "Player.h"
+#include "Enemies.h"
 #include "Coins.h"
 #include "Fonts.h"
 #include "Menu.h"
@@ -36,6 +37,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	pathfinding = new PathFinding();
 	physics = new Physics();
 	player = new Player();
+	enemies = new Enemies();
 	coins = new Coins();
 	fonts = new Fonts();
 	menu = new Menu();
@@ -54,6 +56,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(pathfinding);
 	AddModule(physics);
 	AddModule(player);
+	AddModule(enemies);
 	AddModule(coins);
 	AddModule(fonts);
 	AddModule(menu);

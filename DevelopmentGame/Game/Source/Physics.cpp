@@ -181,6 +181,11 @@ bool Physics::PostUpdate()
 						c_g = 200;
 						c_b = 200;
 						break;
+					case 9:
+						c_r = 50;
+						c_g = 50;
+						c_b = 50;
+						break;
 					default:
 						c_r = 0;
 						c_g = 0;
