@@ -8,6 +8,8 @@
 #include "Map.h"
 #include "Physics.h"
 #include "Player.h"
+#include "Enemies.h"
+#include "Coins.h"
 #include "Menu.h"
 #include "Frontground.h"
 
@@ -258,7 +260,17 @@ void Physics::BeginContact(b2Contact* contact)
 	void* fixtureUserDataA = contact->GetFixtureA()->GetUserData();
 	void* fixtureUserDataB = contact->GetFixtureB()->GetUserData();
 
-	if ((int)fixtureUserDataA == 2)
+	if ((int)fixtureUserDataA == 4)
+	{
+		if ((int)fixtureUserDataB == 4)
+		{
+			for (size_t i = 0; i < app->enemies->enemies.Count(); i++)
+			{
+				app->enemies->enemies.At(i)->obLeft = !app->enemies->enemies.At(i)->obLeft;
+			}
+		}
+	}
+	else if ((int)fixtureUserDataA == 2)
 	{
 		if ((int)fixtureUserDataB == 3)
 		{
@@ -293,6 +305,11 @@ void Physics::BeginContact(b2Contact* contact)
 			// water well
 			app->frontground->SetPressE_Hide(false);
 			inWaterWell = true;
+		}
+		else if ((int)fixtureUserDataB == 8)
+		{
+			// coin
+			app->coins->PickCoin(app->player->x, app->player->y);
 		}
 	}
 
@@ -331,6 +348,11 @@ void Physics::BeginContact(b2Contact* contact)
 			// water well
 			app->frontground->SetPressE_Hide(false);
 			inWaterWell = true;
+		}
+		else if ((int)fixtureUserDataA == 8)
+		{
+			// coin
+			app->coins->PickCoin(app->player->x, app->player->y);
 		}
 	}
 }

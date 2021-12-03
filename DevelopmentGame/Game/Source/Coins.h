@@ -12,7 +12,7 @@ struct Coin
 {
 	b2Body* body;
 
-	int x, y;
+	float x, y;
 
 	bool picked;
 };
@@ -46,6 +46,8 @@ public:
 
 	void CreateCoin(int x, int y);
 
+	void PickCoin(float x, float y);
+
 private:
 
 	SDL_Texture* texture = NULL;
@@ -53,7 +55,7 @@ private:
 
 	Animation idleAnim;
 
-	int w, h = 32;
+	int w = 16, h = 16;
 
 	DynArray<Coin> coins;
 

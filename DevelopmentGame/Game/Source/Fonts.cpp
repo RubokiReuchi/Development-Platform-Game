@@ -75,7 +75,7 @@ void Fonts::UnLoad(int font_id)
 {
 	if (font_id >= 0 && font_id < MAX_FONTS && fonts[font_id].texture != nullptr)
 	{
-		app->tex->Unload(fonts[font_id].texture);
+		app->tex->UnLoad(fonts[font_id].texture);
 		fonts[font_id].texture = nullptr;
 		//LOG("Successfully Unloaded BMP font_id %d", font_id);
 	}
@@ -119,11 +119,11 @@ void Fonts::BlitText(int x, int y, int font_id, const char* text, int zoom, int 
 			y += spriteRect.h * zoom + zoom * down;
 		}
 		else if (text[i] == 'M' || text[i] == 'W' || text[i] == 'm' || text[i] == 'w') {
-			app->render->DrawTexture(font->texture, x + 4, y, &spriteRect, 1.0f, 0, INT_MAX, INT_MAX, r, g, b);
+			//app->render->DrawTexture(font->texture, x + 4, y, &spriteRect, 1.0f, 0, INT_MAX, INT_MAX, r, g, b);
 			x += spriteRect.w;
 		}
 		else {
-			app->render->DrawTexture(font->texture, x, y, &spriteRect, 1.0f, 0, INT_MAX, INT_MAX, r, g, b);
+			//app->render->DrawTexture(font->texture, x, y, &spriteRect, 1.0f, 0, INT_MAX, INT_MAX, r, g, b);
 			x += spriteRect.w - 8;
 		}
 

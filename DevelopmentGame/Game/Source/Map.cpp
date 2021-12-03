@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "Physics.h"
 #include "Coins.h"
+#include "Enemies.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -110,8 +111,18 @@ void Map::Draw()
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 6)
 						{
-							// collision water wells
+							// coins
 							app->coins->CreateCoin(pos.x, pos.y);
+						}
+						else if (mapLayerItem->data->properties.GetProperty("Collision") == 7)
+						{
+							// ground enemies
+							app->enemies->CreateGroundEnemy(pos.x, pos.y);
+						}
+						else if (mapLayerItem->data->properties.GetProperty("Collision") == 8)
+						{
+							// air enemies
+							app->enemies->CreateAirEnemy(pos.x, pos.y);
 						}
 					}
 				}

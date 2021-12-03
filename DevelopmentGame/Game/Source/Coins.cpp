@@ -48,8 +48,11 @@ bool Coins::Start()
 // Called each loop iteration
 bool Coins::PreUpdate()
 {
-
-	
+	for (size_t i = 0; i < coins.Count(); i++)
+	{
+		coins.At(i)->x = coins.At(i)->body->GetPosition().x;
+		coins.At(i)->y = coins.At(i)->body->GetPosition().y;
+	}
 
 	return true;
 }
@@ -73,7 +76,7 @@ bool Coins::PostUpdate()
 		{
 			SDL_Rect rect = currentAnimation->GetCurrentFrame();
 			
-			app->render->DrawTexture(texture, coins.At(i)->x, coins.At(i)->y, &rect);
+			app->render->DrawTexture(texture, METERS_TO_PIXELS(coins.At(i)->x), METERS_TO_PIXELS(coins.At(i)->y), &rect);
 		}
 	}
 
@@ -95,12 +98,12 @@ void Coins::CreateCoin(int x, int y)
 
 	b2BodyDef c_body;
 	c_body.type = b2_staticBody;
-	c_body.position.Set(x, y);
+	c_body.position.Set(PIXELS_TO_METERS(x), PIXELS_TO_METERS(y));
 
 	new_coin->body = app->physics->world->CreateBody(&c_body);
 
 	b2PolygonShape box;
-	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h));
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h), b2Vec2(PIXELS_TO_METERS(16), PIXELS_TO_METERS(16)), 0);
 
 	b2FixtureDef fixture;
 	fixture.shape = &box;
@@ -108,10 +111,23 @@ void Coins::CreateCoin(int x, int y)
 	bodyFixture->SetSensor(true);
 	bodyFixture->SetUserData((void*)8); // coin collision
 
-	new_coin->x = x;
-	new_coin->y = y;
-
 	new_coin->picked = false;
 
 	coins.Insert(*new_coin, coins.Count());
+}
+
+void Coins::PickCoin(float x, float y)
+{
+	for (size_t i = 0; i < coins.Count(); i++)
+	{
+		if (x + 1.5f > coins.At(i)->x && x - 1.5f < coins.At(i)->x && y + 2.0f > coins.At(i)->y && y - 2.0f < coins.At(i)->y)
+		{
+			if (!coins.At(i)->picked)
+			{
+				// add one coin
+			}
+			coins.At(i)->picked = true;
+			break;
+		}
+	}
 }

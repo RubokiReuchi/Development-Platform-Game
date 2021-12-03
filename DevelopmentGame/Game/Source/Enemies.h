@@ -6,10 +6,17 @@
 #include "Animation.h"
 #include "DynArray.h"
 
-enum ENEMY_TYPE
+enum class ENEMY_TYPE
 {
 	GROUND,
 	AIR
+};
+
+enum class ENEMY_STATE
+{
+	IDLE,
+	HUNT,
+	DEATH
 };
 
 struct Enemy {
@@ -17,7 +24,7 @@ struct Enemy {
 
 	float origin_x, origin_y;
 	float x, y;
-	int w = 32, h = 32;
+	int w = 16, h = 16;
 	float speed;
 
 	ENEMY_TYPE type;
@@ -29,7 +36,9 @@ struct Enemy {
 	float detectionRange;
 	bool enemy_spoted;
 
-	bool alive;
+	ENEMY_STATE state;
+	float idleOb_x, idleOb_y;
+	bool obLeft;
 };
 
 class Enemies : public Module
