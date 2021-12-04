@@ -13,6 +13,8 @@
 #include "Defs.h"
 #include "Log.h"
 
+#include <time.h>
+
 Enemies::Enemies() : Module()
 {
 	name.Create("enemies");
@@ -118,13 +120,16 @@ bool Enemies::PreUpdate()
 {
 	for (size_t i = 0; i < enemies.Count(); i++)
 	{
+		enemies.At(i)->x = enemies.At(i)->body->GetPosition().x;
+		enemies.At(i)->y = enemies.At(i)->body->GetPosition().y;
+
 		if (enemies.At(i)->obLeft)
 		{
-			enemies.At(i)->idleOb_x = enemies.At(i)->origin_x - PIXELS_TO_METERS(16 * 4);
+			enemies.At(i)->idleOb_x = enemies.At(i)->origin_x - PIXELS_TO_METERS(32 * 5);
 		}
 		else
 		{
-			enemies.At(i)->idleOb_x = enemies.At(i)->origin_x + PIXELS_TO_METERS(16 * 4);
+			enemies.At(i)->idleOb_x = enemies.At(i)->origin_x + PIXELS_TO_METERS(32 * 5);
 		}
 	}
 
@@ -145,19 +150,35 @@ bool Enemies::Update(float dt)
 		{
 			if (en->state == ENEMY_STATE::IDLE)
 			{
-				if (en->x < en->idleOb_x)
+				if (!en->obLeft)
 				{
-					enemies.At(i)->body->SetLinearVelocity({ en->speed * dt, en->body->GetLinearVelocity().y });
-					enemies.At(i)->obLeft = false;
+					if (en->x < en->idleOb_x)
+					{
+						enemies.At(i)->body->SetLinearVelocity({ en->speed * dt, en->body->GetLinearVelocity().y });
+						float ui = en->x;
+						float uii = en->idleOb_x;
+						int yd = 0;
+					}
+					else
+					{
+						enemies.At(i)->obLeft = true;
+					}
+					
 				}
-				else if (en->x > en->idleOb_x)
+				else if (en->obLeft)
 				{
-					enemies.At(i)->body->SetLinearVelocity({ -en->speed * dt, en->body->GetLinearVelocity().y });
-					enemies.At(i)->obLeft = true;
+					if (en->x > en->idleOb_x)
+					{
+						enemies.At(i)->body->SetLinearVelocity({ -en->speed * dt, en->body->GetLinearVelocity().y });
+					}
+					else
+					{
+						enemies.At(i)->obLeft = false;
+					}
 				}
 			}
 		}
-		else
+		else if (en->type == ENEMY_TYPE::AIR)
 		{
 
 		}
@@ -277,10 +298,10 @@ void Enemies::CreateGroundEnemy(float x, float y)
 	sensorFixture->SetUserData((void*)9); // hit sensor
 
 	// stats
-	new_enemy->origin_x = x;
-	new_enemy->origin_y = y;
-	new_enemy->x = x;
-	new_enemy->y = y;
+	new_enemy->origin_x = PIXELS_TO_METERS(x);
+	new_enemy->origin_y = PIXELS_TO_METERS(y);
+	new_enemy->x = PIXELS_TO_METERS(x);
+	new_enemy->y = PIXELS_TO_METERS(y);
 	new_enemy->speed = 0.1f;
 
 	new_enemy->type = ENEMY_TYPE::GROUND;
@@ -330,10 +351,10 @@ void Enemies::CreateAirEnemy(float x, float y)
 	sensorFixture->SetUserData((void*)9); // ground sensor
 
 	// stats
-	new_enemy->origin_x = x;
-	new_enemy->origin_y = y;
-	new_enemy->x = x;
-	new_enemy->y = y;
+	new_enemy->origin_x = PIXELS_TO_METERS(x);
+	new_enemy->origin_y = PIXELS_TO_METERS(y);
+	new_enemy->x = PIXELS_TO_METERS(x);
+	new_enemy->y = PIXELS_TO_METERS(y);
 	new_enemy->speed = 0.05f;
 
 	new_enemy->type = ENEMY_TYPE::AIR;
@@ -346,8 +367,34 @@ void Enemies::CreateAirEnemy(float x, float y)
 	new_enemy->enemy_spoted = false;
 
 	new_enemy->state = ENEMY_STATE::IDLE;
-	new_enemy->idleOb_x = new_enemy->origin_x + PIXELS_TO_METERS(16 * 5);
-	new_enemy->idleOb_y = new_enemy->origin_y + PIXELS_TO_METERS(16 * 5);
-
+	
 	enemies.Insert(*new_enemy, enemies.Count());
+}
+
+void Enemies::MoveAirEnemy(Enemy* enemy, float dt)
+{
+	int mov = rand() % 4;
+	bool again = true;
+
+	while (again)
+	{
+		switch (mov)
+		{
+		case 1: // up
+			if (enemy->y + PIXELS_TO_METERS(32 * 5) < enemy->origin_y)
+			{
+				enemy->body->SetLinearVelocity({ enemy->body->GetLinearVelocity().x, -enemy->speed * dt });
+				again = false;
+			}
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+		default:
+			break;
+		}
+	}
 }

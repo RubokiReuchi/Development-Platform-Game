@@ -266,7 +266,10 @@ void Physics::BeginContact(b2Contact* contact)
 		{
 			for (size_t i = 0; i < app->enemies->enemies.Count(); i++)
 			{
-				app->enemies->enemies.At(i)->obLeft = !app->enemies->enemies.At(i)->obLeft;
+				if (app->enemies->enemies.At(i)->type == ENEMY_TYPE::GROUND)
+				{
+					app->enemies->enemies.At(i)->obLeft = !app->enemies->enemies.At(i)->obLeft;
+				}
 			}
 		}
 	}

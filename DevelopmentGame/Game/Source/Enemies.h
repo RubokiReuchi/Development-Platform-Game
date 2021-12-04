@@ -70,6 +70,7 @@ public:
 
 	void CreateGroundEnemy(float x, float y);
 	void CreateAirEnemy(float x, float y);
+	void MoveAirEnemy(Enemy* enemy, float dt);
 
 	Animation idleAnimR;
 	Animation idleAnimL;
