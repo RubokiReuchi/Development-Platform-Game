@@ -37,8 +37,13 @@ struct Enemy {
 	bool enemy_spoted;
 
 	ENEMY_STATE state;
-	float idleOb_x, idleOb_y;
+
+	// only used in ground enemies
+	float idleOb_x;
 	bool obLeft;
+
+	// only used in air enemies
+	int cd_air_enemy = 0;
 };
 
 class Enemies : public Module
@@ -70,7 +75,10 @@ public:
 
 	void CreateGroundEnemy(float x, float y);
 	void CreateAirEnemy(float x, float y);
+
 	void MoveAirEnemy(Enemy* enemy, float dt);
+	void CheckAirEnemy(Enemy* enemy, float dt);
+	
 
 	Animation idleAnimR;
 	Animation idleAnimL;

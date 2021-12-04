@@ -102,6 +102,7 @@ Enemies::~Enemies()
 // Called before render is available
 bool Enemies::Awake()
 {
+	srand(time(NULL));
 
 	return true;
 }
@@ -180,7 +181,16 @@ bool Enemies::Update(float dt)
 		}
 		else if (en->type == ENEMY_TYPE::AIR)
 		{
-
+			if (en->cd_air_enemy <= 0)
+			{
+				MoveAirEnemy(enemies.At(i), dt);
+			}
+			else
+			{
+				en->cd_air_enemy--;
+			}
+			
+			CheckAirEnemy(enemies.At(i), dt);
 		}
 
 		
@@ -374,24 +384,103 @@ void Enemies::CreateAirEnemy(float x, float y)
 void Enemies::MoveAirEnemy(Enemy* enemy, float dt)
 {
 	int mov = rand() % 4;
-	bool again = true;
 
-	while (again)
+	switch (mov)
 	{
+	case 0: // up
+		enemy->body->SetLinearVelocity({ 0, -enemy->speed * dt });
+		break;
+	case 1: // down
+		enemy->body->SetLinearVelocity({ 0, enemy->speed * dt });
+		break;
+	case 2: // left
+		enemy->body->SetLinearVelocity({ -enemy->speed * dt, 0 });
+		break;
+	case 3: // right
+		enemy->body->SetLinearVelocity({ enemy->speed * dt, 0 });
+		break;
+	default:
+		break;
+	}
+
+	enemy->cd_air_enemy = 200;
+}
+
+void Enemies::CheckAirEnemy(Enemy* enemy, float dt)
+{
+	int mov = rand() % 3;
+	
+	if (enemy->y + PIXELS_TO_METERS(32 * 5) < enemy->origin_y) // up
+	{
+		enemy->body->SetTransform({ enemy->body->GetPosition().x, enemy->origin_y - PIXELS_TO_METERS(32 * 5) }, 0);
+
 		switch (mov)
 		{
-		case 1: // up
-			if (enemy->y + PIXELS_TO_METERS(32 * 5) < enemy->origin_y)
-			{
-				enemy->body->SetLinearVelocity({ enemy->body->GetLinearVelocity().x, -enemy->speed * dt });
-				again = false;
-			}
+		case 0: // down
+			enemy->body->SetLinearVelocity({ 0, enemy->speed * dt });
 			break;
-		case 2:
+		case 1: // left
+			enemy->body->SetLinearVelocity({ -enemy->speed * dt, 0 });
 			break;
-		case 3:
+		case 2: // right
+			enemy->body->SetLinearVelocity({ enemy->speed * dt, 0 });
 			break;
-		case 4:
+		default:
+			break;
+		}
+	}
+	else if (enemy->y - PIXELS_TO_METERS(32 * 5) > enemy->origin_y) // down
+	{
+		enemy->body->SetTransform({ enemy->body->GetPosition().x, enemy->origin_y + PIXELS_TO_METERS(32 * 5) }, 0);
+
+		switch (mov)
+		{
+		case 0: // up
+			enemy->body->SetLinearVelocity({ 0, -enemy->speed * dt });
+			break;
+		case 1: // left
+			enemy->body->SetLinearVelocity({ -enemy->speed * dt, 0 });
+			break;
+		case 2: // right
+			enemy->body->SetLinearVelocity({ enemy->speed * dt, 0 });
+			break;
+		default:
+			break;
+		}
+	}
+	else if (enemy->x + PIXELS_TO_METERS(32 * 5) < enemy->origin_x) // left
+	{
+		enemy->body->SetTransform({ enemy->origin_x - PIXELS_TO_METERS(32 * 5), enemy->body->GetPosition().y }, 0);
+
+		switch (mov)
+		{
+		case 0: // up
+			enemy->body->SetLinearVelocity({ 0, -enemy->speed * dt });
+			break;
+		case 1: // down
+			enemy->body->SetLinearVelocity({ 0, enemy->speed * dt });
+			break;
+		case 2: // right
+			enemy->body->SetLinearVelocity({ enemy->speed * dt, 0 });
+			break;
+		default:
+			break;
+		}
+	}
+	else if (enemy->x - PIXELS_TO_METERS(32 * 5) > enemy->origin_x) // right
+	{
+		enemy->body->SetTransform({ enemy->origin_x + PIXELS_TO_METERS(32 * 5), enemy->body->GetPosition().y }, 0);
+
+		switch (mov)
+		{
+		case 0: // up
+			enemy->body->SetLinearVelocity({ 0, -enemy->speed * dt });
+			break;
+		case 1: // down
+			enemy->body->SetLinearVelocity({ 0, enemy->speed * dt });
+			break;
+		case 2: // left
+			enemy->body->SetLinearVelocity({ -enemy->speed * dt, 0 });
 			break;
 		default:
 			break;
