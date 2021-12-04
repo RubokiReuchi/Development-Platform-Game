@@ -5,6 +5,8 @@
 #include "Physics.h"
 #include "Coins.h"
 #include "Enemies.h"
+#include "Fonts.h"
+#include "Scene.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -51,7 +53,6 @@ bool Map::Awake(pugi::xml_node& config)
 void Map::Draw()
 {
 	if (mapLoaded == false) return;
-
 	// L04: DONE 5: Prepare the loop to draw all tilesets + DrawTexture()
 	ListItem<MapLayer*>* mapLayerItem;
 	mapLayerItem = mapData.layers.start;
@@ -132,6 +133,8 @@ void Map::Draw()
 		mapLayerItem = mapLayerItem->next;
 	}
 
+	app->fonts->BlitText(0, 0, app->scene->textFont, "MONEDAS: ");
+	app->fonts->BlitText(0, 20, app->scene->textFont, app->coins->numCoins);
 	collision_loaded = true;
 }
 

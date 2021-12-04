@@ -43,6 +43,8 @@ public:
 
 	int current_level = 0;
 
+	int textFont = -1;
+
 private:
 	SDL_Texture* start_screen;
 

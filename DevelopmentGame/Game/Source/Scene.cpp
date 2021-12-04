@@ -41,6 +41,10 @@ bool Scene::Start()
 	// Load music
 	app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
 
+
+	char lookupTableChars[] = { " !'#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[/]^_ abcdefghijklmnopqrstuvwxyz{|}~ çüéâäàaçêëèïîìäaéÆæôöòûù" };
+	textFont = app->fonts->Load("Assets/textures/pixel_font.png", lookupTableChars, 8);
+
 	return true;
 }
 
@@ -109,6 +113,7 @@ bool Scene::Update(float dt)
 	if (start_screen != NULL)
 	{
 		app->map->Draw();
+		
 	}
 
 	if (godmode)

@@ -3,7 +3,6 @@
 #include "Render.h"
 #include "Map.h"
 #include "Coins.h"
-
 #include "Defs.h"
 #include "Log.h"
 
@@ -75,8 +74,9 @@ bool Coins::PostUpdate()
 		if (!coins.At(i)->picked)
 		{
 			SDL_Rect rect = currentAnimation->GetCurrentFrame();
-			
 			app->render->DrawTexture(texture, METERS_TO_PIXELS(coins.At(i)->x), METERS_TO_PIXELS(coins.At(i)->y), &rect);
+			ncoins++;
+			sprintf_s(numCoins, 7, "%06d", ncoins);
 		}
 	}
 
