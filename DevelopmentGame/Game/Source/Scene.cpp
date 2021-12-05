@@ -10,6 +10,7 @@
 #include "Fonts.h"
 #include "Frontground.h"
 #include "Player.h"
+#include "Coins.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -43,7 +44,7 @@ bool Scene::Start()
 
 
 	char lookupTableChars[] = { " !'#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[/]^_ abcdefghijklmnopqrstuvwxyz{|}~ çüéâäàaçêëèïîìäaéÆæôöòûù" };
-	textFont = app->fonts->Load("Assets/textures/pixel_font.png", lookupTableChars, 8);
+	textFont = app->fonts->Load("Assets/textures/pixel_letters.png", lookupTableChars, 8);
 
 	return true;
 }
@@ -143,6 +144,11 @@ bool Scene::PostUpdate()
 	else
 	{
 		app->map->Draw();
+
+		//FALTA MIRAR LA POSICION
+		app->fonts->BlitText(2000, 0, textFont, "MONEDAS: ");
+		app->fonts->BlitText(2300, 0, textFont, app->coins->numCoins);
+		app->fonts->BlitText(2000, 40, textFont, "VIDAS: ");
 	}
 	
 	if (app->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)

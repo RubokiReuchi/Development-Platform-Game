@@ -133,8 +133,6 @@ void Map::Draw()
 		mapLayerItem = mapLayerItem->next;
 	}
 
-	app->fonts->BlitText(0, 0, app->scene->textFont, "MONEDAS: ");
-	app->fonts->BlitText(0, 20, app->scene->textFont, app->coins->numCoins);
 	collision_loaded = true;
 }
 

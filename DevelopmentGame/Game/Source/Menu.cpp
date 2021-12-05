@@ -7,7 +7,6 @@
 #include "Frontground.h"
 #include "Menu.h"
 #include "Player.h"
-
 #include "Defs.h"
 #include "Log.h"
 
@@ -181,11 +180,14 @@ bool Menu::Update(float dt)
 // Called each loop iteration
 bool Menu::PostUpdate()
 {
+
+	
 	int c_x = -app->render->camera.x;
 	r.x = c_x;
 
 	if (paused)
 	{
+
 		app->render->DrawRectangle(r, 0, 0, 0, 200);
 
 		for (size_t i = 0; i < NUM_PAUSE_BUTTONS; i++)

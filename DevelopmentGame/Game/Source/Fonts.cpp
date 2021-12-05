@@ -96,8 +96,8 @@ void Fonts::BlitText(int x, int y, int font_id, const char* text, int zoom, int 
 
 	uint len = strlen(text);
 
-	spriteRect.w = 20;
-	spriteRect.h = 20;
+	spriteRect.w = 42;
+	spriteRect.h = 42;
 
 	for (uint i = 0; i < len; ++i)
 	{
@@ -157,3 +157,4 @@ void Fonts::BlitText(int x, int y, int font_id, const char* text, int zoom, int 
 		*/
 	}
 }
+
