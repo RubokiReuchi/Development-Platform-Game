@@ -46,7 +46,12 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	bool LoadState(pugi::xml_node&);
+	bool SaveState(pugi::xml_node&);
+
 	void CreateCoin(int x, int y);
+
+	void ReloadCoin(Coin* coin);
 
 	void PickCoin(float x, float y);
 

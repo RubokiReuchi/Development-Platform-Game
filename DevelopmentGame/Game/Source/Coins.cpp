@@ -80,7 +80,7 @@ bool Coins::PostUpdate()
 			coins.At(i)->plan_to_delete = false;
 
 		}
-
+		
 		if (!coins.At(i)->picked)
 		{
 			SDL_Rect rect = currentAnimation->GetCurrentFrame();
@@ -98,6 +98,56 @@ bool Coins::PostUpdate()
 bool Coins::CleanUp()
 {
 	LOG("Freeing scene");
+
+	return true;
+}
+
+bool Coins::LoadState(pugi::xml_node& data)
+{
+	for (size_t i = 0; i < data.attribute("value").as_int(); i++)
+	{
+		std::string p = "position";
+		std::string s = std::to_string(i);
+		std::string t = p + s;
+		const char* c = t.c_str();
+
+		if (data.child(c).attribute("state").as_int() == 0)
+		{
+			if (coins.At(i)->picked)
+			{
+				ReloadCoin(coins.At(i));
+				ncoins--;
+			}
+		}
+		else
+		{
+			coins.At(i)->picked = true;
+		}
+	}
+
+	return true;
+}
+
+bool Coins::SaveState(pugi::xml_node& data)
+{
+	for (size_t i = 0; i < coins.Count(); i++)
+	{
+		std::string p = "position";
+		std::string s = std::to_string(i);
+		std::string t = p + s;
+		const char* c = t.c_str();
+
+		if (!coins.At(i)->picked)
+		{
+			data.child(c).attribute("state").set_value("0");
+		}
+		else
+		{
+			data.child(c).attribute("state").set_value("1");
+		}
+	}
+
+	data.attribute("value").set_value(coins.Count());
 
 	return true;
 }
@@ -127,6 +177,27 @@ void Coins::CreateCoin(int x, int y)
 	coins.Insert(*new_coin, coins.Count());
 }
 
+void Coins::ReloadCoin(Coin* coin)
+{
+	// coin
+	b2BodyDef c_body;
+	c_body.type = b2_staticBody;
+	c_body.position.Set(coin->x, coin->y);
+
+	coin->body = app->physics->world->CreateBody(&c_body);
+
+	b2PolygonShape box;
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h), b2Vec2(PIXELS_TO_METERS(16), PIXELS_TO_METERS(16)), 0);
+
+	b2FixtureDef fixture;
+	fixture.shape = &box;
+	b2Fixture* bodyFixture = coin->body->CreateFixture(&fixture);
+	bodyFixture->SetSensor(true);
+	bodyFixture->SetUserData((void*)8); // coin collision
+
+	coin->picked = false;
+}
+
 void Coins::PickCoin(float x, float y)
 {
 	for (size_t i = 0; i < coins.Count(); i++)
@@ -138,6 +209,8 @@ void Coins::PickCoin(float x, float y)
 				ncoins++;
 				sprintf_s(numCoins, 4, "%03d", ncoins);
 				coins.At(i)->picked = true;
+				coins.At(i)->x = coins.At(i)->body->GetPosition().x;
+				coins.At(i)->y = coins.At(i)->body->GetPosition().y;
 				coins.At(i)->plan_to_delete = true;
 			}
 			

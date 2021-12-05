@@ -246,12 +246,29 @@ bool Enemies::CleanUp()
 
 bool Enemies::LoadState(pugi::xml_node& data)
 {
-	/*for (size_t i = 0; i < data.attribute("value").as_int(); i++)
+	for (size_t i = 0; i < data.attribute("value").as_int(); i++)
 	{
-		if (data.child("position" + i).attribute("state").as_int() == 0)
+		std::string p = "position";
+		std::string s = std::to_string(i);
+		std::string t = p + s;
+		const char* c = t.c_str();
+
+		if (data.child(c).attribute("state").as_int() == 0)
 		{
-			enemies.At(i)->x = data.child("position" + i).attribute("x").as_int();
-			enemies.At(i)->y = data.child("position" + i).attribute("y").as_int();
+			if (enemies.At(i)->state == ENEMY_STATE::DEATH)
+			{
+				if (enemies.At(i)->type == ENEMY_TYPE::GROUND)
+				{
+					ReviveGroundEnemy(enemies.At(i));
+				}
+				else if (enemies.At(i)->type == ENEMY_TYPE::AIR)
+				{
+					ReviveAirEnemy(enemies.At(i));
+				}
+			}
+			
+			enemies.At(i)->x = data.child(c).attribute("x").as_int();
+			enemies.At(i)->y = data.child(c).attribute("y").as_int();
 
 			enemies.At(i)->body->SetTransform({ enemies.At(i)->x + PIXELS_TO_METERS(enemies.At(i)->w), enemies.At(i)->y }, enemies.At(i)->body->GetAngle());
 			enemies.At(i)->body->ApplyForceToCenter({ 0, 200 }, true);
@@ -260,9 +277,9 @@ bool Enemies::LoadState(pugi::xml_node& data)
 		}
 		else
 		{
-			enemies.At(i)->alive = false;
+			enemies.At(i)->state = ENEMY_STATE::DEATH;
 		}
-	}*/
+	}
 
 	return true;
 }
@@ -271,16 +288,21 @@ bool Enemies::SaveState(pugi::xml_node& data)
 {
 	for (size_t i = 0; i < enemies.Count(); i++)
 	{
-		data.child("position" + i).attribute("x").set_value(enemies.At(i)->x);
-		data.child("position" + i).attribute("y").set_value(enemies.At(i)->y);
+		std::string p = "position";
+		std::string s = std::to_string(i);
+		std::string t = p + s;
+		const char* c = t.c_str();
+
+		data.child(c).attribute("x").set_value(enemies.At(i)->x);
+		data.child(c).attribute("y").set_value(enemies.At(i)->y);
 
 		if (enemies.At(i)->state != ENEMY_STATE::DEATH)
 		{
-			data.child("position" + i).attribute("state").set_value("0");
+			data.child(c).attribute("state").set_value("0");
 		}
 		else
 		{
-			data.child("position" + i).attribute("state").set_value("1");
+			data.child(c).attribute("state").set_value("1");
 		}
 	}
 
@@ -391,6 +413,69 @@ void Enemies::CreateAirEnemy(float x, float y)
 	new_enemy->state = ENEMY_STATE::IDLE;
 	
 	enemies.Insert(*new_enemy, enemies.Count());
+}
+
+void Enemies::ReviveGroundEnemy(Enemy* enemy)
+{
+	// body
+	b2BodyDef e_body;
+	e_body.type = b2_dynamicBody;
+	e_body.fixedRotation = true;
+	e_body.position.Set(PIXELS_TO_METERS(enemy->x), PIXELS_TO_METERS(enemy->y));
+
+	enemy->body = app->physics->world->CreateBody(&e_body);
+	enemy->body->SetFixedRotation(true);
+
+	b2PolygonShape box;
+	box.SetAsBox(PIXELS_TO_METERS(enemy->w), PIXELS_TO_METERS(enemy->h));
+
+	b2FixtureDef fixture;
+	fixture.shape = &box;
+	fixture.density = 1.0f;
+	fixture.friction = 0.0f;
+	b2Fixture* bodyFixture = enemy->body->CreateFixture(&fixture);
+	bodyFixture->SetSensor(false);
+	bodyFixture->SetUserData((void*)4); // player collision
+
+	// ground sensor
+	box.SetAsBox(PIXELS_TO_METERS((enemy->w)), PIXELS_TO_METERS(4), b2Vec2(0, PIXELS_TO_METERS(-20)), 0);
+	fixture.isSensor = true;
+	b2Fixture* sensorFixture = enemy->body->CreateFixture(&fixture);
+	sensorFixture->SetUserData((void*)9); // ground sensor
+
+	enemy->state = ENEMY_STATE::IDLE;
+}
+
+void Enemies::ReviveAirEnemy(Enemy* enemy)
+{
+	// body
+	b2BodyDef e_body;
+	e_body.type = b2_dynamicBody;
+	e_body.fixedRotation = true;
+	e_body.position.Set(PIXELS_TO_METERS(enemy->x), PIXELS_TO_METERS(enemy->y));
+	e_body.gravityScale = 0.0f;
+
+	enemy->body = app->physics->world->CreateBody(&e_body);
+	enemy->body->SetFixedRotation(true);
+
+	b2PolygonShape box;
+	box.SetAsBox(PIXELS_TO_METERS(enemy->w), PIXELS_TO_METERS(enemy->h));
+
+	b2FixtureDef fixture;
+	fixture.shape = &box;
+	fixture.density = 1.0f;
+	fixture.friction = 0.0f;
+	b2Fixture* bodyFixture = enemy->body->CreateFixture(&fixture);
+	bodyFixture->SetSensor(false);
+	bodyFixture->SetUserData((void*)4); // player collision
+
+	// ground sensor
+	box.SetAsBox(PIXELS_TO_METERS((enemy->w)), PIXELS_TO_METERS(4), b2Vec2(0, PIXELS_TO_METERS(-20)), 0);
+	fixture.isSensor = true;
+	b2Fixture* sensorFixture = enemy->body->CreateFixture(&fixture);
+	sensorFixture->SetUserData((void*)9); // ground sensor
+
+	enemy->state = ENEMY_STATE::IDLE;
 }
 
 void Enemies::MoveAirEnemy(Enemy* enemy, float dt)

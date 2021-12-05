@@ -78,6 +78,9 @@ public:
 	void CreateGroundEnemy(float x, float y);
 	void CreateAirEnemy(float x, float y);
 
+	void ReviveGroundEnemy(Enemy* enemy);
+	void ReviveAirEnemy(Enemy* enemy);
+
 	void MoveAirEnemy(Enemy* enemy, float dt);
 	void CheckAirEnemy(Enemy* enemy, float dt);
 

@@ -95,6 +95,8 @@ bool Frontground::PostUpdate()
 		app->render->DrawTexture(press_e, c_x + 1280, 1100);
 	}
 
+	r.x = c_x;
+
 	app->render->DrawRectangle(r, 0, 0, 0, a);
 
 	return true;
