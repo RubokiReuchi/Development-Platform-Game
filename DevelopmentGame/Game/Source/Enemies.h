@@ -44,6 +44,8 @@ struct Enemy {
 
 	// only used in air enemies
 	int cd_air_enemy = 0;
+
+	bool plan_to_delete = false;
 };
 
 class Enemies : public Module
@@ -78,6 +80,8 @@ public:
 
 	void MoveAirEnemy(Enemy* enemy, float dt);
 	void CheckAirEnemy(Enemy* enemy, float dt);
+
+	void KillEnemy(float x, float y);
 	
 
 	Animation idleAnimR;

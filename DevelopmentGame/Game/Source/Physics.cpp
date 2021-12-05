@@ -279,6 +279,10 @@ void Physics::BeginContact(b2Contact* contact)
 		{
 			on_collosion++;
 		}
+		else if ((int)fixtureUserDataB == 9)
+		{
+			app->enemies->KillEnemy(app->player->x, app->player->y);
+		}
 	}
 	else if ((int)fixtureUserDataA == 1)
 	{
@@ -321,6 +325,10 @@ void Physics::BeginContact(b2Contact* contact)
 		if ((int)fixtureUserDataA == 3)
 		{
 			on_collosion++;
+		}
+		else if ((int)fixtureUserDataA == 9)
+		{
+			app->enemies->KillEnemy(app->player->x, app->player->y);
 		}
 	}
 	else if ((int)fixtureUserDataB == 2)

@@ -121,16 +121,19 @@ bool Enemies::PreUpdate()
 {
 	for (size_t i = 0; i < enemies.Count(); i++)
 	{
-		enemies.At(i)->x = enemies.At(i)->body->GetPosition().x;
-		enemies.At(i)->y = enemies.At(i)->body->GetPosition().y;
+		if (enemies.At(i)->state != ENEMY_STATE::DEATH)
+		{
+			enemies.At(i)->x = enemies.At(i)->body->GetPosition().x;
+			enemies.At(i)->y = enemies.At(i)->body->GetPosition().y;
 
-		if (enemies.At(i)->obLeft)
-		{
-			enemies.At(i)->idleOb_x = enemies.At(i)->origin_x - PIXELS_TO_METERS(32 * 5);
-		}
-		else
-		{
-			enemies.At(i)->idleOb_x = enemies.At(i)->origin_x + PIXELS_TO_METERS(32 * 5);
+			if (enemies.At(i)->obLeft)
+			{
+				enemies.At(i)->idleOb_x = enemies.At(i)->origin_x - PIXELS_TO_METERS(32 * 5);
+			}
+			else
+			{
+				enemies.At(i)->idleOb_x = enemies.At(i)->origin_x + PIXELS_TO_METERS(32 * 5);
+			}
 		}
 	}
 
@@ -210,13 +213,22 @@ bool Enemies::PostUpdate()
 		{
 			for (size_t i = 0; i < enemies.Count(); i++)
 			{
-				if (enemies.At(i)->lookLeft)
+				if (enemies.At(i)->plan_to_delete)
 				{
-					app->render->DrawTexture(textureL, METERS_TO_PIXELS(enemies.At(i)->x), METERS_TO_PIXELS(enemies.At(i)->y), &rect);
+					app->physics->world->DestroyBody(enemies.At(i)->body);
+					enemies.At(i)->plan_to_delete = false;
 				}
-				else
+				
+				if (enemies.At(i)->state != ENEMY_STATE::DEATH)
 				{
-					app->render->DrawTexture(textureR, METERS_TO_PIXELS(enemies.At(i)->x), METERS_TO_PIXELS(enemies.At(i)->y), &rect);
+					if (enemies.At(i)->lookLeft)
+					{
+						app->render->DrawTexture(textureL, METERS_TO_PIXELS(enemies.At(i)->x), METERS_TO_PIXELS(enemies.At(i)->y), &rect);
+					}
+					else
+					{
+						app->render->DrawTexture(textureR, METERS_TO_PIXELS(enemies.At(i)->x), METERS_TO_PIXELS(enemies.At(i)->y), &rect);
+					}
 				}
 			}
 		}
@@ -483,6 +495,24 @@ void Enemies::CheckAirEnemy(Enemy* enemy, float dt)
 			enemy->body->SetLinearVelocity({ -enemy->speed * dt, 0 });
 			break;
 		default:
+			break;
+		}
+	}
+}
+
+void Enemies::KillEnemy(float x, float y)
+{
+	for (size_t i = 0; i < enemies.Count(); i++)
+	{
+		if (x + 1.5f > enemies.At(i)->x && x - 1.5f < enemies.At(i)->x && y + 2.0f > enemies.At(i)->y && y - 2.0f < enemies.At(i)->y)
+		{
+			if (enemies.At(i)->state != ENEMY_STATE::DEATH)
+			{
+				enemies.At(i)->state = ENEMY_STATE::DEATH;
+				enemies.At(i)->plan_to_delete = true;
+				app->player->player_body->ApplyForceToCenter({ 0, -23.5 * 17 }, true);
+			}
+			
 			break;
 		}
 	}

@@ -15,6 +15,8 @@ struct Coin
 	float x, y;
 
 	bool picked;
+
+	bool plan_to_delete = false;
 };
 
 class Coins : public Module

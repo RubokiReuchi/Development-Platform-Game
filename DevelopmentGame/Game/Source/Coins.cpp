@@ -49,8 +49,11 @@ bool Coins::PreUpdate()
 {
 	for (size_t i = 0; i < coins.Count(); i++)
 	{
-		coins.At(i)->x = coins.At(i)->body->GetPosition().x;
-		coins.At(i)->y = coins.At(i)->body->GetPosition().y;
+		if (!coins.At(i)->picked)
+		{
+			coins.At(i)->x = coins.At(i)->body->GetPosition().x;
+			coins.At(i)->y = coins.At(i)->body->GetPosition().y;
+		}
 	}
 
 	return true;
@@ -71,11 +74,19 @@ bool Coins::PostUpdate()
 
 	for (size_t i = 0; i < coins.Count(); i++)
 	{
+		if (coins.At(i)->plan_to_delete)
+		{
+			app->physics->world->DestroyBody(coins.At(i)->body);
+			coins.At(i)->plan_to_delete = false;
+
+		}
+
 		if (!coins.At(i)->picked)
 		{
 			SDL_Rect rect = currentAnimation->GetCurrentFrame();
 			app->render->DrawTexture(texture, METERS_TO_PIXELS(coins.At(i)->x), METERS_TO_PIXELS(coins.At(i)->y), &rect);
 		}
+		
 	}
 
 
@@ -126,8 +137,10 @@ void Coins::PickCoin(float x, float y)
 			{
 				ncoins++;
 				sprintf_s(numCoins, 4, "%03d", ncoins);
+				coins.At(i)->picked = true;
+				coins.At(i)->plan_to_delete = true;
 			}
-			coins.At(i)->picked = true;
+			
 			break;
 		}
 	}
