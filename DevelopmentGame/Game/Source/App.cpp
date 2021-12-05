@@ -12,6 +12,7 @@
 #include "Player.h"
 #include "Enemies.h"
 #include "Coins.h"
+#include "Hearts.h"
 #include "Fonts.h"
 #include "Menu.h"
 #include "Frontground.h"
@@ -39,6 +40,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	player = new Player();
 	enemies = new Enemies();
 	coins = new Coins();
+	hearts = new Hearts();
 	fonts = new Fonts();
 	menu = new Menu();
 	frontground = new Frontground();
@@ -58,6 +60,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(player);
 	AddModule(enemies);
 	AddModule(coins);
+	AddModule(hearts);
 	AddModule(fonts);
 	AddModule(menu);
 	AddModule(frontground);

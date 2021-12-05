@@ -40,6 +40,8 @@ bool Coins::Start()
 	texture = app->tex->Load("Assets/textures/Coin.png");
 
 	currentAnimation = &idleAnim;
+
+	sprintf_s(numCoins, 4, "%03d", ncoins);
 	
 	return true;
 }

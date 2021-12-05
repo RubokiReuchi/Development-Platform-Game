@@ -163,7 +163,8 @@ bool Player::Start()
 	jump_sound = app->audio->LoadFx("Assets/audio/fx/jump_sound.wav");
 
 	// player Save Data
-	
+	nlifes = 2;
+	sprintf_s(numLifes, 3, "%02d", nlifes);
 
 	// player
 	b2BodyDef p_body;
@@ -361,7 +362,15 @@ bool Player::Update(float dt)
 		if (death_cd <= 0)
 		{
 			// death screen
-			app->menu->dead = true;
+			if(nlifes <= 0)
+			{
+				app->menu->lose = true;
+			}
+			else
+			{
+				app->menu->dead = true;
+
+			}
 		}
 	}
 	else
@@ -426,15 +435,18 @@ bool Player::SaveState(pugi::xml_node& data)
 
 bool Player::Death()
 {
-	if (app->player->lookLeft)
+	nlifes--;
+	sprintf_s(numLifes, 3, "%02d", nlifes);
+
+	if (lookLeft)
 	{
 		deathAnimL.Reset();
-		app->player->currentAnimation = &app->player->deathAnimL;
+		currentAnimation = &deathAnimL;
 	}
 	else
 	{
 		deathAnimR.Reset();
-		app->player->currentAnimation = &app->player->deathAnimR;
+		currentAnimation = &deathAnimR;
 	}
 
 	return true;

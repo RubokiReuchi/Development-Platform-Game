@@ -36,6 +36,8 @@ public:
 
 	bool dead;
 
+	bool lose;
+
 private:
 	SDL_Rect r;
 	bool paused;

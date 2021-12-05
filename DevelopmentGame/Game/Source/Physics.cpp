@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "Enemies.h"
 #include "Coins.h"
+#include "Hearts.h"
 #include "Menu.h"
 #include "Frontground.h"
 
@@ -188,6 +189,11 @@ bool Physics::PostUpdate()
 						c_g = 50;
 						c_b = 50;
 						break;
+					case 10:
+						c_r = 100;
+						c_g = 100;
+						c_b = 100;
+						break;
 					default:
 						c_r = 0;
 						c_g = 0;
@@ -317,6 +323,11 @@ void Physics::BeginContact(b2Contact* contact)
 		{
 			// coin
 			app->coins->PickCoin(app->player->x, app->player->y);
+		}
+		else if ((int)fixtureUserDataB == 10)
+		{
+			// hearts
+			app->hearts->PickHeart(app->player->x, app->player->y);
 		}
 	}
 

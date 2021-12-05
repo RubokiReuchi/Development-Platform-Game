@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "Physics.h"
 #include "Coins.h"
+#include "Hearts.h"
 #include "Enemies.h"
 #include "Fonts.h"
 #include "Scene.h"
@@ -124,6 +125,11 @@ void Map::Draw()
 						{
 							// air enemies
 							app->enemies->CreateAirEnemy(pos.x, pos.y);
+						}
+						else if (mapLayerItem->data->properties.GetProperty("Collision") == 9)
+						{
+							// hearts
+							app->hearts->CreateHeart(pos.x, pos.y);
 						}
 					}
 				}

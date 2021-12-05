@@ -27,6 +27,7 @@
     <ClCompile Include="Source\Coins.cpp" />
     <ClCompile Include="Source\Fonts.cpp" />
     <ClCompile Include="Source\Enemies.cpp" />
+    <ClCompile Include="Source\Hearts.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Window.h" />
@@ -79,6 +80,7 @@
     <ClInclude Include="Source\Coins.h" />
     <ClInclude Include="Source\Fonts.h" />
     <ClInclude Include="Source\Enemies.h" />
+    <ClInclude Include="Source\Hearts.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">

@@ -33,6 +33,7 @@ bool Menu::Start()
 
 	paused = false;
 	dead = false;
+	lose = false;
 
 	pause_buttons[0].state = 1;
 	dead_buttons[0].state = 1;
@@ -116,7 +117,7 @@ bool Menu::PreUpdate()
 bool Menu::Update(float dt)
 {
 	// pause buttons
-	if (paused && !loading && !dead)
+	if (paused && !loading && !dead && !lose)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
 		{
@@ -166,6 +167,23 @@ bool Menu::Update(float dt)
 				loading = true;
 				break;
 			case 1:
+				return false;
+				break;
+			}
+
+			dead_buttons[chosed].state = 1;
+		}
+	}
+
+
+	//lose
+	if (lose && !loading)
+	{
+		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		{
+			switch (chosed)
+			{
+			case 0:
 				return false;
 				break;
 			}
@@ -229,6 +247,22 @@ bool Menu::PostUpdate()
 
 			app->render->DrawTexture(dead_buttons[i].tex, dead_buttons[i].rect.x + 10, dead_buttons[i].rect.y + 10);
 		}
+	}
+
+
+	if (lose)
+	{
+		app->render->DrawRectangle(r, 0, 0, 0, 200);
+
+		app->render->DrawTexture(gameOver, 0 + c_x, 75);
+		app->render->DrawTexture(cat, 950 + c_x, 800);
+
+		dead_buttons[1].rect.x = ((int)win_w / 2) - (dead_buttons[1].rect.w / 2) + c_x;
+		
+		app->render->DrawRectangle(dead_buttons[1].rect, inColorR, inColorG, inColorB);
+
+		app->render->DrawTexture(dead_buttons[1].tex, dead_buttons[1].rect.x + 10, dead_buttons[1].rect.y + 10);
+		
 	}
 
 	return true;

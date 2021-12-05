@@ -66,6 +66,9 @@ public:
 	bool lookLeft;
 	int death_cd = 120;
 
+	int nlifes = 0;
+	char numLifes[3] = { "\0" };
+
 };
 
 #endif

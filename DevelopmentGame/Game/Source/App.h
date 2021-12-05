@@ -25,6 +25,7 @@ class Physics;
 class Player;
 class Enemies;
 class Coins;
+class Hearts;
 class Fonts;
 class Menu;
 class Frontground;
@@ -106,6 +107,7 @@ public:
 	Player* player;
 	Enemies* enemies;
 	Coins* coins;
+	Hearts* hearts;
 	Fonts* fonts;
 	Menu* menu;
 	Frontground* frontground;
