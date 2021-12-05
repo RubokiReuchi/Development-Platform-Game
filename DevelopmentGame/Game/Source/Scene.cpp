@@ -137,6 +137,8 @@ bool Scene::PostUpdate()
 {
 	bool ret = true;
 
+	int c_x = -app->render->camera.x;
+
 	if (start_screen != NULL) 
 	{
 		app->render->DrawTexture(start_screen, 0, 0);
@@ -146,9 +148,9 @@ bool Scene::PostUpdate()
 		app->map->Draw();
 
 		//FALTA MIRAR LA POSICION
-		app->fonts->BlitText(2000, 0, textFont, "MONEDAS: ");
-		app->fonts->BlitText(2300, 0, textFont, app->coins->numCoins);
-		app->fonts->BlitText(2000, 40, textFont, "VIDAS: ");
+		app->fonts->BlitText(c_x + 30, 5, textFont, "MONEDAS: ");
+		app->fonts->BlitText(c_x + 330, 5, textFont, app->coins->numCoins);
+		app->fonts->BlitText(c_x + 30, 45, textFont, "VIDAS: ");
 	}
 	
 	if (app->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)

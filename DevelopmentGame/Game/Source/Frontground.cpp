@@ -88,7 +88,6 @@ bool Frontground::Update(float dt)
 bool Frontground::PostUpdate()
 {
 	int c_x = -app->render->camera.x;
-	r.x = c_x;
 
 	if (!press_e_hide)
 	{

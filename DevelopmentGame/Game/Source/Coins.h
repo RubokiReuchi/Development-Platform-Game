@@ -47,6 +47,7 @@ public:
 	void CreateCoin(int x, int y);
 
 	void PickCoin(float x, float y);
+
 	int ncoins = 0;
 	char numCoins[4] = { "\0" };
 
