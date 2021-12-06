@@ -71,8 +71,9 @@ public:
 	bool LoadState(pugi::xml_node&);
 	bool SaveState(pugi::xml_node&);
 
-	SDL_Texture* textureR = NULL;
-	SDL_Texture* textureL = NULL;
+	SDL_Texture* slime_textureR = NULL;
+	SDL_Texture* slime_textureL = NULL;
+	SDL_Texture* floper_texture = NULL;
 
 	DynArray<Enemy> enemies;
 
@@ -92,13 +93,9 @@ public:
 
 	void KillEnemy(float x, float y);
 	
-
-	Animation idleAnimR;
-	Animation idleAnimL;
-	Animation walkAnimR;
-	Animation walkAnimL;
-	Animation deathAnimL;
-	Animation deathAnimR;
+	Animation slime_walkAnimR;
+	Animation slime_walkAnimL;
+	Animation floper_walkAnim;
 
 };
 

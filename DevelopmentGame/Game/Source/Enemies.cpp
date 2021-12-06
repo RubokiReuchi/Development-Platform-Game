@@ -19,80 +19,31 @@
 Enemies::Enemies() : Module()
 {
 	name.Create("enemies");
-	int pix = 111;
+	int pix = 64;
 
-	// idle animation
-	idleAnimR.PushBack({ pix * 0, pix * 3, pix, pix });
-	idleAnimR.PushBack({ pix * 1, pix * 3, pix, pix });
-	idleAnimR.PushBack({ pix * 2, pix * 3, pix, pix });
-	idleAnimR.PushBack({ pix * 3, pix * 3, pix, pix });
-	idleAnimR.PushBack({ pix * 4, pix * 3, pix, pix });
-	idleAnimR.PushBack({ pix * 5, pix * 3, pix, pix });
-	idleAnimR.PushBack({ pix * 6, pix * 3, pix, pix });
-	idleAnimR.PushBack({ pix * 7, pix * 3, pix, pix });
-	idleAnimR.PushBack({ pix * 8, pix * 3, pix, pix });
-	idleAnimR.PushBack({ pix * 9, pix * 3, pix, pix });
-	idleAnimR.speed = 0.25f;
+	// walk slime
+	slime_walkAnimR.PushBack({ pix * 0, pix * 0, pix, pix });
+	slime_walkAnimR.PushBack({ pix * 1, pix * 0, pix, pix });
+	slime_walkAnimR.PushBack({ pix * 2, pix * 0, pix, pix });
+	slime_walkAnimR.PushBack({ pix * 3, pix * 0, pix, pix });
+	slime_walkAnimR.speed = 0.02f;
+	slime_walkAnimR.pingpong = true;
 
-	idleAnimL.PushBack({ pix * 9, pix * 3, pix, pix });
-	idleAnimL.PushBack({ pix * 8, pix * 3, pix, pix });
-	idleAnimL.PushBack({ pix * 7, pix * 3, pix, pix });
-	idleAnimL.PushBack({ pix * 6, pix * 3, pix, pix });
-	idleAnimL.PushBack({ pix * 5, pix * 3, pix, pix });
-	idleAnimL.PushBack({ pix * 4, pix * 3, pix, pix });
-	idleAnimL.PushBack({ pix * 3, pix * 3, pix, pix });
-	idleAnimL.PushBack({ pix * 2, pix * 3, pix, pix });
-	idleAnimL.PushBack({ pix * 1, pix * 3, pix, pix });
-	idleAnimL.PushBack({ pix * 0, pix * 3, pix, pix });
-	idleAnimL.speed = 0.25f;
+	slime_walkAnimL.PushBack({ pix * 0, pix * 0, pix, pix });
+	slime_walkAnimL.PushBack({ pix * 1, pix * 0, pix, pix });
+	slime_walkAnimL.PushBack({ pix * 2, pix * 0, pix, pix });
+	slime_walkAnimL.PushBack({ pix * 3, pix * 0, pix, pix });
+	slime_walkAnimL.speed = 0.02f;
+	slime_walkAnimL.pingpong = true;
 
-	// walk
-	walkAnimR.PushBack({ pix * 0, pix * 5, pix, pix });
-	walkAnimR.PushBack({ pix * 1, pix * 5, pix, pix });
-	walkAnimR.PushBack({ pix * 2, pix * 5, pix, pix });
-	walkAnimR.PushBack({ pix * 3, pix * 5, pix, pix });
-	walkAnimR.PushBack({ pix * 4, pix * 5, pix, pix });
-	walkAnimR.PushBack({ pix * 5, pix * 5, pix, pix });
-	walkAnimR.PushBack({ pix * 6, pix * 5, pix, pix });
-	walkAnimR.PushBack({ pix * 7, pix * 5, pix, pix });
-	walkAnimR.speed = 0.25f;
-
-	walkAnimL.PushBack({ pix * 7, pix * 5, pix, pix });
-	walkAnimL.PushBack({ pix * 6, pix * 5, pix, pix });
-	walkAnimL.PushBack({ pix * 5, pix * 5, pix, pix });
-	walkAnimL.PushBack({ pix * 4, pix * 5, pix, pix });
-	walkAnimL.PushBack({ pix * 3, pix * 5, pix, pix });
-	walkAnimL.PushBack({ pix * 2, pix * 5, pix, pix });
-	walkAnimL.PushBack({ pix * 1, pix * 5, pix, pix });
-	walkAnimL.PushBack({ pix * 0, pix * 5, pix, pix });
-	walkAnimL.speed = 0.25f;
-
-	// death
-	deathAnimR.PushBack({ pix * 0, pix * 0, pix, pix });
-	deathAnimR.PushBack({ pix * 1, pix * 0, pix, pix });
-	deathAnimR.PushBack({ pix * 2, pix * 0, pix, pix });
-	deathAnimR.PushBack({ pix * 3, pix * 0, pix, pix });
-	deathAnimR.PushBack({ pix * 4, pix * 0, pix, pix });
-	deathAnimR.PushBack({ pix * 5, pix * 0, pix, pix });
-	deathAnimR.PushBack({ pix * 6, pix * 0, pix, pix });
-	deathAnimR.PushBack({ pix * 7, pix * 0, pix, pix });
-	deathAnimR.PushBack({ pix * 8, pix * 0, pix, pix });
-	deathAnimR.PushBack({ pix * 9, pix * 0, pix, pix });
-	deathAnimR.loop = false;
-	deathAnimR.speed = 0.05f;
-
-	deathAnimL.PushBack({ pix * 9, pix * 0, pix, pix });
-	deathAnimL.PushBack({ pix * 8, pix * 0, pix, pix });
-	deathAnimL.PushBack({ pix * 7, pix * 0, pix, pix });
-	deathAnimL.PushBack({ pix * 6, pix * 0, pix, pix });
-	deathAnimL.PushBack({ pix * 5, pix * 0, pix, pix });
-	deathAnimL.PushBack({ pix * 4, pix * 0, pix, pix });
-	deathAnimL.PushBack({ pix * 3, pix * 0, pix, pix });
-	deathAnimL.PushBack({ pix * 2, pix * 0, pix, pix });
-	deathAnimL.PushBack({ pix * 1, pix * 0, pix, pix });
-	deathAnimL.PushBack({ pix * 0, pix * 0, pix, pix });
-	deathAnimL.loop = false;
-	deathAnimL.speed = 0.05f;
+	// walk floper
+	floper_walkAnim.PushBack({ pix * 0, pix * 0, pix, pix });
+	floper_walkAnim.PushBack({ pix * 1, pix * 0, pix, pix });
+	floper_walkAnim.PushBack({ pix * 2, pix * 0, pix, pix });
+	floper_walkAnim.PushBack({ pix * 3, pix * 0, pix, pix });
+	floper_walkAnim.PushBack({ pix * 4, pix * 0, pix, pix });
+	floper_walkAnim.PushBack({ pix * 5, pix * 0, pix, pix });
+	floper_walkAnim.speed = 0.02f;
 	
 }
 
@@ -111,8 +62,9 @@ bool Enemies::Awake()
 // Called before the first frame
 bool Enemies::Start()
 {
-	textureR = app->tex->Load("Assets/textures/Player.png");
-	textureL = app->tex->Load("Assets/textures/PlayerInv.png");
+	slime_textureR = app->tex->Load("Assets/textures/SlimeR.png");
+	slime_textureL = app->tex->Load("Assets/textures/SlimeL.png");
+	floper_texture = app->tex->Load("Assets/textures/Floper.png");
 
 	return true;
 }
@@ -165,6 +117,15 @@ bool Enemies::Update(float dt)
 			else if (en->state == ENEMY_STATE::RETURN)
 			{
 				EnemyReturning(enemies.At(i), dt);
+			}
+
+			if (enemies.At(i)->body->GetLinearVelocity().x >= 0)
+			{
+				enemies.At(i)->lookLeft = false;
+			}
+			else
+			{
+				enemies.At(i)->lookLeft = true;
 			}
 		}
 		else if (en->type == ENEMY_TYPE::AIR)
@@ -220,14 +181,22 @@ bool Enemies::PostUpdate()
 				
 				if (enemies.At(i)->state != ENEMY_STATE::DEATH)
 				{
-					if (enemies.At(i)->lookLeft)
+					if (enemies.At(i)->type == ENEMY_TYPE::GROUND)
 					{
-						app->render->DrawTexture(textureL, METERS_TO_PIXELS(enemies.At(i)->x), METERS_TO_PIXELS(enemies.At(i)->y), &rect);
+						if (enemies.At(i)->lookLeft)
+						{
+							app->render->DrawTexture(slime_textureL, METERS_TO_PIXELS(enemies.At(i)->x - (40)), METERS_TO_PIXELS(enemies.At(i)->y - (45)), &rect);
+						}
+						else
+						{
+							app->render->DrawTexture(slime_textureR, METERS_TO_PIXELS(enemies.At(i)->x - (40)), METERS_TO_PIXELS(enemies.At(i)->y - (45)), &rect);
+						}
 					}
-					else
+					else if (enemies.At(i)->type == ENEMY_TYPE::AIR)
 					{
-						app->render->DrawTexture(textureR, METERS_TO_PIXELS(enemies.At(i)->x), METERS_TO_PIXELS(enemies.At(i)->y), &rect);
+						app->render->DrawTexture(floper_texture, METERS_TO_PIXELS(enemies.At(i)->x - (30)), METERS_TO_PIXELS(enemies.At(i)->y - (35)), &rect);
 					}
+					
 				}
 			}
 		}
@@ -271,8 +240,6 @@ bool Enemies::LoadState(pugi::xml_node& data)
 
 			enemies.At(i)->body->SetTransform({ enemies.At(i)->x + PIXELS_TO_METERS(enemies.At(i)->w), enemies.At(i)->y }, enemies.At(i)->body->GetAngle());
 			enemies.At(i)->body->ApplyForceToCenter({ 0, 200 }, true);
-
-			enemies.At(i)->currentAnimation = &idleAnimR;
 		}
 		else
 		{
@@ -349,7 +316,7 @@ void Enemies::CreateGroundEnemy(float x, float y)
 
 	new_enemy->type = ENEMY_TYPE::GROUND;
 
-	new_enemy->currentAnimation = &idleAnimR;
+	new_enemy->currentAnimation = &slime_walkAnimR;
 
 	new_enemy->lookLeft = true;
 
@@ -402,7 +369,7 @@ void Enemies::CreateAirEnemy(float x, float y)
 
 	new_enemy->type = ENEMY_TYPE::AIR;
 
-	new_enemy->currentAnimation = &idleAnimR;
+	new_enemy->currentAnimation = &floper_walkAnim;
 
 	new_enemy->lookLeft = true;
 
