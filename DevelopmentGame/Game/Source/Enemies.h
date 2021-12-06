@@ -16,6 +16,7 @@ enum class ENEMY_STATE
 {
 	IDLE,
 	HUNT,
+	RETURN,
 	DEATH
 };
 
@@ -81,8 +82,13 @@ public:
 	void ReviveGroundEnemy(Enemy* enemy);
 	void ReviveAirEnemy(Enemy* enemy);
 
+	void MoveGroundEnemy(Enemy* enemy, float dt);
 	void MoveAirEnemy(Enemy* enemy, float dt);
 	void CheckAirEnemy(Enemy* enemy, float dt);
+	void CheckPlayer(Enemy* enemy);
+
+	void EnemyHunting(Enemy* enemy, float dt);
+	void EnemyReturning(Enemy* enemy, float dt);
 
 	void KillEnemy(float x, float y);
 	

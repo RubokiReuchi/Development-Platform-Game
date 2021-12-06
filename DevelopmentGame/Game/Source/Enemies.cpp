@@ -8,6 +8,7 @@
 #include "Physics.h"
 #include "Player.h"
 #include "Enemies.h"
+#include "Pathfinding.h"
 #include "Menu.h"
 
 #include "Defs.h"
@@ -154,49 +155,47 @@ bool Enemies::Update(float dt)
 		{
 			if (en->state == ENEMY_STATE::IDLE)
 			{
-				if (!en->obLeft)
-				{
-					if (en->x < en->idleOb_x)
-					{
-						enemies.At(i)->body->SetLinearVelocity({ en->speed * dt, en->body->GetLinearVelocity().y });
-						float ui = en->x;
-						float uii = en->idleOb_x;
-						int yd = 0;
-					}
-					else
-					{
-						enemies.At(i)->obLeft = true;
-					}
-					
-				}
-				else if (en->obLeft)
-				{
-					if (en->x > en->idleOb_x)
-					{
-						enemies.At(i)->body->SetLinearVelocity({ -en->speed * dt, en->body->GetLinearVelocity().y });
-					}
-					else
-					{
-						enemies.At(i)->obLeft = false;
-					}
-				}
+				MoveGroundEnemy(enemies.At(i), dt);
+				
+			}
+			else if (en->state == ENEMY_STATE::HUNT)
+			{
+				EnemyHunting(enemies.At(i), dt);
+			}
+			else if (en->state == ENEMY_STATE::RETURN)
+			{
+				EnemyReturning(enemies.At(i), dt);
 			}
 		}
 		else if (en->type == ENEMY_TYPE::AIR)
 		{
-			if (en->cd_air_enemy <= 0)
+			if (en->state == ENEMY_STATE::IDLE)
 			{
-				MoveAirEnemy(enemies.At(i), dt);
+				if (en->cd_air_enemy <= 0)
+				{
+					MoveAirEnemy(enemies.At(i), dt);
+				}
+				else
+				{
+					en->cd_air_enemy--;
+				}
+
+				CheckAirEnemy(enemies.At(i), dt);
 			}
-			else
+			else if (en->state == ENEMY_STATE::HUNT)
 			{
-				en->cd_air_enemy--;
+				EnemyHunting(enemies.At(i), dt);
 			}
-			
-			CheckAirEnemy(enemies.At(i), dt);
+			else if (en->state == ENEMY_STATE::RETURN)
+			{
+				EnemyReturning(enemies.At(i), dt);
+			}
 		}
 
-		
+		if (en->state != ENEMY_STATE::DEATH)
+		{
+			CheckPlayer(enemies.At(i));
+		}
 	}
 	
 	return true;
@@ -346,7 +345,7 @@ void Enemies::CreateGroundEnemy(float x, float y)
 	new_enemy->origin_y = PIXELS_TO_METERS(y);
 	new_enemy->x = PIXELS_TO_METERS(x);
 	new_enemy->y = PIXELS_TO_METERS(y);
-	new_enemy->speed = 0.1f;
+	new_enemy->speed = 0.05f;
 
 	new_enemy->type = ENEMY_TYPE::GROUND;
 
@@ -478,6 +477,33 @@ void Enemies::ReviveAirEnemy(Enemy* enemy)
 	enemy->state = ENEMY_STATE::IDLE;
 }
 
+void Enemies::MoveGroundEnemy(Enemy* enemy, float dt)
+{
+	if (!enemy->obLeft)
+	{
+		if (enemy->x < enemy->idleOb_x)
+		{
+			enemy->body->SetLinearVelocity({ enemy->speed * dt, enemy->body->GetLinearVelocity().y });
+		}
+		else
+		{
+			enemy->obLeft = true;
+		}
+
+	}
+	else if (enemy->obLeft)
+	{
+		if (enemy->x > enemy->idleOb_x)
+		{
+			enemy->body->SetLinearVelocity({ -enemy->speed * dt, enemy->body->GetLinearVelocity().y });
+		}
+		else
+		{
+			enemy->obLeft = false;
+		}
+	}
+}
+
 void Enemies::MoveAirEnemy(Enemy* enemy, float dt)
 {
 	int mov = rand() % 4;
@@ -591,14 +617,92 @@ void Enemies::KillEnemy(float x, float y)
 	{
 		if (x + 1.5f > enemies.At(i)->x && x - 1.5f < enemies.At(i)->x && y + 2.0f > enemies.At(i)->y && y - 2.0f < enemies.At(i)->y)
 		{
-			if (enemies.At(i)->state != ENEMY_STATE::DEATH)
-			{
-				enemies.At(i)->state = ENEMY_STATE::DEATH;
-				enemies.At(i)->plan_to_delete = true;
-				app->player->player_body->ApplyForceToCenter({ 0, -23.5 * 17 }, true);
-			}
+			enemies.At(i)->state = ENEMY_STATE::DEATH;
+			enemies.At(i)->plan_to_delete = true;
+			app->player->player_body->ApplyForceToCenter({ 0, -23.5f * app->GetDT() }, true);
 			
 			break;
 		}
 	}
+}
+
+void Enemies::CheckPlayer(Enemy* enemy)
+{
+	if (enemy->x + enemy->detectionRange > app->player->GetPosition().x && enemy->x - enemy->detectionRange < app->player->GetPosition().x
+		&& enemy->y + enemy->detectionRange > app->player->GetPosition().y && enemy->y - enemy->detectionRange < app->player->GetPosition().y)
+	{
+		if (enemy->state != ENEMY_STATE::HUNT)
+		{
+			enemy->state = ENEMY_STATE::HUNT;
+		}
+	}
+	else
+	{
+		if (enemy->state == ENEMY_STATE::HUNT)
+		{
+			enemy->state = ENEMY_STATE::RETURN;
+		}
+	}
+}
+
+void Enemies::EnemyHunting(Enemy* enemy, float dt)
+{
+	PathFinding* path = new PathFinding();
+	;
+	if (enemy->type == ENEMY_TYPE::GROUND)
+	{
+		path->CreatePath({ (int)enemy->x, 0 }, { (int)app->player->GetPosition().x, 0 });
+		int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
+
+		enemy->body->SetLinearVelocity({ (ob_x - enemy->x) * enemy->speed * dt, enemy->body->GetLinearVelocity().y });
+	}
+	else if(enemy->type == ENEMY_TYPE::AIR)
+	{
+		path->CreatePath({ (int)enemy->x, (int)enemy->y }, { (int)app->player->GetPosition().x, (int)app->player->GetPosition().y });
+		int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
+		int ob_y = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->y;
+
+		LOG("x = %d, y = %d", ob_x - enemy->x, ob_y - enemy->y);
+
+		enemy->body->SetLinearVelocity({ (ob_x - enemy->x) * enemy->speed* dt,  (ob_y - enemy->y) * enemy->speed * dt });
+	}
+	
+}
+
+void Enemies::EnemyReturning(Enemy* enemy, float dt)
+{
+	PathFinding* path = new PathFinding();
+	
+	if (enemy->type == ENEMY_TYPE::GROUND)
+	{
+		path->CreatePath({ (int)enemy->x, 0 }, { (int)enemy->origin_x, 0 });
+		int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
+		
+		enemy->body->SetLinearVelocity({ (ob_x - enemy->x) * enemy->speed * dt, enemy->body->GetLinearVelocity().y });
+
+		if (enemy->x + 1.5f > enemy->origin_x && enemy->x - 1.5f < enemy->origin_x)
+		{
+			enemy->state = ENEMY_STATE::IDLE;
+		}
+
+		if (enemy->y + 1.5f > enemy->origin_y || enemy->y - 1.5f < enemy->origin_y)
+		{
+			enemy->origin_x = enemy->x;
+			enemy->origin_y = enemy->y;
+		}
+	}
+	else if (enemy->type == ENEMY_TYPE::AIR)
+	{
+		path->CreatePath({ (int)enemy->x, (int)enemy->y }, { (int)enemy->origin_x, (int)enemy->origin_y });
+		int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
+		int ob_y = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->y;
+
+		enemy->body->SetLinearVelocity({ (ob_x - enemy->x) * enemy->speed * dt,  (ob_y - enemy->y) * enemy->speed * dt });
+
+		if (enemy->x + 1.5f > enemy->origin_x && enemy->x - 1.5f < enemy->origin_x && enemy->y + 2.0f > enemy->origin_y && enemy->y - 2.0f < enemy->origin_y)
+		{
+			enemy->state = ENEMY_STATE::IDLE;
+		}
+	}
+
 }

@@ -144,7 +144,11 @@ private:
 	float dt = 0.0f;
 
 	uint32 maxFrameRate;
-	PerfTimer* frameDuration;;
+	PerfTimer* frameDuration;
+
+public:
+	float GetDT();
+
 };
 
 extern App* app;

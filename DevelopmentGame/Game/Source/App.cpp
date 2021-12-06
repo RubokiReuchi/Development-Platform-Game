@@ -402,4 +402,7 @@ bool App::SaveGame()
 }
 
 
-
+float App::GetDT()
+{
+	return dt;
+}
