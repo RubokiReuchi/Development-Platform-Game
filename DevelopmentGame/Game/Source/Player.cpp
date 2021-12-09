@@ -137,6 +137,17 @@ Player::Player() : Module()
 	deathAnimL.loop = false;
 	deathAnimL.speed = 0.05f;
 
+	pix = 109;
+
+	readyAnim.PushBack({ pix * 0, pix * 0, pix, pix });
+	readyAnim.loop = false;
+
+	chargeAnim.PushBack({ pix * 1, pix * 0, pix, pix });
+	chargeAnim.PushBack({ pix * 2, pix * 0, pix, pix });
+	chargeAnim.PushBack({ pix * 3, pix * 0, pix, pix });
+	chargeAnim.PushBack({ pix * 4, pix * 0, pix, pix });
+	chargeAnim.loop = false;
+
 }
 
 // Destructor
@@ -193,6 +204,14 @@ bool Player::Start()
 	b2Fixture* sensorFixture = player_body->CreateFixture(&fixture);
 	sensorFixture->SetUserData((void*)2); // ground sensor
 
+	hab_tex = app->tex->Load("Assets/textures/HabilityMack.png");
+
+	habAnimation = &readyAnim;
+	hab_ready = true;
+	hab_cd = 60;
+	dashing = false;
+	dash_time = 3;
+
 	return true;
 }
 
@@ -214,144 +233,148 @@ bool Player::Update(float dt)
 	if (!app->menu->GetGameState() && (currentAnimation != &deathAnimL &&
 		currentAnimation != &deathAnimR) && !app->scene->GetStartScreenState())
 	{
-		// move left
-		if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+		if (!dashing)
 		{
-			player_body->SetLinearVelocity({ -fixedSpeed, player_body->GetLinearVelocity().y });
-			lookLeft = true;
-
-			if (currentAnimation != &walkAnimL && !inAir)
+			// move left
+			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 			{
-				walkAnimL.Reset();
-				currentAnimation = &walkAnimL;
-			}
+				player_body->SetLinearVelocity({ -fixedSpeed, player_body->GetLinearVelocity().y });
+				lookLeft = true;
 
-			//app->audio->PlayFx(walk_sound);
-		}
-		else if (app->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
-		{
-			player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
-
-			if (currentAnimation != &idleAnimL && !inAir)
-			{
-				idleAnimL.Reset();
-				currentAnimation = &idleAnimL;
-			}
-		}
-
-		//move right
-		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-		{
-			player_body->SetLinearVelocity({ fixedSpeed, player_body->GetLinearVelocity().y });
-			lookLeft = false;
-
-			if (currentAnimation != &walkAnimR && !inAir)
-			{
-				walkAnimR.Reset();
-				currentAnimation = &walkAnimR;
-			}
-		}
-		else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
-		{
-			player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
-
-			if (currentAnimation != &idleAnimR && !inAir)
-			{
-				idleAnimR.Reset();
-				currentAnimation = &idleAnimR;
-			}
-		}
-
-		if (!inAir && player_body->GetLinearVelocity().x != 0)
-		{
-			walk_cd--;
-			if (walk_cd <= 0)
-			{
-				app->audio->PlayFx(walk_sound);
-				walk_cd = 20;
-			}
-		}
-
-		//jump
-		if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-		{
-			if (!inAir)
-			{
-				player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
-				player_body->ApplyForceToCenter({ 0, -fixedJumpForce }, true);
-				app->audio->PlayFx(jump_sound);
-				inAir = true;
-			}
-			else if (djump)
-			{
-				player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
-				player_body->ApplyForceToCenter({ 0, -fixedJumpForce }, true);
-				app->audio->PlayFx(jump_sound);
-				djump = false;
-			}
-		}
-
-		if (player_body->GetLinearVelocity().y < 0 && inAir)
-		{
-			if (lookLeft)
-			{
-				if (currentAnimation != &jumpAnimL)
+				if (currentAnimation != &walkAnimL && !inAir)
 				{
-					jumpAnimL.Reset();
-					currentAnimation = &jumpAnimL;
+					walkAnimL.Reset();
+					currentAnimation = &walkAnimL;
 				}
-			}
-			else
-			{
-				if (currentAnimation != &jumpAnimR)
-				{
-					jumpAnimR.Reset();
-					currentAnimation = &jumpAnimR;
-				}
-			}
 
-		}
-		else if (player_body->GetLinearVelocity().y > 0 && inAir)
-		{
-			if (lookLeft)
-			{
-				if (currentAnimation != &fallAnimL)
-				{
-					fallAnimL.Reset();
-					currentAnimation = &fallAnimL;
-				}
+				//app->audio->PlayFx(walk_sound);
 			}
-			else
+			else if (app->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
 			{
-				if (currentAnimation != &fallAnimR)
-				{
-					fallAnimR.Reset();
-					currentAnimation = &fallAnimR;
-				}
-			}
-		}
-		else if (player_body->GetLinearVelocity().x == 0 && player_body->GetLinearVelocity().y == 0)
-		{
-			if (lookLeft)
-			{
-				if (currentAnimation != &idleAnimL)
+				player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
+
+				if (currentAnimation != &idleAnimL && !inAir)
 				{
 					idleAnimL.Reset();
 					currentAnimation = &idleAnimL;
 				}
 			}
-			else
+
+			//move right
+			if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 			{
-				if (currentAnimation != &idleAnimR)
+				player_body->SetLinearVelocity({ fixedSpeed, player_body->GetLinearVelocity().y });
+				lookLeft = false;
+
+				if (currentAnimation != &walkAnimR && !inAir)
+				{
+					walkAnimR.Reset();
+					currentAnimation = &walkAnimR;
+				}
+			}
+			else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
+			{
+				player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
+
+				if (currentAnimation != &idleAnimR && !inAir)
 				{
 					idleAnimR.Reset();
 					currentAnimation = &idleAnimR;
 				}
 			}
-		}
 
-		currentAnimation->Update();
+			if (!inAir && player_body->GetLinearVelocity().x != 0)
+			{
+				walk_cd--;
+				if (walk_cd <= 0)
+				{
+					app->audio->PlayFx(walk_sound);
+					walk_cd = 20;
+				}
+			}
+
+			//jump
+			if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+			{
+				if (!inAir)
+				{
+					player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
+					player_body->ApplyForceToCenter({ 0, -fixedJumpForce }, true);
+					app->audio->PlayFx(jump_sound);
+					inAir = true;
+				}
+				else if (djump)
+				{
+					player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
+					player_body->ApplyForceToCenter({ 0, -fixedJumpForce }, true);
+					app->audio->PlayFx(jump_sound);
+					djump = false;
+				}
+			}
+
+			if (player_body->GetLinearVelocity().y < 0 && inAir)
+			{
+				if (lookLeft)
+				{
+					if (currentAnimation != &jumpAnimL)
+					{
+						jumpAnimL.Reset();
+						currentAnimation = &jumpAnimL;
+					}
+				}
+				else
+				{
+					if (currentAnimation != &jumpAnimR)
+					{
+						jumpAnimR.Reset();
+						currentAnimation = &jumpAnimR;
+					}
+				}
+
+			}
+			else if (player_body->GetLinearVelocity().y > 0 && inAir)
+			{
+				if (lookLeft)
+				{
+					if (currentAnimation != &fallAnimL)
+					{
+						fallAnimL.Reset();
+						currentAnimation = &fallAnimL;
+					}
+				}
+				else
+				{
+					if (currentAnimation != &fallAnimR)
+					{
+						fallAnimR.Reset();
+						currentAnimation = &fallAnimR;
+					}
+				}
+			}
+			else if (player_body->GetLinearVelocity().x == 0 && player_body->GetLinearVelocity().y == 0)
+			{
+				if (lookLeft)
+				{
+					if (currentAnimation != &idleAnimL)
+					{
+						idleAnimL.Reset();
+						currentAnimation = &idleAnimL;
+					}
+				}
+				else
+				{
+					if (currentAnimation != &idleAnimR)
+					{
+						idleAnimR.Reset();
+						currentAnimation = &idleAnimR;
+					}
+				}
+			}
+
+			currentAnimation->Update();
+		}
 	}
+		
 
 	if (currentAnimation == &deathAnimL || currentAnimation == &deathAnimR)
 	{
@@ -376,6 +399,64 @@ bool Player::Update(float dt)
 	else
 	{
 		death_cd = 120;
+	}
+
+	//hability
+	if (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_DOWN)
+	{
+		if (hab_ready)
+		{
+			dashing = true;
+
+			// cast
+			if (lookLeft)
+			{
+				player_body->ApplyForceToCenter({ -2000 * speed * dt, 0 }, true);
+			}
+			else
+			{
+				player_body->ApplyForceToCenter({ 2000 * speed * dt, 0 }, true);
+			}
+
+			if (habAnimation != &chargeAnim)
+			{
+				chargeAnim.Reset();
+				habAnimation = &chargeAnim;
+			}
+			
+			hab_ready = false;
+
+		}
+	}
+
+	if (dashing)
+	{
+		dash_time--;
+
+		if (dash_time <= 0)
+		{
+			dashing = false;
+			dash_time = 3;
+			player_body->SetLinearVelocity({ 0, 0 });
+		}
+	}
+
+	if (!hab_ready)
+	{
+		hab_cd--;
+
+		if (hab_cd <= 0)
+		{
+			chargeAnim.Update();
+			hab_cd = 60;
+		}
+
+		if (chargeAnim.HasFinished())
+		{
+			hab_ready = true;
+			habAnimation = &readyAnim;
+			chargeAnim.loopCount = 0;
+		}
 	}
 
 	return true;

@@ -198,8 +198,6 @@ bool Menu::Update(float dt)
 // Called each loop iteration
 bool Menu::PostUpdate()
 {
-
-	
 	int c_x = -app->render->camera.x;
 	r.x = c_x;
 
@@ -263,6 +261,25 @@ bool Menu::PostUpdate()
 
 		app->render->DrawTexture(dead_buttons[1].tex, dead_buttons[1].rect.x + 10, dead_buttons[1].rect.y + 10);
 		
+	}
+
+	if (!paused && !dead && !lose)
+	{
+		SDL_Rect hab_rect = app->player->habAnimation->GetCurrentFrame();
+		uint win_w, win_h;
+		app->win->GetWindowSize(win_w, win_h);
+		int hab_h = 2 * win_h;
+
+		if (app->player->hab_ready)
+		{
+			app->render->DrawRectangle({ c_x + 20, hab_h - 129, 109, 109 }, 0, 0, 255);
+		}
+		else
+		{
+			app->render->DrawRectangle({ c_x + 20, hab_h - 129, 109, 109 }, 255, 0, 0);
+		}
+		
+		app->render->DrawTexture(app->player->hab_tex, c_x + 20, hab_h - 129, &hab_rect);
 	}
 
 	return true;

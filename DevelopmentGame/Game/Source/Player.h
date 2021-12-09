@@ -69,6 +69,18 @@ public:
 	int nlifes = 0;
 	char numLifes[3] = { "\0" };
 
+	// Hability
+	SDL_Texture* hab_tex = NULL;
+	Animation* habAnimation = NULL;
+
+	Animation readyAnim;
+	Animation chargeAnim;
+
+	bool hab_ready;
+	int hab_cd;
+	bool dashing;
+	int dash_time;
+
 };
 
 #endif
