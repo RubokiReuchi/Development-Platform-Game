@@ -263,7 +263,7 @@ bool Menu::PostUpdate()
 		
 	}
 
-	if (!paused && !dead && !lose)
+	if (!paused && !dead && !lose && !app->scene->GetStartScreenState())
 	{
 		SDL_Rect hab_rect = app->player->habAnimation->GetCurrentFrame();
 		uint win_w, win_h;

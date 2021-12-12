@@ -196,6 +196,14 @@ bool Enemies::PostUpdate()
 					{
 						app->render->DrawTexture(floper_texture, METERS_TO_PIXELS(enemies.At(i)->x - (30)), METERS_TO_PIXELS(enemies.At(i)->y - (35)), &rect);
 					}
+
+					if (enemies.At(i)->state == ENEMY_STATE::HUNT || enemies.At(i)->state == ENEMY_STATE::RETURN)
+					{
+						if (app->physics->debug)
+						{
+							app->pathfinding->DrawPath(enemies.At(i)->path_save, enemies.At(i));
+						}
+					}
 					
 				}
 			}
@@ -615,7 +623,7 @@ void Enemies::CheckPlayer(Enemy* enemy)
 void Enemies::EnemyHunting(Enemy* enemy, float dt)
 {
 	PathFinding* path = new PathFinding();
-	;
+
 	if (enemy->type == ENEMY_TYPE::GROUND)
 	{
 		path->CreatePath({ (int)enemy->x, 0 }, { (int)app->player->GetPosition().x, 0 });
@@ -633,7 +641,8 @@ void Enemies::EnemyHunting(Enemy* enemy, float dt)
 
 		enemy->body->SetLinearVelocity({ (ob_x - enemy->x) * enemy->speed* dt,  (ob_y - enemy->y) * enemy->speed * dt });
 	}
-	
+
+	enemy->path_save = path;
 }
 
 void Enemies::EnemyReturning(Enemy* enemy, float dt)
@@ -672,4 +681,5 @@ void Enemies::EnemyReturning(Enemy* enemy, float dt)
 		}
 	}
 
+	enemy->path_save = path;
 }

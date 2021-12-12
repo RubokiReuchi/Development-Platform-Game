@@ -47,6 +47,8 @@ struct Enemy {
 	int cd_air_enemy = 0;
 
 	bool plan_to_delete = false;
+
+	PathFinding* path_save;
 };
 
 class Enemies : public Module

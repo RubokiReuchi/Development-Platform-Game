@@ -10,6 +10,8 @@
 #define DEFAULT_PATH_LENGTH 50
 #define INVALID_WALK_CODE 255
 
+struct Enemy;
+
 class PathFinding : public Module
 {
 public:
@@ -40,6 +42,8 @@ public:
 	// Utility: return the walkability value of a tile
 	uchar GetTileAt(const iPoint& pos) const;
 
+	void DrawPath(PathFinding* path, Enemy* enemy);
+
 private:
 
 	// size of the map
@@ -51,6 +55,8 @@ private:
 
 	// we store the created path here
 	DynArray<iPoint> lastPath;
+
+	SDL_Texture* tileX = NULL;
 };
 
 // forward declaration
