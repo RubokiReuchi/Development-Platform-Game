@@ -92,6 +92,7 @@
     <ClCompile Include="Source\Background.cpp" />
     <ClCompile Include="Source\Coins.cpp" />
     <ClCompile Include="Source\Enemies.cpp" />
+    <ClCompile Include="Source\Entities.cpp" />
     <ClCompile Include="Source\Fonts.cpp" />
     <ClCompile Include="Source\Frontground.cpp" />
     <ClCompile Include="Source\Hearts.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="Source\Background.h" />
     <ClInclude Include="Source\Coins.h" />
     <ClInclude Include="Source\Enemies.h" />
+    <ClInclude Include="Source\Entities.h" />
     <ClInclude Include="Source\Fonts.h" />
     <ClInclude Include="Source\Frontground.h" />
     <ClInclude Include="Source\Hearts.h" />

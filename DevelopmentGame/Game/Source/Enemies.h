@@ -2,15 +2,10 @@
 #define __ENEMIES_H__
 
 #include "Module.h"
+#include "Entities.h"
 #include "Physics.h"
 #include "Animation.h"
 #include "DynArray.h"
-
-enum class ENEMY_TYPE
-{
-	GROUND,
-	AIR
-};
 
 enum class ENEMY_STATE
 {
@@ -20,15 +15,36 @@ enum class ENEMY_STATE
 	DEATH
 };
 
-struct Enemy {
-	b2Body* body;
+class Ground_Enemies : public Entity
+{
+public:
+	Ground_Enemies();
 
+	virtual ~Ground_Enemies();
+
+private:
+	void PreUpdate();
+
+	void Update(float dt);
+
+	void Draw();
+
+	void CreateGroundEnemy(float x, float y);
+	void ReviveGroundEnemy(Enemy* enemy);
+
+	void MoveGroundEnemy(Enemy* enemy, float dt);
+	void CheckPlayer(Enemy* enemy);
+
+	void EnemyHunting(Enemy* enemy, float dt);
+	void EnemyReturning(Enemy* enemy, float dt);
+
+	Animation slime_walkAnimR;
+	Animation slime_walkAnimL;
+
+public:
 	float origin_x, origin_y;
-	float x, y;
 	int w = 16, h = 16;
 	float speed;
-
-	ENEMY_TYPE type;
 
 	Animation* currentAnimation = NULL;
 
@@ -42,63 +58,62 @@ struct Enemy {
 	// only used in ground enemies
 	float idleOb_x;
 	bool obLeft;
-
-	// only used in air enemies
-	int cd_air_enemy = 0;
+	//
 
 	bool plan_to_delete = false;
 
 	PathFinding* path_save;
 };
 
-class Enemies : public Module
+class Air_Enemies : public Entity
 {
 public:
-	Enemies();
+	Air_Enemies();
 
-	virtual ~Enemies();
+	virtual ~Air_Enemies();
 
-	bool Awake();
+private:
+	void PreUpdate();
 
-	bool Start();
+	void Update(float dt);
 
-	bool PreUpdate();
-
-	bool Update(float dt);
-
-	bool PostUpdate();
-
-	bool CleanUp();
-
-	bool LoadState(pugi::xml_node&);
-	bool SaveState(pugi::xml_node&);
-
-	SDL_Texture* slime_textureR = NULL;
-	SDL_Texture* slime_textureL = NULL;
-	SDL_Texture* floper_texture = NULL;
+	void Draw();
 
 	DynArray<Enemy> enemies;
 
-	void CreateGroundEnemy(float x, float y);
 	void CreateAirEnemy(float x, float y);
-
-	void ReviveGroundEnemy(Enemy* enemy);
 	void ReviveAirEnemy(Enemy* enemy);
 
-	void MoveGroundEnemy(Enemy* enemy, float dt);
 	void MoveAirEnemy(Enemy* enemy, float dt);
 	void CheckAirEnemy(Enemy* enemy, float dt);
 	void CheckPlayer(Enemy* enemy);
 
 	void EnemyHunting(Enemy* enemy, float dt);
 	void EnemyReturning(Enemy* enemy, float dt);
-
-	void KillEnemy(float x, float y);
 	
-	Animation slime_walkAnimR;
-	Animation slime_walkAnimL;
 	Animation floper_walkAnim;
 
+public:
+	float origin_x, origin_y;
+	int w = 16, h = 16;
+	float speed;
+
+	Animation* currentAnimation = NULL;
+
+	bool lookLeft;
+
+	float detectionRange;
+	bool enemy_spoted;
+
+	ENEMY_STATE state;
+
+	// only used in air enemies
+	int cd_air_enemy = 0;
+	//
+
+	bool plan_to_delete = false;
+
+	PathFinding* path_save;
 };
 
 #endif

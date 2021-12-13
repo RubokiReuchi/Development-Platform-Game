@@ -16,9 +16,9 @@
 
 #include <time.h>
 
-Enemies::Enemies() : Module()
+// GROUND ENEMY
+Ground_Enemies::Ground_Enemies() : Entity()
 {
-	name.Create("enemies");
 	int pix = 64;
 
 	// walk slime
@@ -35,24 +35,15 @@ Enemies::Enemies() : Module()
 	slime_walkAnimL.PushBack({ pix * 3, pix * 0, pix, pix });
 	slime_walkAnimL.speed = 0.02f;
 	slime_walkAnimL.pingpong = true;
-
-	// walk floper
-	floper_walkAnim.PushBack({ pix * 0, pix * 0, pix, pix });
-	floper_walkAnim.PushBack({ pix * 1, pix * 0, pix, pix });
-	floper_walkAnim.PushBack({ pix * 2, pix * 0, pix, pix });
-	floper_walkAnim.PushBack({ pix * 3, pix * 0, pix, pix });
-	floper_walkAnim.PushBack({ pix * 4, pix * 0, pix, pix });
-	floper_walkAnim.PushBack({ pix * 5, pix * 0, pix, pix });
-	floper_walkAnim.speed = 0.02f;
 	
 }
 
 // Destructor
-Enemies::~Enemies()
+Ground_Enemies::~Ground_Enemies()
 {}
 
 // Called before render is available
-bool Enemies::Awake()
+/*bool Enemies::Awake()
 {
 	srand(time(NULL));
 
@@ -67,277 +58,142 @@ bool Enemies::Start()
 	floper_texture = app->tex->Load("Assets/textures/Floper.png");
 
 	return true;
-}
+}*/
 
 // Called each loop iteration
-bool Enemies::PreUpdate()
+void Ground_Enemies::PreUpdate()
 {
-	for (size_t i = 0; i < enemies.Count(); i++)
+	if (state != ENEMY_STATE::DEATH)
 	{
-		if (enemies.At(i)->state != ENEMY_STATE::DEATH)
+		position.x = body->GetPosition().x;
+		position.y = body->GetPosition().y;
+
+		if (obLeft)
 		{
-			enemies.At(i)->x = enemies.At(i)->body->GetPosition().x;
-			enemies.At(i)->y = enemies.At(i)->body->GetPosition().y;
-
-			if (enemies.At(i)->obLeft)
-			{
-				enemies.At(i)->idleOb_x = enemies.At(i)->origin_x - PIXELS_TO_METERS(32 * 5);
-			}
-			else
-			{
-				enemies.At(i)->idleOb_x = enemies.At(i)->origin_x + PIXELS_TO_METERS(32 * 5);
-			}
-		}
-	}
-
-	return true;
-}
-
-// Called each loop iteration
-bool Enemies::Update(float dt)
-{
-	for (size_t i = 0; i < enemies.Count(); i++)
-	{
-		Enemy* en = enemies.At(i);
-
-		en->currentAnimation->Update();
-
-		// update path
-		if (en->type == ENEMY_TYPE::GROUND)
-		{
-			if (en->state == ENEMY_STATE::IDLE)
-			{
-				MoveGroundEnemy(enemies.At(i), dt);
-				
-			}
-			else if (en->state == ENEMY_STATE::HUNT)
-			{
-				EnemyHunting(enemies.At(i), dt);
-			}
-			else if (en->state == ENEMY_STATE::RETURN)
-			{
-				EnemyReturning(enemies.At(i), dt);
-			}
-
-			if (enemies.At(i)->body->GetLinearVelocity().x >= 0)
-			{
-				enemies.At(i)->lookLeft = false;
-			}
-			else
-			{
-				enemies.At(i)->lookLeft = true;
-			}
-		}
-		else if (en->type == ENEMY_TYPE::AIR)
-		{
-			if (en->state == ENEMY_STATE::IDLE)
-			{
-				if (en->cd_air_enemy <= 0)
-				{
-					MoveAirEnemy(enemies.At(i), dt);
-				}
-				else
-				{
-					en->cd_air_enemy--;
-				}
-
-				CheckAirEnemy(enemies.At(i), dt);
-			}
-			else if (en->state == ENEMY_STATE::HUNT)
-			{
-				EnemyHunting(enemies.At(i), dt);
-			}
-			else if (en->state == ENEMY_STATE::RETURN)
-			{
-				EnemyReturning(enemies.At(i), dt);
-			}
-		}
-
-		if (en->state != ENEMY_STATE::DEATH)
-		{
-			CheckPlayer(enemies.At(i));
-		}
-	}
-	
-	return true;
-}
-
-// Called each loop iteration
-bool Enemies::PostUpdate()
-{
-	for (size_t i = 0; i < enemies.Count(); i++)
-	{
-		SDL_Rect rect = enemies.At(i)->currentAnimation->GetCurrentFrame();
-
-		if (!app->scene->GetStartScreenState())
-		{
-			for (size_t i = 0; i < enemies.Count(); i++)
-			{
-				if (enemies.At(i)->plan_to_delete)
-				{
-					app->physics->world->DestroyBody(enemies.At(i)->body);
-					enemies.At(i)->plan_to_delete = false;
-				}
-				
-				if (enemies.At(i)->state != ENEMY_STATE::DEATH)
-				{
-					if (enemies.At(i)->type == ENEMY_TYPE::GROUND)
-					{
-						if (enemies.At(i)->lookLeft)
-						{
-							app->render->DrawTexture(slime_textureL, METERS_TO_PIXELS(enemies.At(i)->x - (40)), METERS_TO_PIXELS(enemies.At(i)->y - (45)), &rect);
-						}
-						else
-						{
-							app->render->DrawTexture(slime_textureR, METERS_TO_PIXELS(enemies.At(i)->x - (40)), METERS_TO_PIXELS(enemies.At(i)->y - (45)), &rect);
-						}
-					}
-					else if (enemies.At(i)->type == ENEMY_TYPE::AIR)
-					{
-						app->render->DrawTexture(floper_texture, METERS_TO_PIXELS(enemies.At(i)->x - (30)), METERS_TO_PIXELS(enemies.At(i)->y - (35)), &rect);
-					}
-
-					if (enemies.At(i)->state == ENEMY_STATE::HUNT || enemies.At(i)->state == ENEMY_STATE::RETURN)
-					{
-						if (app->physics->debug)
-						{
-							app->pathfinding->DrawPath(enemies.At(i)->path_save, enemies.At(i));
-						}
-					}
-					
-				}
-			}
-		}
-	}
-	
-	return true;
-}
-
-// Called before quitting
-bool Enemies::CleanUp()
-{
-
-	return true;
-}
-
-bool Enemies::LoadState(pugi::xml_node& data)
-{
-	for (size_t i = 0; i < data.attribute("value").as_int(); i++)
-	{
-		std::string p = "position";
-		std::string s = std::to_string(i);
-		std::string t = p + s;
-		const char* c = t.c_str();
-
-		if (data.child(c).attribute("state").as_int() == 0)
-		{
-			if (enemies.At(i)->state == ENEMY_STATE::DEATH)
-			{
-				if (enemies.At(i)->type == ENEMY_TYPE::GROUND)
-				{
-					ReviveGroundEnemy(enemies.At(i));
-				}
-				else if (enemies.At(i)->type == ENEMY_TYPE::AIR)
-				{
-					ReviveAirEnemy(enemies.At(i));
-				}
-			}
-			
-			enemies.At(i)->x = data.child(c).attribute("x").as_int();
-			enemies.At(i)->y = data.child(c).attribute("y").as_int();
-
-			enemies.At(i)->body->SetTransform({ enemies.At(i)->x + PIXELS_TO_METERS(enemies.At(i)->w), enemies.At(i)->y }, enemies.At(i)->body->GetAngle());
-			enemies.At(i)->body->ApplyForceToCenter({ 0, 200 }, true);
+			idleOb_x = origin_x - PIXELS_TO_METERS(32 * 5);
 		}
 		else
 		{
-			enemies.At(i)->state = ENEMY_STATE::DEATH;
+			idleOb_x = origin_x + PIXELS_TO_METERS(32 * 5);
 		}
 	}
-
-	return true;
 }
 
-bool Enemies::SaveState(pugi::xml_node& data)
+// Called each loop iteration
+void Ground_Enemies::Update(float dt)
 {
-	for (size_t i = 0; i < enemies.Count(); i++)
+	currentAnimation->Update();
+
+	// update path
+	switch (state)
 	{
-		std::string p = "position";
-		std::string s = std::to_string(i);
-		std::string t = p + s;
-		const char* c = t.c_str();
+	case ENEMY_STATE::IDLE:
+		MoveGroundEnemy(enemies.At(i), dt);
+		break;
+	case ENEMY_STATE::HUNT:
+		EnemyHunting(enemies.At(i), dt);
+		break;
+	case ENEMY_STATE::RETURN:
+		EnemyReturning(enemies.At(i), dt);
+		break;
+	default:
+		break;
+	}
 
-		data.child(c).attribute("x").set_value(enemies.At(i)->x);
-		data.child(c).attribute("y").set_value(enemies.At(i)->y);
+	if (body->GetLinearVelocity().x >= 0)
+	{
+		lookLeft = false;
+	}
+	else
+	{
+		lookLeft = true;
+	}
 
-		if (enemies.At(i)->state != ENEMY_STATE::DEATH)
+	if (state != ENEMY_STATE::DEATH)
+	{
+		CheckPlayer(enemies.At(i));
+	}
+}
+
+// Called each loop iteration
+void Ground_Enemies::Draw()
+{
+	SDL_Rect rect = currentAnimation->GetCurrentFrame();
+
+	if (plan_to_delete)
+	{
+		app->physics->world->DestroyBody(body);
+		plan_to_delete = false;
+	}
+
+	if (state != ENEMY_STATE::DEATH)
+	{
+		if (lookLeft)
 		{
-			data.child(c).attribute("state").set_value("0");
+			app->render->DrawTexture(slime_textureL, METERS_TO_PIXELS(position.x - (40)), METERS_TO_PIXELS(position.y - (45)), &rect);
 		}
 		else
 		{
-			data.child(c).attribute("state").set_value("1");
+			app->render->DrawTexture(slime_textureR, METERS_TO_PIXELS(position.x - (40)), METERS_TO_PIXELS(position.y - (45)), &rect);
+		}
+
+		if (state == ENEMY_STATE::HUNT || state == ENEMY_STATE::RETURN)
+		{
+			if (app->physics->debug)
+			{
+				app->pathfinding->DrawPath(path_save, enemies.At(i));
+			}
 		}
 	}
-
-	data.attribute("value").set_value(enemies.Count());
-
-	return true;
 }
 
-void Enemies::CreateGroundEnemy(float x, float y)
+void Ground_Enemies::CreateGroundEnemy(float x, float y)
 {
-	Enemy* new_enemy = new Enemy();
-	
 	// body
 	b2BodyDef e_body;
 	e_body.type = b2_dynamicBody;
 	e_body.fixedRotation = true;
 	e_body.position.Set(PIXELS_TO_METERS(x), PIXELS_TO_METERS(y));
 
-	new_enemy->body = app->physics->world->CreateBody(&e_body);
-	new_enemy->body->SetFixedRotation(true);
+	body = app->physics->world->CreateBody(&e_body);
+	body->SetFixedRotation(true);
 
 	b2PolygonShape box;
-	box.SetAsBox(PIXELS_TO_METERS(new_enemy->w), PIXELS_TO_METERS(new_enemy->h));
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h));
 
 	b2FixtureDef fixture;
 	fixture.shape = &box;
 	fixture.density = 1.0f;
 	fixture.friction = 0.0f;
-	b2Fixture* bodyFixture = new_enemy->body->CreateFixture(&fixture);
+	b2Fixture* bodyFixture = body->CreateFixture(&fixture);
 	bodyFixture->SetSensor(false);
 	bodyFixture->SetUserData((void*)4);
 
 	// ground sensor
-	box.SetAsBox(PIXELS_TO_METERS((new_enemy->w)), PIXELS_TO_METERS(4), b2Vec2(0, PIXELS_TO_METERS(-20)), 0);
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(4), b2Vec2(0, PIXELS_TO_METERS(-20)), 0);
 	fixture.isSensor = true;
-	b2Fixture* sensorFixture = new_enemy->body->CreateFixture(&fixture);
+	b2Fixture* sensorFixture = body->CreateFixture(&fixture);
 	sensorFixture->SetUserData((void*)9); // hit sensor
 
 	// stats
-	new_enemy->origin_x = PIXELS_TO_METERS(x);
-	new_enemy->origin_y = PIXELS_TO_METERS(y);
-	new_enemy->x = PIXELS_TO_METERS(x);
-	new_enemy->y = PIXELS_TO_METERS(y);
-	new_enemy->speed = 0.05f;
+	origin_x = PIXELS_TO_METERS(x);
+	origin_y = PIXELS_TO_METERS(y);
+	position.x = PIXELS_TO_METERS(x);
+	position.y = PIXELS_TO_METERS(y);
+	speed = 0.05f;
 
-	new_enemy->type = ENEMY_TYPE::GROUND;
+	currentAnimation = &slime_walkAnimR;
 
-	new_enemy->currentAnimation = &slime_walkAnimR;
+	lookLeft = true;
 
-	new_enemy->lookLeft = true;
+	detectionRange = 5.0f;
+	enemy_spoted = false;
 
-	new_enemy->detectionRange = 5.0f;
-	new_enemy->enemy_spoted = false;
-
-	new_enemy->state = ENEMY_STATE::IDLE;
-	new_enemy->obLeft = false;
-
-	enemies.Insert(*new_enemy, enemies.Count());
+	state = ENEMY_STATE::IDLE;
+	obLeft = false;
 }
 
-void Enemies::CreateAirEnemy(float x, float y)
+/*void Enemies::CreateAirEnemy(float x, float y)
 {
 	Enemy* new_enemy = new Enemy();
 
@@ -387,40 +243,40 @@ void Enemies::CreateAirEnemy(float x, float y)
 	new_enemy->state = ENEMY_STATE::IDLE;
 	
 	enemies.Insert(*new_enemy, enemies.Count());
-}
+}*/
 
-void Enemies::ReviveGroundEnemy(Enemy* enemy)
+void Ground_Enemies::ReviveGroundEnemy()
 {
 	// body
 	b2BodyDef e_body;
 	e_body.type = b2_dynamicBody;
 	e_body.fixedRotation = true;
-	e_body.position.Set(PIXELS_TO_METERS(enemy->x), PIXELS_TO_METERS(enemy->y));
+	e_body.position.Set(PIXELS_TO_METERS(position.x), PIXELS_TO_METERS(position.y));
 
-	enemy->body = app->physics->world->CreateBody(&e_body);
-	enemy->body->SetFixedRotation(true);
+	body = app->physics->world->CreateBody(&e_body);
+	body->SetFixedRotation(true);
 
 	b2PolygonShape box;
-	box.SetAsBox(PIXELS_TO_METERS(enemy->w), PIXELS_TO_METERS(enemy->h));
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h));
 
 	b2FixtureDef fixture;
 	fixture.shape = &box;
 	fixture.density = 1.0f;
 	fixture.friction = 0.0f;
-	b2Fixture* bodyFixture = enemy->body->CreateFixture(&fixture);
+	b2Fixture* bodyFixture = body->CreateFixture(&fixture);
 	bodyFixture->SetSensor(false);
 	bodyFixture->SetUserData((void*)4); // player collision
 
 	// ground sensor
-	box.SetAsBox(PIXELS_TO_METERS((enemy->w)), PIXELS_TO_METERS(4), b2Vec2(0, PIXELS_TO_METERS(-20)), 0);
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(4), b2Vec2(0, PIXELS_TO_METERS(-20)), 0);
 	fixture.isSensor = true;
-	b2Fixture* sensorFixture = enemy->body->CreateFixture(&fixture);
+	b2Fixture* sensorFixture = body->CreateFixture(&fixture);
 	sensorFixture->SetUserData((void*)9); // ground sensor
 
-	enemy->state = ENEMY_STATE::IDLE;
+	state = ENEMY_STATE::IDLE;
 }
 
-void Enemies::ReviveAirEnemy(Enemy* enemy)
+/*void Enemies::ReviveAirEnemy(Enemy* enemy)
 {
 	// body
 	b2BodyDef e_body;
@@ -450,36 +306,36 @@ void Enemies::ReviveAirEnemy(Enemy* enemy)
 	sensorFixture->SetUserData((void*)9); // ground sensor
 
 	enemy->state = ENEMY_STATE::IDLE;
-}
+}*/
 
-void Enemies::MoveGroundEnemy(Enemy* enemy, float dt)
+void Ground_Enemies::MoveGroundEnemy(float dt)
 {
-	if (!enemy->obLeft)
+	if (!obLeft)
 	{
-		if (enemy->x < enemy->idleOb_x)
+		if (position.x < idleOb_x)
 		{
-			enemy->body->SetLinearVelocity({ enemy->speed * dt, enemy->body->GetLinearVelocity().y });
+			body->SetLinearVelocity({ speed * dt, body->GetLinearVelocity().y });
 		}
 		else
 		{
-			enemy->obLeft = true;
+			obLeft = true;
 		}
 
 	}
-	else if (enemy->obLeft)
+	else if (obLeft)
 	{
-		if (enemy->x > enemy->idleOb_x)
+		if (position.x > idleOb_x)
 		{
-			enemy->body->SetLinearVelocity({ -enemy->speed * dt, enemy->body->GetLinearVelocity().y });
+			body->SetLinearVelocity({ -speed * dt, body->GetLinearVelocity().y });
 		}
 		else
 		{
-			enemy->obLeft = false;
+			obLeft = false;
 		}
 	}
 }
 
-void Enemies::MoveAirEnemy(Enemy* enemy, float dt)
+/*void Enemies::MoveAirEnemy(Enemy* enemy, float dt)
 {
 	int mov = rand() % 4;
 
@@ -502,9 +358,9 @@ void Enemies::MoveAirEnemy(Enemy* enemy, float dt)
 	}
 
 	enemy->cd_air_enemy = 200;
-}
+}*/
 
-void Enemies::CheckAirEnemy(Enemy* enemy, float dt)
+/*void Enemies::CheckAirEnemy(Enemy* enemy, float dt)
 {
 	int mov = rand() % 3;
 	
@@ -584,54 +440,37 @@ void Enemies::CheckAirEnemy(Enemy* enemy, float dt)
 			break;
 		}
 	}
-}
+}*/
 
-void Enemies::KillEnemy(float x, float y)
+void Ground_Enemies::CheckPlayer()
 {
-	for (size_t i = 0; i < enemies.Count(); i++)
+	if (position.x + detectionRange > app->player->GetPosition().x && position.x - detectionRange < app->player->GetPosition().x
+		&& position.y + detectionRange > app->player->GetPosition().y && position.y - detectionRange < app->player->GetPosition().y)
 	{
-		if (x + 1.5f > enemies.At(i)->x && x - 1.5f < enemies.At(i)->x && y + 2.0f > enemies.At(i)->y && y - 2.0f < enemies.At(i)->y)
+		if (state != ENEMY_STATE::HUNT)
 		{
-			enemies.At(i)->state = ENEMY_STATE::DEATH;
-			enemies.At(i)->plan_to_delete = true;
-			app->player->player_body->ApplyForceToCenter({ 0, -23.5f * app->GetDT() }, true);
-			
-			break;
-		}
-	}
-}
-
-void Enemies::CheckPlayer(Enemy* enemy)
-{
-	if (enemy->x + enemy->detectionRange > app->player->GetPosition().x && enemy->x - enemy->detectionRange < app->player->GetPosition().x
-		&& enemy->y + enemy->detectionRange > app->player->GetPosition().y && enemy->y - enemy->detectionRange < app->player->GetPosition().y)
-	{
-		if (enemy->state != ENEMY_STATE::HUNT)
-		{
-			enemy->state = ENEMY_STATE::HUNT;
+			state = ENEMY_STATE::HUNT;
 		}
 	}
 	else
 	{
-		if (enemy->state == ENEMY_STATE::HUNT)
+		if (state == ENEMY_STATE::HUNT)
 		{
-			enemy->state = ENEMY_STATE::RETURN;
+			state = ENEMY_STATE::RETURN;
 		}
 	}
 }
 
-void Enemies::EnemyHunting(Enemy* enemy, float dt)
+void Ground_Enemies::EnemyHunting(float dt)
 {
 	PathFinding* path = new PathFinding();
 
-	if (enemy->type == ENEMY_TYPE::GROUND)
-	{
-		path->CreatePath({ (int)enemy->x, 0 }, { (int)app->player->GetPosition().x, 0 });
-		int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
+	path->CreatePath({ (int)position.x, 0 }, { (int)app->player->GetPosition().x, 0 });
+	int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
 
-		enemy->body->SetLinearVelocity({ (ob_x - enemy->x) * enemy->speed * dt, enemy->body->GetLinearVelocity().y });
-	}
-	else if(enemy->type == ENEMY_TYPE::AIR)
+	body->SetLinearVelocity({ (ob_x - position.x) * speed * dt, body->GetLinearVelocity().y });
+	
+/*else if (enemy->type == ENEMY_TYPE::AIR)
 	{
 		path->CreatePath({ (int)enemy->x, (int)enemy->y }, { (int)app->player->GetPosition().x, (int)app->player->GetPosition().y });
 		int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
@@ -640,12 +479,12 @@ void Enemies::EnemyHunting(Enemy* enemy, float dt)
 		LOG("x = %d, y = %d", ob_x - enemy->x, ob_y - enemy->y);
 
 		enemy->body->SetLinearVelocity({ (ob_x - enemy->x) * enemy->speed* dt,  (ob_y - enemy->y) * enemy->speed * dt });
-	}
+	}*/
 
-	enemy->path_save = path;
+	path_save = path;
 }
 
-void Enemies::EnemyReturning(Enemy* enemy, float dt)
+void Ground_Enemies::EnemyReturning(float dt)
 {
 	PathFinding* path = new PathFinding();
 	
