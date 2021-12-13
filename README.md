@@ -18,5 +18,12 @@ Life sistem with permanent game over
 HUD
 Hability with cooldown
 
+# Controls
+A - Move Left
+D - Move Right
+SPACE - Jump
+L_SHIFT - Dash hability
+
+
 # Link Github
 https://github.com/RubokiReuchi/Development-Platform-Game
