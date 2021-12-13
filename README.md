@@ -1,5 +1,5 @@
 # Credits
- Made by Rubén Ayora & Alejandro Giralt
+Made by Rubén Ayora & Alejandro Giralt  
  Grup name: Tensura_Dev
 
 # Features
