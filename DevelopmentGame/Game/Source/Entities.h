@@ -55,12 +55,16 @@ public:
 	bool LoadState(pugi::xml_node&);
 	bool SaveState(pugi::xml_node&);
 
-	Entity* CreateEntity(ENTITY_TYPE entity_type);
+	Entity* CreateEntity(ENTITY_TYPE entity_type, float x, float y);
 	void DestroyEntity(Entity* entity);
 
 	DynArray<Entity> entities;
 
 	void KillEnemy(fPoint pos);
+
+	SDL_Texture* slime_textureR = NULL;
+	SDL_Texture* slime_textureL = NULL;
+	SDL_Texture* floper_texture = NULL;
 	
 };
 

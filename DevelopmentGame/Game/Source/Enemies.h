@@ -22,6 +22,8 @@ public:
 
 	virtual ~Ground_Enemies();
 
+	void CreateGroundEnemy(float x, float y);
+
 private:
 	void PreUpdate();
 
@@ -29,14 +31,13 @@ private:
 
 	void Draw();
 
-	void CreateGroundEnemy(float x, float y);
-	void ReviveGroundEnemy(Enemy* enemy);
+	void ReviveGroundEnemy();
 
-	void MoveGroundEnemy(Enemy* enemy, float dt);
-	void CheckPlayer(Enemy* enemy);
+	void MoveGroundEnemy(float dt);
+	void CheckPlayer();
 
-	void EnemyHunting(Enemy* enemy, float dt);
-	void EnemyReturning(Enemy* enemy, float dt);
+	void EnemyHunting(float dt);
+	void EnemyReturning(float dt);
 
 	Animation slime_walkAnimR;
 	Animation slime_walkAnimL;
@@ -48,14 +49,13 @@ public:
 
 	Animation* currentAnimation = NULL;
 
-	bool lookLeft;
-
 	float detectionRange;
 	bool enemy_spoted;
 
 	ENEMY_STATE state;
 
 	// only used in ground enemies
+	bool lookLeft;
 	float idleOb_x;
 	bool obLeft;
 	//
@@ -72,6 +72,8 @@ public:
 
 	virtual ~Air_Enemies();
 
+	void CreateAirEnemy(float x, float y);
+
 private:
 	void PreUpdate();
 
@@ -79,17 +81,14 @@ private:
 
 	void Draw();
 
-	DynArray<Enemy> enemies;
+	void ReviveAirEnemy();
 
-	void CreateAirEnemy(float x, float y);
-	void ReviveAirEnemy(Enemy* enemy);
+	void MoveAirEnemy(float dt);
+	void CheckAirEnemy(float dt);
+	void CheckPlayer();
 
-	void MoveAirEnemy(Enemy* enemy, float dt);
-	void CheckAirEnemy(Enemy* enemy, float dt);
-	void CheckPlayer(Enemy* enemy);
-
-	void EnemyHunting(Enemy* enemy, float dt);
-	void EnemyReturning(Enemy* enemy, float dt);
+	void EnemyHunting(float dt);
+	void EnemyReturning(float dt);
 	
 	Animation floper_walkAnim;
 
@@ -99,8 +98,6 @@ public:
 	float speed;
 
 	Animation* currentAnimation = NULL;
-
-	bool lookLeft;
 
 	float detectionRange;
 	bool enemy_spoted;

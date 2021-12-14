@@ -4,7 +4,7 @@
 #include "Render.h"
 #include "Map.h"
 #include "Physics.h"
-#include "Enemies.h"
+#include "Entities.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -254,7 +254,7 @@ int PathFinding::CreatePath(const iPoint& origin, const iPoint& destination)
 	return ret;
 }
 
-void PathFinding::DrawPath(PathFinding* path, Enemy* enemy)
+void PathFinding::DrawPath(PathFinding* path, fPoint pos, ENTITY_TYPE type)
 {
 	if (tileX == NULL)
 	{
@@ -263,11 +263,11 @@ void PathFinding::DrawPath(PathFinding* path, Enemy* enemy)
 
 	for (uint i = 0; i < path->GetLastPath()->Count(); ++i)
 	{
-		if (enemy->type == ENEMY_TYPE::GROUND)
+		if (type == ENTITY_TYPE::GROUND_ENEMY)
 		{
-			app->render->DrawTexture(tileX, METERS_TO_PIXELS(path->GetLastPath()->At(i)->x), METERS_TO_PIXELS(enemy->y));
+			app->render->DrawTexture(tileX, METERS_TO_PIXELS(path->GetLastPath()->At(i)->x), METERS_TO_PIXELS(pos.y));
 		}
-		else if (enemy->type == ENEMY_TYPE::AIR)
+		else if (type == ENTITY_TYPE::AIR_ENEMY)
 		{
 			app->render->DrawTexture(tileX, METERS_TO_PIXELS(path->GetLastPath()->At(i)->x), METERS_TO_PIXELS(path->GetLastPath()->At(i)->y));
 		}
