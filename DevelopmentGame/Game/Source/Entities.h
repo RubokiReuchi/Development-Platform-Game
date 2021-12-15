@@ -6,10 +6,11 @@
 #include "Animation.h"
 #include "DynArray.h"
 #include "Point.h"
+#include "List.h"
 
 enum class ENTITY_TYPE
 {
-	PLAYER,
+	PLAYER = 0,
 	GROUND_ENEMY,
 	AIR_ENEMY
 };
@@ -24,6 +25,8 @@ public:
 	virtual void HandleInput(float dt);
 	virtual void Update(float dt);
 	virtual void Draw();
+
+	virtual void DeleteEntity();
 
 public:
 	ENTITY_TYPE entity_type;
@@ -55,10 +58,10 @@ public:
 	bool LoadState(pugi::xml_node&);
 	bool SaveState(pugi::xml_node&);
 
-	Entity* CreateEntity(ENTITY_TYPE entity_type, float x, float y);
+	void CreateEntity(ENTITY_TYPE entity_type, float x, float y);
 	void DestroyEntity(Entity* entity);
 
-	DynArray<Entity> entities;
+	List<Entity*> entities;
 
 	void KillEnemy(fPoint pos);
 

@@ -44,7 +44,7 @@ bool Entities::PreUpdate()
 {
 	for (size_t i = 0; i < entities.Count(); i++)
 	{
-		entities.At(i)->PreUpdate();
+		entities.At(i)->data->PreUpdate();
 	}
 
 	return true;
@@ -55,8 +55,8 @@ bool Entities::Update(float dt)
 {
 	for (size_t i = 0; i < entities.Count(); i++)
 	{
-		entities.At(i)->HandleInput(dt);
-		entities.At(i)->Update(dt);
+		entities.At(i)->data->HandleInput(dt);
+		entities.At(i)->data->Update(dt);
 	}
 
 	return true;
@@ -69,7 +69,7 @@ bool Entities::PostUpdate()
 	{
 		if (!app->scene->GetStartScreenState())
 		{
-			entities.At(i)->Draw();
+			entities.At(i)->data->Draw();
 		}
 	}
 
@@ -103,18 +103,19 @@ bool Entities::SaveState(pugi::xml_node& data)
 	return true;
 }
 
-Entity* Entities::CreateEntity(ENTITY_TYPE entity_type, float x, float y)
+void Entities::CreateEntity(ENTITY_TYPE entity_type, float x, float y)
 {
+	Entity* en = new Entity();
 	switch (entity_type)
 	{
 	case ENTITY_TYPE::PLAYER:
 		// create player
 		break;
 	case ENTITY_TYPE::GROUND_ENEMY:
-		Ground_Enemies::CreateGroundEnemy(x, y);
+		entities.Add(Ground_Enemies::CreateGroundEnemy(x, y));
 		break;
 	case ENTITY_TYPE::AIR_ENEMY:
-		Air_Enemies::CreateAirEnemy(x, y);
+		//entities.Add(static_cast<Air_Enemies*>(en)->CreateAirEnemy(x, y));
 		break;
 	default:
 		break;
@@ -128,15 +129,16 @@ void Entities::DestroyEntity(Entity* entity)
 
 void Entities::KillEnemy(fPoint pos)
 {
-	for (size_t i = 0; i < enemies.Count(); i++)
+	for (size_t i = 0; i < entities.Count(); i++)
 	{
-		if (pos.x + 1.5f > enemies.At(i)->x && pos.x - 1.5f < enemies.At(i)->x && pos.y + 2.0f > enemies.At(i)->y && pos.y - 2.0f < enemies.At(i)->y)
+		if (entities.At(i)->data->entity_type == ENTITY_TYPE::GROUND_ENEMY || entities.At(i)->data->entity_type == ENTITY_TYPE::AIR_ENEMY)
 		{
-			enemies.At(i)->state = ENEMY_STATE::DEATH;
-			enemies.At(i)->plan_to_delete = true;
-			app->player->player_body->ApplyForceToCenter({ 0, -23.5f * app->GetDT() }, true);
+			if (pos.x + 1.5f > entities.At(i)->data->position.x && pos.x - 1.5f < entities.At(i)->data->position.x && pos.y + 2.0f > entities.At(i)->data->position.y && pos.y - 2.0f < entities.At(i)->data->position.y)
+			{
+				entities.At(i)->data->DeleteEntity();
 
-			break;
+				break;
+			}
 		}
 	}
 }
@@ -157,6 +159,11 @@ void Entity::Update(float dt)
 }
 
 void Entity::Draw()
+{
+
+}
+
+void Entity::DeleteEntity()
 {
 
 }

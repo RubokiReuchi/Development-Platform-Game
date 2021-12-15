@@ -6,6 +6,7 @@
 #include "Point.h"
 #include "DynArray.h"
 #include "List.h"
+#include "Entities.h"
 
 #define DEFAULT_PATH_LENGTH 50
 #define INVALID_WALK_CODE 255

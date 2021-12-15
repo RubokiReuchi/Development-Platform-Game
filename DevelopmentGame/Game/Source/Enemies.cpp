@@ -129,7 +129,7 @@ void Ground_Enemies::Draw()
 	}
 }
 
-void Ground_Enemies::CreateGroundEnemy(float x, float y)
+Ground_Enemies* Ground_Enemies::CreateGroundEnemy(float x, float y)
 {
 	// body
 	b2BodyDef e_body;
@@ -173,6 +173,8 @@ void Ground_Enemies::CreateGroundEnemy(float x, float y)
 
 	state = ENEMY_STATE::IDLE;
 	obLeft = false;
+
+	return this;
 }
 
 void Ground_Enemies::ReviveGroundEnemy()
@@ -286,6 +288,13 @@ void Ground_Enemies::EnemyReturning(float dt)
 
 	path_save = path;
 }
+
+void Ground_Enemies::DeleteEntity()
+{
+	state = ENEMY_STATE::DEATH;
+	plan_to_delete = true;
+	app->player->player_body->ApplyForceToCenter({ 0, -23.5f * app->GetDT() }, true);
+}
 //
 //
 //
@@ -383,7 +392,7 @@ void Air_Enemies::Draw()
 	}
 }
 
-void Air_Enemies::CreateAirEnemy(float x, float y)
+Air_Enemies* Air_Enemies::CreateAirEnemy(float x, float y)
 {
 	// body
 	b2BodyDef e_body;
@@ -425,6 +434,8 @@ void Air_Enemies::CreateAirEnemy(float x, float y)
 	enemy_spoted = false;
 
 	state = ENEMY_STATE::IDLE;
+
+	return this;
 }
 
 void Air_Enemies::ReviveAirEnemy()
@@ -614,4 +625,11 @@ void Air_Enemies::EnemyReturning(float dt)
 	}
 
 	path_save = path;
+}
+
+void Air_Enemies::DeleteEntity()
+{
+	state = ENEMY_STATE::DEATH;
+	plan_to_delete = true;
+	app->player->player_body->ApplyForceToCenter({ 0, -23.5f * app->GetDT() }, true);
 }

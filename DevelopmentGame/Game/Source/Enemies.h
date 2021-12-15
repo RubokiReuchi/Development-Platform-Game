@@ -22,7 +22,7 @@ public:
 
 	virtual ~Ground_Enemies();
 
-	void CreateGroundEnemy(float x, float y);
+	Ground_Enemies* CreateGroundEnemy(float x, float y);
 
 private:
 	void PreUpdate();
@@ -38,6 +38,8 @@ private:
 
 	void EnemyHunting(float dt);
 	void EnemyReturning(float dt);
+
+	void DeleteEntity();
 
 	Animation slime_walkAnimR;
 	Animation slime_walkAnimL;
@@ -72,7 +74,7 @@ public:
 
 	virtual ~Air_Enemies();
 
-	void CreateAirEnemy(float x, float y);
+	Air_Enemies* CreateAirEnemy(float x, float y);
 
 private:
 	void PreUpdate();
@@ -89,6 +91,8 @@ private:
 
 	void EnemyHunting(float dt);
 	void EnemyReturning(float dt);
+
+	void DeleteEntity();
 	
 	Animation floper_walkAnim;
 

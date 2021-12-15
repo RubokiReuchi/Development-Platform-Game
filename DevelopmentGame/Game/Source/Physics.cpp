@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "Map.h"
 #include "Physics.h"
+#include "Entities.h"
 #include "Player.h"
 #include "Enemies.h"
 #include "Coins.h"
@@ -270,11 +271,11 @@ void Physics::BeginContact(b2Contact* contact)
 	{
 		if ((int)fixtureUserDataB == 4)
 		{
-			for (size_t i = 0; i < app->enemies->enemies.Count(); i++)
+			for (size_t i = 0; i < app->entities->entities.Count(); i++)
 			{
-				if (app->enemies->enemies.At(i)->type == ENEMY_TYPE::GROUND)
+				if (app->entities->entities.At(i)->data->entity_type == ENTITY_TYPE::GROUND_ENEMY)
 				{
-					app->enemies->enemies.At(i)->obLeft = !app->enemies->enemies.At(i)->obLeft;
+					static_cast<Ground_Enemies*>(app->entities->entities.At(i)->data)->obLeft = !static_cast<Ground_Enemies*>(app->entities->entities.At(i)->data)->obLeft;
 				}
 			}
 		}
@@ -287,7 +288,7 @@ void Physics::BeginContact(b2Contact* contact)
 		}
 		else if ((int)fixtureUserDataB == 9)
 		{
-			app->enemies->KillEnemy(app->player->x, app->player->y);
+			app->entities->KillEnemy(fPoint(app->player->x, app->player->y));
 		}
 	}
 	else if ((int)fixtureUserDataA == 1)
@@ -339,7 +340,7 @@ void Physics::BeginContact(b2Contact* contact)
 		}
 		else if ((int)fixtureUserDataA == 9)
 		{
-			app->enemies->KillEnemy(app->player->x, app->player->y);
+			app->entities->KillEnemy(fPoint(app->player->x, app->player->y));
 		}
 	}
 	else if ((int)fixtureUserDataB == 2)
