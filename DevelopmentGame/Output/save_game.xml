@@ -6,27 +6,27 @@
 	<audio />
 	<scene />
 	<renderer>
-		<camera x="0" y="0" />
+		<camera x="-1105" y="0" />
 	</renderer>
 	<player>
-		<position x="8" y="22.0156193" />
+		<position x="47.7081223" y="9.29602814" />
 	</player>
-	<enemies value="6">
-		<position0 x="32.6399994" y="22.3999996" state="0" />
-		<position1 x="49.2799988" y="9.59999943" state="0" />
-		<position2 x="66.5599976" y="26.2399998" state="0" />
-		<position3 x="71.0400009" y="16" state="0" />
-		<position4 x="14.7199993" y="5.75999975" state="0" />
-		<position5 x="96" y="12.1599998" state="0" />
-	</enemies>
+	<entities>
+		<entities0 x="68.1964951" y="16.3050041" state="0" />
+		<entities1 x="52.2488403" y="9.90500164" state="0" />
+		<entities2 x="66.0327911" y="26.5450058" state="0" />
+		<entities3 x="70.0156479" y="16.3050041" state="0" />
+		<entities4 x="11.5199995" y="3.03665733" state="0" />
+		<entities5 x="95.6298752" y="12.684639" state="0" />
+	</entities>
 	<coins value="62">
 		<position0 state="0" />
-		<position1 state="0" />
-		<position2 state="0" />
+		<position1 state="1" />
+		<position2 state="1" />
 		<position3 state="0" />
-		<position4 state="0" />
-		<position5 state="0" />
-		<position6 state="0" />
+		<position4 state="1" />
+		<position5 state="1" />
+		<position6 state="1" />
 		<position7 state="0" />
 		<position8 state="0" />
 		<position9 state="0" />

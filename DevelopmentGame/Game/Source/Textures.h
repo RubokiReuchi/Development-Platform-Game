@@ -35,6 +35,12 @@ public:
 public:
 
 	List<SDL_Texture*> textures;
+
+	// textures
+	SDL_Texture* slime_textureR = NULL;
+	SDL_Texture* slime_textureL = NULL;
+	SDL_Texture* floper_texture = NULL;
+	SDL_Texture* tileX = NULL;
 };
 
 

@@ -41,6 +41,12 @@ bool Textures::Start()
 {
 	LOG("start textures");
 	bool ret = true;
+
+	slime_textureR = app->tex->Load("Assets/textures/SlimeR.png");
+	slime_textureL = app->tex->Load("Assets/textures/SlimeL.png");
+	floper_texture = app->tex->Load("Assets/textures/Floper.png");
+	tileX = app->tex->Load("Assets/textures/x.png");
+
 	return ret;
 }
 

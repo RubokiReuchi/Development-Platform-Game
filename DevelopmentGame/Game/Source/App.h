@@ -130,7 +130,7 @@ private:
 
 	pugi::xml_document saveGame;
 		
-	PerfTimer ptimer;
+	PerfTimer* ptimer;
 
 	Timer startupTime;
 	Timer frameTime;
@@ -146,8 +146,12 @@ private:
 	uint32 maxFrameRate;
 	PerfTimer* frameDuration;
 
+	uint32 FPS;
+
 public:
 	float GetDT();
+
+	void ToggleFPS();
 
 };
 

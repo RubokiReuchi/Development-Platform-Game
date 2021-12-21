@@ -4,7 +4,7 @@
   <app>
     <title>Game Development Testbed</title>
     <organization>UPC</organization>
-    <frame_rate fps="60"/>
+    <frame_rate fps="16"/>
   </app>
 
   <renderer>

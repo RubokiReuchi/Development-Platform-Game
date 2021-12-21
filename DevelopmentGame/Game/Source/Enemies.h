@@ -22,14 +22,14 @@ public:
 
 	virtual ~Ground_Enemies();
 
-	Ground_Enemies* CreateGroundEnemy(float x, float y);
-
 private:
-	void PreUpdate();
+	void InitCustomEntity();
 
-	void Update(float dt);
+	bool PreUpdate();
 
-	void Draw();
+	bool Update(float dt);
+
+	bool Draw();
 
 	void ReviveGroundEnemy();
 
@@ -39,10 +39,13 @@ private:
 	void EnemyHunting(float dt);
 	void EnemyReturning(float dt);
 
-	void DeleteEntity();
+	bool DeleteEntity();
 
-	Animation slime_walkAnimR;
-	Animation slime_walkAnimL;
+	// load-save
+	bool Load(pugi::xml_node&);
+	bool Save(pugi::xml_node&);
+
+	void SwitchDirection();
 
 public:
 	float origin_x, origin_y;
@@ -56,15 +59,16 @@ public:
 
 	ENEMY_STATE state;
 
-	// only used in ground enemies
 	bool lookLeft;
 	float idleOb_x;
 	bool obLeft;
-	//
 
 	bool plan_to_delete = false;
 
-	PathFinding* path_save;
+	PathFinding* path_save = NULL;
+
+	Animation slime_walkAnimR;
+	Animation slime_walkAnimL;
 };
 
 class Air_Enemies : public Entity
@@ -74,14 +78,14 @@ public:
 
 	virtual ~Air_Enemies();
 
-	Air_Enemies* CreateAirEnemy(float x, float y);
-
 private:
-	void PreUpdate();
+	void InitCustomEntity();
 
-	void Update(float dt);
+	bool PreUpdate();
 
-	void Draw();
+	bool Update(float dt);
+
+	bool Draw();
 
 	void ReviveAirEnemy();
 
@@ -92,9 +96,15 @@ private:
 	void EnemyHunting(float dt);
 	void EnemyReturning(float dt);
 
-	void DeleteEntity();
-	
-	Animation floper_walkAnim;
+	bool DeleteEntity();
+
+	// load-save
+	bool Load(pugi::xml_node&);
+	bool Save(pugi::xml_node&);
+
+	// load-save
+	bool Load();
+	bool Save();
 
 public:
 	float origin_x, origin_y;
@@ -108,13 +118,13 @@ public:
 
 	ENEMY_STATE state;
 
-	// only used in air enemies
-	int cd_air_enemy = 0;
-	//
+	float cd_air_enemy = 0;
 
 	bool plan_to_delete = false;
 
-	PathFinding* path_save;
+	PathFinding* path_save = NULL;
+
+	Animation floper_walkAnim;
 };
 
 #endif

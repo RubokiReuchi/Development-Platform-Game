@@ -67,6 +67,9 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 
 	// Render last to swap buffer
 	AddModule(render);
+
+	ptimer = new PerfTimer();
+	frameDuration = new PerfTimer();
 }
 
 // Destructor
@@ -99,7 +102,8 @@ bool App::Awake()
 	{
 		title.Create(configApp.child("title").child_value());
 		win->SetTitle(title.GetString());
-		maxFrameRate = configApp.child("frame_rate").attribute("fps").as_int() * (16/60);
+		FPS = configApp.child("frame_rate").attribute("fps").as_int();
+		maxFrameRate = FPS;
 
 		ListItem<Module*>* item;
 		item = modules.start;
@@ -119,7 +123,6 @@ bool App::Start()
 {
 	startupTime.Start();
 	lastSecFrameTime.Start();
-	frameDuration = new PerfTimer();
 
 	bool ret = true;
 	ListItem<Module*>* item;
@@ -218,6 +221,8 @@ void App::FinishUpdate()
 	}
 
 	app->win->SetTitle(title);
+
+	maxFrameRate = FPS;
 }
 
 // Call modules before each loop iteration
@@ -405,4 +410,16 @@ bool App::SaveGame()
 float App::GetDT()
 {
 	return dt;
+}
+
+void App::ToggleFPS()
+{
+	if (FPS == 16)
+	{
+		FPS = 32;
+	}
+	else
+	{
+		FPS = 16;
+	}
 }

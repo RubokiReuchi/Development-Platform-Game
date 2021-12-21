@@ -37,6 +37,8 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
+	app->SaveGameRequest();
+
 	start_screen = app->tex->Load("Assets/textures/Start_screen.png");
 	
 	// Load music
@@ -108,6 +110,10 @@ bool Scene::Update(float dt)
 	else if (app->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN)
 	{
 		godmode = !godmode;
+	}
+	else if (app->input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN)
+	{
+		app->ToggleFPS();
 	}
 
 	// Draw map

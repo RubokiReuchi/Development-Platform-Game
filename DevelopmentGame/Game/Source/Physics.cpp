@@ -271,11 +271,17 @@ void Physics::BeginContact(b2Contact* contact)
 	{
 		if ((int)fixtureUserDataB == 4)
 		{
-			for (size_t i = 0; i < app->entities->entities.Count(); i++)
+			ListItem<Entity*>* item;
+			Entity* entity = NULL;
+			Ground_Enemies* g = NULL;
+
+			for (item = app->entities->entities.start; item != NULL; item = item->next)
 			{
-				if (app->entities->entities.At(i)->data->entity_type == ENTITY_TYPE::GROUND_ENEMY)
+				entity = item->data;
+
+				if (entity->entity_type == ENTITY_TYPE::GROUND_ENEMY)
 				{
-					static_cast<Ground_Enemies*>(app->entities->entities.At(i)->data)->obLeft = !static_cast<Ground_Enemies*>(app->entities->entities.At(i)->data)->obLeft;
+					entity->SwitchDirection();
 				}
 			}
 		}

@@ -21,12 +21,21 @@ public:
 	Entity() {}
 	~Entity() {}
 
-	virtual void PreUpdate();
-	virtual void HandleInput(float dt);
-	virtual void Update(float dt);
-	virtual void Draw();
+	void Init(ENTITY_TYPE type, fPoint p);
 
-	virtual void DeleteEntity();
+	virtual void InitCustomEntity();
+	virtual bool PreUpdate();
+	virtual void HandleInput(float dt);
+	virtual bool Update(float dt);
+	virtual bool Draw();
+	virtual bool DeleteEntity();
+
+	// load-save
+	virtual bool Load(pugi::xml_node&);
+	virtual bool Save(pugi::xml_node&);
+
+	// custom fuctions
+	virtual void SwitchDirection();
 
 public:
 	ENTITY_TYPE entity_type;
@@ -34,6 +43,12 @@ public:
 	fPoint position;
 
 	b2Body* body;
+
+	bool alive;
+
+	bool init;
+
+	int p_in_array;
 };
 
 class Entities : public Module
@@ -42,6 +57,8 @@ public:
 	Entities();
 
 	virtual ~Entities();
+
+	void AddEntity(Entity* entity, ENTITY_TYPE type, fPoint p);
 
 	bool Awake();
 
@@ -58,16 +75,15 @@ public:
 	bool LoadState(pugi::xml_node&);
 	bool SaveState(pugi::xml_node&);
 
+public:
 	void CreateEntity(ENTITY_TYPE entity_type, float x, float y);
 	void DestroyEntity(Entity* entity);
 
 	List<Entity*> entities;
 
-	void KillEnemy(fPoint pos);
+	int array_lenght = 0;
 
-	SDL_Texture* slime_textureR = NULL;
-	SDL_Texture* slime_textureL = NULL;
-	SDL_Texture* floper_texture = NULL;
+	void KillEnemy(fPoint pos);
 	
 };
 

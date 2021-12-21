@@ -42,8 +42,51 @@ Ground_Enemies::Ground_Enemies() : Entity()
 Ground_Enemies::~Ground_Enemies()
 {}
 
+void Ground_Enemies::InitCustomEntity()
+{
+	origin_x = position.x;
+	origin_y = position.y;
+	speed = 0.05f;
+
+	currentAnimation = &slime_walkAnimR;
+
+	lookLeft = true;
+
+	detectionRange = 5.0f;
+	enemy_spoted = false;
+
+	state = ENEMY_STATE::IDLE;
+	obLeft = false;
+
+	// body
+	b2BodyDef e_body;
+	e_body.type = b2_dynamicBody;
+	e_body.fixedRotation = true;
+	e_body.position.Set(position.x, position.y);
+
+	body = app->physics->world->CreateBody(&e_body);
+	body->SetFixedRotation(true);
+
+	b2PolygonShape box;
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h));
+
+	b2FixtureDef fixture;
+	fixture.shape = &box;
+	fixture.density = 1.0f;
+	fixture.friction = 0.0f;
+	b2Fixture* bodyFixture = body->CreateFixture(&fixture);
+	bodyFixture->SetSensor(false);
+	bodyFixture->SetUserData((void*)4);
+
+	// ground sensor
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(4), b2Vec2(0, PIXELS_TO_METERS(-20)), 0);
+	fixture.isSensor = true;
+	b2Fixture* sensorFixture = body->CreateFixture(&fixture);
+	sensorFixture->SetUserData((void*)9); // hit sensor
+}
+
 // Called each loop iteration
-void Ground_Enemies::PreUpdate()
+bool Ground_Enemies::PreUpdate()
 {
 	if (state != ENEMY_STATE::DEATH)
 	{
@@ -59,10 +102,12 @@ void Ground_Enemies::PreUpdate()
 			idleOb_x = origin_x + PIXELS_TO_METERS(32 * 5);
 		}
 	}
+
+	return true;
 }
 
 // Called each loop iteration
-void Ground_Enemies::Update(float dt)
+bool Ground_Enemies::Update(float dt)
 {
 	currentAnimation->Update();
 
@@ -95,10 +140,12 @@ void Ground_Enemies::Update(float dt)
 	{
 		CheckPlayer();
 	}
+
+	return true;
 }
 
 // Called each loop iteration
-void Ground_Enemies::Draw()
+bool Ground_Enemies::Draw()
 {
 	SDL_Rect rect = currentAnimation->GetCurrentFrame();
 
@@ -107,74 +154,32 @@ void Ground_Enemies::Draw()
 		app->physics->world->DestroyBody(body);
 		plan_to_delete = false;
 	}
-
+	
 	if (state != ENEMY_STATE::DEATH)
 	{
 		if (lookLeft)
 		{
-			app->render->DrawTexture(app->entities->slime_textureL, METERS_TO_PIXELS(position.x - (40)), METERS_TO_PIXELS(position.y - (45)), &rect);
+			app->render->DrawTexture(app->tex->slime_textureL, METERS_TO_PIXELS(position.x - (40)), METERS_TO_PIXELS(position.y - (45)), &rect);
 		}
 		else
 		{
-			app->render->DrawTexture(app->entities->slime_textureR, METERS_TO_PIXELS(position.x - (40)), METERS_TO_PIXELS(position.y - (45)), &rect);
+			app->render->DrawTexture(app->tex->slime_textureR, METERS_TO_PIXELS(position.x - (40)), METERS_TO_PIXELS(position.y - (45)), &rect);
 		}
 
 		if (state == ENEMY_STATE::HUNT || state == ENEMY_STATE::RETURN)
 		{
-			if (app->physics->debug)
+			if (app->physics->debug && path_save)
 			{
 				app->pathfinding->DrawPath(path_save, position, ENTITY_TYPE::GROUND_ENEMY);
 			}
 		}
 	}
-}
+	else
+	{
+		alive = false;
+	}
 
-Ground_Enemies* Ground_Enemies::CreateGroundEnemy(float x, float y)
-{
-	// body
-	b2BodyDef e_body;
-	e_body.type = b2_dynamicBody;
-	e_body.fixedRotation = true;
-	e_body.position.Set(PIXELS_TO_METERS(x), PIXELS_TO_METERS(y));
-
-	body = app->physics->world->CreateBody(&e_body);
-	body->SetFixedRotation(true);
-
-	b2PolygonShape box;
-	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h));
-
-	b2FixtureDef fixture;
-	fixture.shape = &box;
-	fixture.density = 1.0f;
-	fixture.friction = 0.0f;
-	b2Fixture* bodyFixture = body->CreateFixture(&fixture);
-	bodyFixture->SetSensor(false);
-	bodyFixture->SetUserData((void*)4);
-
-	// ground sensor
-	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(4), b2Vec2(0, PIXELS_TO_METERS(-20)), 0);
-	fixture.isSensor = true;
-	b2Fixture* sensorFixture = body->CreateFixture(&fixture);
-	sensorFixture->SetUserData((void*)9); // hit sensor
-
-	// stats
-	origin_x = PIXELS_TO_METERS(x);
-	origin_y = PIXELS_TO_METERS(y);
-	position.x = PIXELS_TO_METERS(x);
-	position.y = PIXELS_TO_METERS(y);
-	speed = 0.05f;
-
-	currentAnimation = &slime_walkAnimR;
-
-	lookLeft = true;
-
-	detectionRange = 5.0f;
-	enemy_spoted = false;
-
-	state = ENEMY_STATE::IDLE;
-	obLeft = false;
-
-	return this;
+	return true;
 }
 
 void Ground_Enemies::ReviveGroundEnemy()
@@ -183,7 +188,7 @@ void Ground_Enemies::ReviveGroundEnemy()
 	b2BodyDef e_body;
 	e_body.type = b2_dynamicBody;
 	e_body.fixedRotation = true;
-	e_body.position.Set(PIXELS_TO_METERS(position.x), PIXELS_TO_METERS(position.y));
+	e_body.position.Set(position.x, position.y);
 
 	body = app->physics->world->CreateBody(&e_body);
 	body->SetFixedRotation(true);
@@ -257,11 +262,20 @@ void Ground_Enemies::CheckPlayer()
 void Ground_Enemies::EnemyHunting(float dt)
 {
 	PathFinding* path = new PathFinding();
+	float dist;
 
 	path->CreatePath({ (int)position.x, 0 }, { (int)app->player->GetPosition().x, 0 });
 	int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
 
-	body->SetLinearVelocity({ (ob_x - position.x) * speed * dt, body->GetLinearVelocity().y });
+	if ((ob_x - position.x) > 0)
+	{
+		dist = 1.5f;
+	}
+	else
+	{
+		dist = -1.5f;
+	}
+	body->SetLinearVelocity({ dist * speed * dt, body->GetLinearVelocity().y });
 
 	path_save = path;
 }
@@ -289,11 +303,69 @@ void Ground_Enemies::EnemyReturning(float dt)
 	path_save = path;
 }
 
-void Ground_Enemies::DeleteEntity()
+bool Ground_Enemies::DeleteEntity()
 {
 	state = ENEMY_STATE::DEATH;
 	plan_to_delete = true;
-	app->player->player_body->ApplyForceToCenter({ 0, -23.5f * app->GetDT() }, true);
+	app->player->player_body->SetLinearVelocity({ app->player->player_body->GetLinearVelocity().x , 0 });
+	app->player->player_body->ApplyForceToCenter({ 0, -25.0f * app->GetDT() }, true);
+
+	return true;
+}
+
+bool Ground_Enemies::Load(pugi::xml_node& data)
+{
+	std::string p = "entities";
+	std::string s = std::to_string(p_in_array);
+	std::string t = p + s;
+	const char* c = t.c_str();
+	
+	if (data.child(c).attribute("state").as_int() == 0)
+	{
+		if (state == ENEMY_STATE::DEATH)
+		{
+			ReviveGroundEnemy();
+		}
+
+		position.x = data.child(c).attribute("x").as_int();
+		position.y = data.child(c).attribute("y").as_int();
+
+		body->SetTransform({ position.x + PIXELS_TO_METERS(w), position.y }, body->GetAngle());
+		body->ApplyForceToCenter({ 0, 1 }, true);
+	}
+	else
+	{
+		state = ENEMY_STATE::DEATH;
+	}
+
+	return true;
+}
+
+bool Ground_Enemies::Save(pugi::xml_node& data)
+{
+	std::string p = "entities";
+	std::string s = std::to_string(p_in_array);
+	std::string t = p + s;
+	const char* c = t.c_str();
+
+	data.child(c).attribute("x").set_value(position.x);
+	data.child(c).attribute("y").set_value(position.y);
+
+	if (state != ENEMY_STATE::DEATH)
+	{
+		data.child(c).attribute("state").set_value("0");
+	}
+	else
+	{
+		data.child(c).attribute("state").set_value("1");
+	}
+
+	return true;
+}
+
+void Ground_Enemies::SwitchDirection()
+{
+	obLeft = !obLeft;
 }
 //
 //
@@ -321,21 +393,64 @@ Air_Enemies::Air_Enemies() : Entity()
 Air_Enemies::~Air_Enemies()
 {}
 
+void Air_Enemies::InitCustomEntity()
+{
+	origin_x = position.x;
+	origin_y = position.y;
+	speed = 0.05f;
+
+	currentAnimation = &floper_walkAnim;
+
+	detectionRange = 5.0f;
+	enemy_spoted = false;
+
+	state = ENEMY_STATE::IDLE;
+
+	// body
+	b2BodyDef e_body;
+	e_body.type = b2_dynamicBody;
+	e_body.fixedRotation = true;
+	e_body.position.Set(position.x, position.y);
+	e_body.gravityScale = 0.0f;
+
+	body = app->physics->world->CreateBody(&e_body);
+	body->SetFixedRotation(true);
+
+	b2PolygonShape box;
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h));
+
+	b2FixtureDef fixture;
+	fixture.shape = &box;
+	fixture.density = 1.0f;
+	fixture.friction = 0.0f;
+	b2Fixture* bodyFixture = body->CreateFixture(&fixture);
+	bodyFixture->SetSensor(false);
+	bodyFixture->SetUserData((void*)4);
+
+	// ground sensor
+	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(4), b2Vec2(0, PIXELS_TO_METERS(-20)), 0);
+	fixture.isSensor = true;
+	b2Fixture* sensorFixture = body->CreateFixture(&fixture);
+	sensorFixture->SetUserData((void*)9); // hit sensor
+}
+
 // Called each loop iteration
-void Air_Enemies::PreUpdate()
+bool Air_Enemies::PreUpdate()
 {
 	if (state != ENEMY_STATE::DEATH)
 	{
 		position.x = body->GetPosition().x;
 		position.y = body->GetPosition().y;
 	}
+
+	return true;
 }
 
 // Called each loop iteration
-void Air_Enemies::Update(float dt)
+bool Air_Enemies::Update(float dt)
 {
 	currentAnimation->Update();
-
+	
 	// update path
 	switch (state)
 	{
@@ -343,10 +458,11 @@ void Air_Enemies::Update(float dt)
 		if (cd_air_enemy <= 0)
 		{
 			MoveAirEnemy(dt);
+			int u = 0;
 		}
 		else
 		{
-			cd_air_enemy--;
+			cd_air_enemy -= dt;
 		}
 
 		CheckAirEnemy(dt);
@@ -365,10 +481,12 @@ void Air_Enemies::Update(float dt)
 	{
 		CheckPlayer();
 	}
+
+	return true;
 }
 
 // Called each loop iteration
-void Air_Enemies::Draw()
+bool Air_Enemies::Draw()
 {
 	SDL_Rect rect = currentAnimation->GetCurrentFrame();
 
@@ -380,62 +498,22 @@ void Air_Enemies::Draw()
 
 	if (state != ENEMY_STATE::DEATH)
 	{
-		app->render->DrawTexture(app->entities->floper_texture, METERS_TO_PIXELS(position.x - (30)), METERS_TO_PIXELS(position.y - (35)), &rect);
+		app->render->DrawTexture(app->tex->floper_texture, METERS_TO_PIXELS(position.x - (30)), METERS_TO_PIXELS(position.y - (35)), &rect);
 
 		if (state == ENEMY_STATE::HUNT || state == ENEMY_STATE::RETURN)
 		{
-			if (app->physics->debug)
+			if (app->physics->debug && path_save)
 			{
 				app->pathfinding->DrawPath(path_save, position, ENTITY_TYPE::AIR_ENEMY);
 			}
 		}
 	}
-}
+	else
+	{
+		alive = false;
+	}
 
-Air_Enemies* Air_Enemies::CreateAirEnemy(float x, float y)
-{
-	// body
-	b2BodyDef e_body;
-	e_body.type = b2_dynamicBody;
-	e_body.fixedRotation = true;
-	e_body.position.Set(PIXELS_TO_METERS(x), PIXELS_TO_METERS(y));
-	e_body.gravityScale = 0.0f;
-
-	body = app->physics->world->CreateBody(&e_body);
-	body->SetFixedRotation(true);
-
-	b2PolygonShape box;
-	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h));
-
-	b2FixtureDef fixture;
-	fixture.shape = &box;
-	fixture.density = 1.0f;
-	fixture.friction = 0.0f;
-	b2Fixture* bodyFixture = body->CreateFixture(&fixture);
-	bodyFixture->SetSensor(false);
-	bodyFixture->SetUserData((void*)4); // player collision
-
-	// ground sensor
-	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(4), b2Vec2(0, PIXELS_TO_METERS(-20)), 0);
-	fixture.isSensor = true;
-	b2Fixture* sensorFixture = body->CreateFixture(&fixture);
-	sensorFixture->SetUserData((void*)9); // ground sensor
-
-	// stats
-	origin_x = PIXELS_TO_METERS(x);
-	origin_y = PIXELS_TO_METERS(y);
-	position.x = PIXELS_TO_METERS(x);
-	position.y = PIXELS_TO_METERS(y);
-	speed = 0.05f;
-
-	currentAnimation = &floper_walkAnim;
-
-	detectionRange = 5.0f;
-	enemy_spoted = false;
-
-	state = ENEMY_STATE::IDLE;
-
-	return this;
+	return true;
 }
 
 void Air_Enemies::ReviveAirEnemy()
@@ -492,12 +570,12 @@ void Air_Enemies::MoveAirEnemy(float dt)
 		break;
 	}
 
-	cd_air_enemy = 200;
+	cd_air_enemy = 3200;
 }
 
 void Air_Enemies::CheckAirEnemy(float dt)
 {
-	int mov = rand() % 3;
+	int mov = 0;//rand() % 3;
 
 	if (position.y + PIXELS_TO_METERS(32 * 5) < origin_y) // up
 	{
@@ -599,12 +677,32 @@ void Air_Enemies::CheckPlayer()
 void Air_Enemies::EnemyHunting(float dt)
 {
 	PathFinding* path = new PathFinding();
+	float distx;
+	float disty;
 
 	path->CreatePath({ (int)position.x, (int)position.y }, { (int)app->player->GetPosition().x, (int)app->player->GetPosition().y });
 	int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
 	int ob_y = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->y;
 
-	body->SetLinearVelocity({ (ob_x - position.x) * speed * dt,  (ob_y - position.y) * speed * dt });
+	if ((ob_x - position.x) > 0)
+	{
+		distx = 1.5f;
+	}
+	else
+	{
+		distx = -1.5f;
+	}
+
+	if ((ob_y - position.y) > 0)
+	{
+		disty = 1.5f;
+	}
+	else
+	{
+		disty = -1.5f;
+	}
+
+	body->SetLinearVelocity({ distx * speed * dt,  disty * speed * dt });
 
 	path_save = path;
 }
@@ -627,9 +725,61 @@ void Air_Enemies::EnemyReturning(float dt)
 	path_save = path;
 }
 
-void Air_Enemies::DeleteEntity()
+bool Air_Enemies::DeleteEntity()
 {
 	state = ENEMY_STATE::DEATH;
 	plan_to_delete = true;
-	app->player->player_body->ApplyForceToCenter({ 0, -23.5f * app->GetDT() }, true);
+	app->player->player_body->ApplyForceToCenter({ 0, -25.0f * app->GetDT() }, true);
+
+	return true;
+}
+
+bool Air_Enemies::Load(pugi::xml_node& data)
+{
+	std::string p = "entities";
+	std::string s = std::to_string(p_in_array);
+	std::string t = p + s;
+	const char* c = t.c_str();
+
+	if (data.child(c).attribute("state").as_int() == 0)
+	{
+		if (state == ENEMY_STATE::DEATH)
+		{
+			ReviveAirEnemy();
+		}
+
+		position.x = data.child(c).attribute("x").as_int();
+		position.y = data.child(c).attribute("y").as_int();
+
+		body->SetTransform({ position.x + PIXELS_TO_METERS(w), position.y }, body->GetAngle());
+		body->ApplyForceToCenter({ 0, 1 }, true);
+	}
+	else
+	{
+		state = ENEMY_STATE::DEATH;
+	}
+
+	return true;
+}
+
+bool Air_Enemies::Save(pugi::xml_node& data)
+{
+	std::string p = "entities";
+	std::string s = std::to_string(p_in_array);
+	std::string t = p + s;
+	const char* c = t.c_str();
+
+	data.child(c).attribute("x").set_value(position.x);
+	data.child(c).attribute("y").set_value(position.y);
+
+	if (state != ENEMY_STATE::DEATH)
+	{
+		data.child(c).attribute("state").set_value("0");
+	}
+	else
+	{
+		data.child(c).attribute("state").set_value("1");
+	}
+
+	return true;
 }

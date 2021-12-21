@@ -13,12 +13,17 @@
 Entities::Entities() : Module()
 {
 	name.Create("entities");
-	
 }
 
 // Destructor
 Entities::~Entities()
 {}
+
+void Entities::AddEntity(Entity* entity, ENTITY_TYPE type, fPoint p)
+{
+	entity->Init(type, p);
+	entities.Add(entity);
+}
 
 // Called before render is available
 bool Entities::Awake()
@@ -31,49 +36,103 @@ bool Entities::Awake()
 // Called before the first frame
 bool Entities::Start()
 {
-	// enemies textures
-	slime_textureR = app->tex->Load("Assets/textures/SlimeR.png");
-	slime_textureL = app->tex->Load("Assets/textures/SlimeL.png");
-	floper_texture = app->tex->Load("Assets/textures/Floper.png");
+	bool ret = true;
+	ListItem<Entity*>* item;
+	item = entities.start;
 
-	return true;
+	while (item != NULL && ret == true)
+	{
+		item->data->InitCustomEntity();
+		item = item->next;
+	}
+
+	return ret;
 }
 
 // Called each loop iteration
 bool Entities::PreUpdate()
 {
-	for (size_t i = 0; i < entities.Count(); i++)
+	bool ret = true;
+
+	ListItem<Entity*>* item;
+	Entity* entity = NULL;
+
+	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
-		entities.At(i)->data->PreUpdate();
+		entity = item->data;
+
+		if (entity->alive == false) {
+			DestroyEntity(entity);
+			continue;
+		}
+
+		if (!entity->init)
+		{
+			item->data->InitCustomEntity();
+			entity->init = true;
+		}
+		else
+		{
+			ret = item->data->PreUpdate();
+		}
 	}
 
-	return true;
+	return ret;
 }
 
 // Called each loop iteration
 bool Entities::Update(float dt)
 {
-	for (size_t i = 0; i < entities.Count(); i++)
+	bool ret = true;
+
+	ListItem<Entity*>* item;
+	Entity* entity = NULL;
+
+	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
-		entities.At(i)->data->HandleInput(dt);
-		entities.At(i)->data->Update(dt);
+		entity = item->data;
+
+		if (entity->alive == false) {
+			continue;
+		}
+
+		if (entity->init)
+		{
+			if (entity->entity_type == ENTITY_TYPE::PLAYER)
+			{
+				item->data->HandleInput(dt);
+			}
+
+			ret = item->data->Update(dt);
+		}
 	}
 
-	return true;
+	return ret;
 }
 
 // Called each loop iteration
 bool Entities::PostUpdate()
 {
-	for (size_t i = 0; i < entities.Count(); i++)
+	bool ret = true;
+
+	ListItem<Entity*>* item;
+	Entity* entity = NULL;
+
+	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
-		if (!app->scene->GetStartScreenState())
+		entity = item->data;
+
+		if (entity->alive == false) {
+			continue;
+		}
+
+		if (entity->init)
 		{
-			entities.At(i)->data->Draw();
+			ret = item->data->Draw();
 		}
 	}
 
-	return true;
+	return ret;
 }
 
 // Called before quitting
@@ -85,9 +144,23 @@ bool Entities::CleanUp()
 
 bool Entities::LoadState(pugi::xml_node& data)
 {
-	for (size_t i = 0; i < data.attribute("value").as_int(); i++)
+	bool ret = true;
+
+	ListItem<Entity*>* item;
+	Entity* entity = NULL;
+
+	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
-		
+		entity = item->data;
+
+		if (entity->alive == false) {
+			continue;
+		}
+
+		if (entity->init)
+		{
+			ret = item->data->Load(data);
+		}
 	}
 
 	return true;
@@ -95,9 +168,23 @@ bool Entities::LoadState(pugi::xml_node& data)
 
 bool Entities::SaveState(pugi::xml_node& data)
 {
-	for (size_t i = 0; i < entities.Count(); i++)
+	bool ret = true;
+
+	ListItem<Entity*>* item;
+	Entity* entity = NULL;
+
+	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
-		
+		entity = item->data;
+
+		if (entity->alive == false) {
+			continue;
+		}
+
+		if (entity->init)
+		{
+			ret = item->data->Save(data);
+		}
 	}
 
 	return true;
@@ -105,17 +192,24 @@ bool Entities::SaveState(pugi::xml_node& data)
 
 void Entities::CreateEntity(ENTITY_TYPE entity_type, float x, float y)
 {
-	Entity* en = new Entity();
+	fPoint p = { x, y };
+
 	switch (entity_type)
 	{
 	case ENTITY_TYPE::PLAYER:
 		// create player
 		break;
 	case ENTITY_TYPE::GROUND_ENEMY:
-		entities.Add(Ground_Enemies::CreateGroundEnemy(x, y));
+	{
+		Ground_Enemies* g_enemy = new Ground_Enemies();
+		AddEntity(g_enemy, ENTITY_TYPE::GROUND_ENEMY, p);
+	}
 		break;
 	case ENTITY_TYPE::AIR_ENEMY:
-		//entities.Add(static_cast<Air_Enemies*>(en)->CreateAirEnemy(x, y));
+	{
+		Air_Enemies* a_enemy = new Air_Enemies();
+		AddEntity(a_enemy, ENTITY_TYPE::AIR_ENEMY, p);
+	}
 		break;
 	default:
 		break;
@@ -129,13 +223,18 @@ void Entities::DestroyEntity(Entity* entity)
 
 void Entities::KillEnemy(fPoint pos)
 {
-	for (size_t i = 0; i < entities.Count(); i++)
+	ListItem<Entity*>* item;
+	Entity* entity = NULL;
+
+	for (item = entities.start; item != NULL; item = item->next)
 	{
-		if (entities.At(i)->data->entity_type == ENTITY_TYPE::GROUND_ENEMY || entities.At(i)->data->entity_type == ENTITY_TYPE::AIR_ENEMY)
+		entity = item->data;
+
+		if (entity->entity_type == ENTITY_TYPE::GROUND_ENEMY || entity->entity_type == ENTITY_TYPE::AIR_ENEMY)
 		{
-			if (pos.x + 1.5f > entities.At(i)->data->position.x && pos.x - 1.5f < entities.At(i)->data->position.x && pos.y + 2.0f > entities.At(i)->data->position.y && pos.y - 2.0f < entities.At(i)->data->position.y)
+			if (pos.x + 1.5f > entity->position.x && pos.x - 1.5f < entity->position.x && pos.y + 2.0f > entity->position.y && pos.y - 2.0f < entity->position.y)
 			{
-				entities.At(i)->data->DeleteEntity();
+				entity->DeleteEntity();
 
 				break;
 			}
@@ -143,9 +242,31 @@ void Entities::KillEnemy(fPoint pos)
 	}
 }
 
-void Entity::PreUpdate()
+void Entity::Init(ENTITY_TYPE type, fPoint p)
+{
+	entity_type = type;
+
+	position.x = PIXELS_TO_METERS(p.x);
+	position.y = PIXELS_TO_METERS(p.y);
+
+	body = NULL;
+
+	alive = true;
+
+	init = false;
+
+	p_in_array = app->entities->array_lenght;
+	app->entities->array_lenght++;
+}
+
+void Entity::InitCustomEntity()
 {
 
+}
+
+bool Entity::PreUpdate()
+{
+	return true;
 }
 
 void Entity::HandleInput(float dt)
@@ -153,17 +274,32 @@ void Entity::HandleInput(float dt)
 
 }
 
-void Entity::Update(float dt)
+bool Entity::Update(float dt)
 {
-
+	return true;
 }
 
-void Entity::Draw()
+bool Entity::Draw()
 {
-
+	return true;
 }
 
-void Entity::DeleteEntity()
+bool Entity::DeleteEntity()
+{
+	return true;
+}
+
+bool Entity::Load(pugi::xml_node&)
+{
+	return true;
+}
+
+bool Entity::Save(pugi::xml_node&)
+{
+	return true;
+}
+
+void Entity::SwitchDirection()
 {
 
 }
