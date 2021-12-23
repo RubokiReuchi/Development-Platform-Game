@@ -23,7 +23,6 @@ class Map;
 class PathFinding;
 class Physics;
 class Entities;
-class Player;
 class Coins;
 class Hearts;
 class Fonts;
@@ -105,7 +104,6 @@ public:
 	PathFinding* pathfinding;
 	Physics* physics;
 	Entities* entities;
-	Player* player;
 	Coins* coins;
 	Hearts* hearts;
 	Fonts* fonts;

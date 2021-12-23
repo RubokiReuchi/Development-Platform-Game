@@ -30,6 +30,9 @@ bool Hearts::Awake()
 bool Hearts::Start()
 {
 	texture = app->tex->Load("Assets/textures/Heart.png");
+
+	nlifes = 2;
+	sprintf_s(numLifes, 3, "%02d", nlifes);
 	
 	return true;
 }
@@ -123,8 +126,8 @@ void Hearts::PickHeart(float x, float y)
 		{
 			if (!hearts.At(i)->picked)
 			{
-				app->player->nlifes++;
-				sprintf_s(app->player->numLifes, 3, "%02d", app->player->nlifes);
+				nlifes++;
+				sprintf_s(numLifes, 3, "%02d", nlifes);
 
 				hearts.At(i)->picked = true;
 				hearts.At(i)->plan_to_delete = true;

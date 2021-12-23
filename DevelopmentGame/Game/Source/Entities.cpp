@@ -3,6 +3,7 @@
 #include "Entities.h"
 #include "Scene.h"
 
+#include "Player.h"
 #include "Enemies.h"
 
 #include "Defs.h"
@@ -197,7 +198,10 @@ void Entities::CreateEntity(ENTITY_TYPE entity_type, float x, float y)
 	switch (entity_type)
 	{
 	case ENTITY_TYPE::PLAYER:
-		// create player
+	{
+		Player* player = new Player();
+		AddEntity(player, ENTITY_TYPE::PLAYER, p);
+	}
 		break;
 	case ENTITY_TYPE::GROUND_ENEMY:
 	{
@@ -240,6 +244,24 @@ void Entities::KillEnemy(fPoint pos)
 			}
 		}
 	}
+}
+
+Entity* Entities::GetPlayer()
+{
+	ListItem<Entity*>* item;
+	Entity* entity = NULL;
+
+	for (item = entities.start; item != NULL; item = item->next)
+	{
+		entity = item->data;
+
+		if (entity->entity_type == ENTITY_TYPE::PLAYER)
+		{
+			return entity;
+		}
+	}
+
+	return NULL;
 }
 
 void Entity::Init(ENTITY_TYPE type, fPoint p)
@@ -297,6 +319,26 @@ bool Entity::Load(pugi::xml_node&)
 bool Entity::Save(pugi::xml_node&)
 {
 	return true;
+}
+
+fPoint Entity::GetPlayerPosition()
+{
+	return { 0, 0 };
+}
+
+void Entity::SetPlayerPosition(int new_x, int new_y)
+{
+
+}
+
+void Entity::PlayerDeath()
+{
+
+}
+
+void Entity::ImpulsePlayer()
+{
+
 }
 
 void Entity::SwitchDirection()

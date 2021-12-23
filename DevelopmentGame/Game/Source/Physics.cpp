@@ -69,16 +69,6 @@ bool Physics::PreUpdate()
 	{
 		world->Step(0, 6, 2);
 	}
-	
-	if (on_collosion > 0)
-	{
-		app->player->inAir = false;
-		app->player->djump = true;
-	}
-	else
-	{
-		app->player->inAir = true;
-	}
 
 	return true;
 }
@@ -294,7 +284,8 @@ void Physics::BeginContact(b2Contact* contact)
 		}
 		else if ((int)fixtureUserDataB == 9)
 		{
-			app->entities->KillEnemy(fPoint(app->player->x, app->player->y));
+			Entity* entity = app->entities->GetPlayer();
+			app->entities->KillEnemy(entity->GetPlayerPosition());
 		}
 	}
 	else if ((int)fixtureUserDataA == 1)
@@ -302,7 +293,8 @@ void Physics::BeginContact(b2Contact* contact)
 		if ((int)fixtureUserDataB == 4 && !app->scene->godmode)
 		{
 			// player death
-			app->player->Death();
+			Entity* entity = app->entities->GetPlayer();
+			entity->PlayerDeath();
 			app->audio->PlayFx(death_sound);
 		}
 		else if ((int)fixtureUserDataB == 5)
@@ -329,12 +321,14 @@ void Physics::BeginContact(b2Contact* contact)
 		else if ((int)fixtureUserDataB == 8)
 		{
 			// coin
-			app->coins->PickCoin(app->player->x, app->player->y);
+			Entity* entity = app->entities->GetPlayer();
+			app->coins->PickCoin(entity->GetPlayerPosition().x, entity->GetPlayerPosition().y);
 		}
 		else if ((int)fixtureUserDataB == 10)
 		{
 			// hearts
-			app->hearts->PickHeart(app->player->x, app->player->y);
+			Entity* entity = app->entities->GetPlayer();
+			app->hearts->PickHeart(entity->GetPlayerPosition().x, entity->GetPlayerPosition().y);
 		}
 	}
 
@@ -346,15 +340,17 @@ void Physics::BeginContact(b2Contact* contact)
 		}
 		else if ((int)fixtureUserDataA == 9)
 		{
-			app->entities->KillEnemy(fPoint(app->player->x, app->player->y));
+			Entity* entity = app->entities->GetPlayer();
+			app->entities->KillEnemy(entity->GetPlayerPosition());
 		}
 	}
-	else if ((int)fixtureUserDataB == 2)
+	else if ((int)fixtureUserDataB == 1)
 	{
 		if ((int)fixtureUserDataA == 4 && !app->scene->godmode)
 		{
 			// player death
-			app->player->Death();
+			Entity* entity = app->entities->GetPlayer();
+			entity->PlayerDeath();
 			app->audio->PlayFx(death_sound);
 		}
 		else if ((int)fixtureUserDataA == 5)
@@ -381,7 +377,14 @@ void Physics::BeginContact(b2Contact* contact)
 		else if ((int)fixtureUserDataA == 8)
 		{
 			// coin
-			app->coins->PickCoin(app->player->x, app->player->y);
+			Entity* entity = app->entities->GetPlayer();
+			app->coins->PickCoin(entity->GetPlayerPosition().x, entity->GetPlayerPosition().y);
+		}
+		else if ((int)fixtureUserDataA == 10)
+		{
+			// hearts
+			Entity* entity = app->entities->GetPlayer();
+			app->hearts->PickHeart(entity->GetPlayerPosition().x, entity->GetPlayerPosition().y);
 		}
 	}
 }

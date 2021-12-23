@@ -50,6 +50,9 @@ public:
 
 	void PickHeart(float x, float y);
 
+	int nlifes = 0;
+	char numLifes[3] = { "\0" };
+
 private:
 
 	SDL_Texture* texture = NULL;

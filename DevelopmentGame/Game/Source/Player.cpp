@@ -8,14 +8,14 @@
 #include "Map.h"
 #include "Physics.h"
 #include "Player.h"
+#include "Hearts.h"
 #include "Menu.h"
 
 #include "Defs.h"
 #include "Log.h"
 
-Player::Player() : Module()
+Player::Player() : Entity()
 {
-	name.Create("player");
 	int pix = 111;
 
 	// idle animation
@@ -154,38 +154,23 @@ Player::Player() : Module()
 Player::~Player()
 {}
 
-// Called before render is available
-bool Player::Awake()
+void Player::InitCustomEntity()
 {
-
-	return true;
-}
-
-// Called before the first frame
-bool Player::Start()
-{
-	textureR = app->tex->Load("Assets/textures/Player.png");
-	textureL = app->tex->Load("Assets/textures/PlayerInv.png");
-
 	currentAnimation = &idleAnimR;
 	lookLeft = false;
 
 	walk_sound = app->audio->LoadFx("Assets/audio/fx/step_sound.wav");
 	jump_sound = app->audio->LoadFx("Assets/audio/fx/jump_sound.wav");
 
-	// player Save Data
-	nlifes = 2;
-	sprintf_s(numLifes, 3, "%02d", nlifes);
-
-	// player
+	// body
 	b2BodyDef p_body;
 	p_body.type = b2_dynamicBody;
 	p_body.fixedRotation = true;
-	p_body.position.Set(x, y);
-	
-	player_body = app->physics->world->CreateBody(&p_body);
-	player_body->SetBullet(true);
-	player_body->SetFixedRotation(true);
+	p_body.position.Set(position.x, position.y);
+
+	body = app->physics->world->CreateBody(&p_body);
+	body->SetBullet(true);
+	body->SetFixedRotation(true);
 
 	b2PolygonShape box;
 	box.SetAsBox(PIXELS_TO_METERS(w), PIXELS_TO_METERS(h));
@@ -194,38 +179,44 @@ bool Player::Start()
 	fixture.shape = &box;
 	fixture.density = 1.0f;
 	fixture.friction = 0.0f;
-	b2Fixture* bodyFixture = player_body->CreateFixture(&fixture);
+	b2Fixture* bodyFixture = body->CreateFixture(&fixture);
 	bodyFixture->SetSensor(false);
 	bodyFixture->SetUserData((void*)1); // player collision
 
 	// ground sensor
 	box.SetAsBox(PIXELS_TO_METERS((w - 2)), PIXELS_TO_METERS(2), b2Vec2(0, PIXELS_TO_METERS(33)), 0);
 	fixture.isSensor = true;
-	b2Fixture* sensorFixture = player_body->CreateFixture(&fixture);
+	b2Fixture* sensorFixture = body->CreateFixture(&fixture);
 	sensorFixture->SetUserData((void*)2); // ground sensor
 
-	hab_tex = app->tex->Load("Assets/textures/HabilityMack.png");
-
+	// hability
 	habAnimation = &readyAnim;
 	hab_ready = true;
-	hab_cd = 60;
+	hab_cd = 960;
 	dashing = false;
-	dash_time = 3;
-
-	return true;
+	dash_time = 48;
 }
 
 // Called each loop iteration
 bool Player::PreUpdate()
 {
-	x = player_body->GetPosition().x;
-	y = player_body->GetPosition().y;
+	position.x = body->GetPosition().x;
+	position.y = body->GetPosition().y;
+
+	if (app->physics->on_collosion > 0)
+	{
+		inAir = false;
+		djump = true;
+	}
+	else
+	{
+		inAir = true;
+	}
 
 	return true;
 }
 
-// Called each loop iteration
-bool Player::Update(float dt)
+void Player::HandleInput(float dt)
 {
 	float fixedSpeed = speed * dt;
 	float fixedJumpForce = jumpForce * dt;
@@ -238,7 +229,7 @@ bool Player::Update(float dt)
 			// move left
 			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 			{
-				player_body->SetLinearVelocity({ -fixedSpeed, player_body->GetLinearVelocity().y });
+				body->SetLinearVelocity({ -fixedSpeed, body->GetLinearVelocity().y });
 				lookLeft = true;
 
 				if (currentAnimation != &walkAnimL && !inAir)
@@ -246,12 +237,10 @@ bool Player::Update(float dt)
 					walkAnimL.Reset();
 					currentAnimation = &walkAnimL;
 				}
-
-				//app->audio->PlayFx(walk_sound);
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
 			{
-				player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
+				body->SetLinearVelocity({ 0, body->GetLinearVelocity().y });
 
 				if (currentAnimation != &idleAnimL && !inAir)
 				{
@@ -263,7 +252,7 @@ bool Player::Update(float dt)
 			//move right
 			if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 			{
-				player_body->SetLinearVelocity({ fixedSpeed, player_body->GetLinearVelocity().y });
+				body->SetLinearVelocity({ fixedSpeed, body->GetLinearVelocity().y });
 				lookLeft = false;
 
 				if (currentAnimation != &walkAnimR && !inAir)
@@ -274,7 +263,7 @@ bool Player::Update(float dt)
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
 			{
-				player_body->SetLinearVelocity({ 0, player_body->GetLinearVelocity().y });
+				body->SetLinearVelocity({ 0, body->GetLinearVelocity().y });
 
 				if (currentAnimation != &idleAnimR && !inAir)
 				{
@@ -283,13 +272,13 @@ bool Player::Update(float dt)
 				}
 			}
 
-			if (!inAir && player_body->GetLinearVelocity().x != 0)
+			if (!inAir && body->GetLinearVelocity().x != 0)
 			{
-				walk_cd--;
+				walk_cd -= dt;
 				if (walk_cd <= 0)
 				{
 					app->audio->PlayFx(walk_sound);
-					walk_cd = 20;
+					walk_cd = 320;
 				}
 			}
 
@@ -298,21 +287,21 @@ bool Player::Update(float dt)
 			{
 				if (!inAir)
 				{
-					player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
-					player_body->ApplyForceToCenter({ 0, -fixedJumpForce }, true);
+					body->SetLinearVelocity({ body->GetLinearVelocity().x , 0 });
+					body->ApplyForceToCenter({ 0, -fixedJumpForce }, true);
 					app->audio->PlayFx(jump_sound);
 					inAir = true;
 				}
 				else if (djump)
 				{
-					player_body->SetLinearVelocity({ player_body->GetLinearVelocity().x , 0 });
-					player_body->ApplyForceToCenter({ 0, -fixedJumpForce }, true);
+					body->SetLinearVelocity({ body->GetLinearVelocity().x , 0 });
+					body->ApplyForceToCenter({ 0, -fixedJumpForce }, true);
 					app->audio->PlayFx(jump_sound);
 					djump = false;
 				}
 			}
 
-			if (player_body->GetLinearVelocity().y < 0 && inAir)
+			if (body->GetLinearVelocity().y < 0 && inAir)
 			{
 				if (lookLeft)
 				{
@@ -332,7 +321,7 @@ bool Player::Update(float dt)
 				}
 
 			}
-			else if (player_body->GetLinearVelocity().y > 0 && inAir)
+			else if (body->GetLinearVelocity().y > 0 && inAir)
 			{
 				if (lookLeft)
 				{
@@ -351,7 +340,7 @@ bool Player::Update(float dt)
 					}
 				}
 			}
-			else if (player_body->GetLinearVelocity().x == 0 && player_body->GetLinearVelocity().y == 0)
+			else if (body->GetLinearVelocity().x == 0 && body->GetLinearVelocity().y == 0)
 			{
 				if (lookLeft)
 				{
@@ -374,18 +363,18 @@ bool Player::Update(float dt)
 			currentAnimation->Update();
 		}
 	}
-		
+
 
 	if (currentAnimation == &deathAnimL || currentAnimation == &deathAnimR)
 	{
-		player_body->SetLinearVelocity({ 0 , 0 });
+		body->SetLinearVelocity({ 0 , 0 });
 		currentAnimation->Update();
 
-		death_cd--;
+		death_cd -= dt;
 		if (death_cd <= 0)
 		{
 			// death screen
-			if(nlifes <= 0)
+			if (app->hearts->nlifes <= 0)
 			{
 				app->menu->lose = true;
 			}
@@ -398,7 +387,7 @@ bool Player::Update(float dt)
 	}
 	else
 	{
-		death_cd = 120;
+		death_cd = 1920;
 	}
 
 	//hability
@@ -411,11 +400,11 @@ bool Player::Update(float dt)
 			// cast
 			if (lookLeft)
 			{
-				player_body->ApplyForceToCenter({ -2000 * speed * dt, 0 }, true);
+				body->ApplyForceToCenter({ -2000 * speed * dt, 0 }, true);
 			}
 			else
 			{
-				player_body->ApplyForceToCenter({ 2000 * speed * dt, 0 }, true);
+				body->ApplyForceToCenter({ 2000 * speed * dt, 0 }, true);
 			}
 
 			if (habAnimation != &chargeAnim)
@@ -423,32 +412,39 @@ bool Player::Update(float dt)
 				chargeAnim.Reset();
 				habAnimation = &chargeAnim;
 			}
-			
+
 			hab_ready = false;
 
 		}
 	}
+}
+
+// Called each loop iteration
+bool Player::Update(float dt)
+{
+	float fixedSpeed = speed * dt;
+	float fixedJumpForce = jumpForce * dt;
 
 	if (dashing)
 	{
-		dash_time--;
+		dash_time -= dt;
 
 		if (dash_time <= 0)
 		{
 			dashing = false;
-			dash_time = 3;
-			player_body->SetLinearVelocity({ 0, 0 });
+			dash_time = 48;
+			body->SetLinearVelocity({ 0, 0 });
 		}
 	}
 
 	if (!hab_ready)
 	{
-		hab_cd--;
+		hab_cd -= dt;
 
 		if (hab_cd <= 0)
 		{
 			chargeAnim.Update();
-			hab_cd = 60;
+			hab_cd = 960;
 		}
 
 		if (chargeAnim.HasFinished())
@@ -463,7 +459,7 @@ bool Player::Update(float dt)
 }
 
 // Called each loop iteration
-bool Player::PostUpdate()
+bool Player::Draw()
 {
 	SDL_Rect rect = currentAnimation->GetCurrentFrame();
 	 
@@ -471,31 +467,46 @@ bool Player::PostUpdate()
 	{
 		if (lookLeft)
 		{
-			app->render->DrawTexture(textureL, METERS_TO_PIXELS(x - 55.5f), METERS_TO_PIXELS(y - 70.0f), &rect);
+			app->render->DrawTexture(app->tex->player_textureL, METERS_TO_PIXELS(position.x - 55.5f), METERS_TO_PIXELS(position.y - 70.0f), &rect);
 		}
 		else
 		{
-			app->render->DrawTexture(textureR, METERS_TO_PIXELS(x - 55.5f), METERS_TO_PIXELS(y - 70.0f), &rect);
+			app->render->DrawTexture(app->tex->player_textureR, METERS_TO_PIXELS(position.x - 55.5f), METERS_TO_PIXELS(position.y - 70.0f), &rect);
 		}
+
+		int c_x = -app->render->camera.x;
+		SDL_Rect hab_rect = habAnimation->GetCurrentFrame();
+		uint win_w, win_h;
+		app->win->GetWindowSize(win_w, win_h);
+		int hab_h = 2 * win_h;
+
+		if (hab_ready)
+		{
+			app->render->DrawRectangle({ c_x + 20, hab_h - 129, 109, 109 }, 0, 0, 255);
+		}
+		else
+		{
+			app->render->DrawRectangle({ c_x + 20, hab_h - 129, 109, 109 }, 255, 0, 0);
+		}
+
+		app->render->DrawTexture(app->tex->hab_tex, c_x + 20, hab_h - 129, &hab_rect);
 	}
 	
 	return true;
 }
 
-// Called before quitting
-bool Player::CleanUp()
+bool Player::Load(pugi::xml_node& data)
 {
+	std::string p = "entities";
+	std::string s = std::to_string(p_in_array);
+	std::string t = p + s;
+	const char* c = t.c_str();
 
-	return true;
-}
+	position.x = data.child(c).attribute("x").as_int();
+	position.y = data.child(c).attribute("y").as_int();
 
-bool Player::LoadState(pugi::xml_node& data)
-{
-	x = data.child("position").attribute("x").as_int();
-	y = data.child("position").attribute("y").as_int();
-
-	player_body->SetTransform({ x + PIXELS_TO_METERS(w), y }, player_body->GetAngle());
-	player_body->ApplyForceToCenter({ 0, 200 }, true);
+	body->SetTransform({ position.x + PIXELS_TO_METERS(w), position.y }, body->GetAngle());
+	body->ApplyForceToCenter({ 0, 1 }, true);
 
 	currentAnimation = &idleAnimR;
 	if (app->menu->dead)
@@ -506,18 +517,23 @@ bool Player::LoadState(pugi::xml_node& data)
 	return true;
 }
 
-bool Player::SaveState(pugi::xml_node& data)
+bool Player::Save(pugi::xml_node& data)
 {
-	data.child("position").attribute("x").set_value(x);
-	data.child("position").attribute("y").set_value(y);
+	std::string p = "entities";
+	std::string s = std::to_string(p_in_array);
+	std::string t = p + s;
+	const char* c = t.c_str();
+
+	data.child(c).attribute("x").set_value(position.x);
+	data.child(c).attribute("y").set_value(position.y);
 
 	return true;
 }
 
-bool Player::Death()
+void Player::PlayerDeath()
 {
-	nlifes--;
-	sprintf_s(numLifes, 3, "%02d", nlifes);
+	app->hearts->nlifes--;
+	sprintf_s(app->hearts->numLifes, 3, "%02d", app->hearts->nlifes);
 
 	if (lookLeft)
 	{
@@ -529,20 +545,24 @@ bool Player::Death()
 		deathAnimR.Reset();
 		currentAnimation = &deathAnimR;
 	}
-
-	return true;
 }
 
-fPoint Player::GetPosition()
+fPoint Player::GetPlayerPosition()
 {
-	return { x, y };
+	return position;
 }
 
-void Player::SetPosition(int new_x, int new_y)
+void Player::SetPlayerPosition(int new_x, int new_y)
 {
-	x = new_x;
-	y = new_y;
+	position.x = new_x;
+	position.y = new_y;
 
-	player_body->SetTransform({ x, y }, player_body->GetAngle());
-	player_body->ApplyForceToCenter({ 0, 50 }, true);
+	body->SetTransform({ position.x, position.y }, body->GetAngle());
+	body->ApplyForceToCenter({ 0, 1 }, true);
+}
+
+void Player::ImpulsePlayer()
+{
+	body->SetLinearVelocity({ body->GetLinearVelocity().x , 0 });
+	body->ApplyForceToCenter({ 0, -25.0f * app->GetDT() }, true);
 }

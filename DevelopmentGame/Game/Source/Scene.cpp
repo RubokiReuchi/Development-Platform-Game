@@ -11,6 +11,7 @@
 #include "Frontground.h"
 #include "Player.h"
 #include "Coins.h"
+#include "Hearts.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -156,7 +157,7 @@ bool Scene::PostUpdate()
 		app->fonts->BlitText(c_x + 30, 5, textFont, "MONEDAS: ");
 		app->fonts->BlitText(c_x + 330, 5, textFont, app->coins->numCoins);
 		app->fonts->BlitText(c_x + 30, 45, textFont, "VIDAS: ");
-		app->fonts->BlitText(c_x + 250, 45, textFont, app->player->numLifes);
+		app->fonts->BlitText(c_x + 250, 45, textFont, app->hearts->numLifes);
 	}
 	
 	if (app->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)

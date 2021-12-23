@@ -66,8 +66,7 @@ bool Menu::Start()
 // Called each loop iteration
 bool Menu::PreUpdate()
 {
-	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead 
-		&& app->player->currentAnimation != &app->player->deathAnimL && app->player->currentAnimation != &app->player->deathAnimR)
+	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead )
 	{
 		paused = !paused;
 
@@ -261,25 +260,6 @@ bool Menu::PostUpdate()
 
 		app->render->DrawTexture(dead_buttons[1].tex, dead_buttons[1].rect.x + 10, dead_buttons[1].rect.y + 10);
 		
-	}
-
-	if (!paused && !dead && !lose && !app->scene->GetStartScreenState())
-	{
-		SDL_Rect hab_rect = app->player->habAnimation->GetCurrentFrame();
-		uint win_w, win_h;
-		app->win->GetWindowSize(win_w, win_h);
-		int hab_h = 2 * win_h;
-
-		if (app->player->hab_ready)
-		{
-			app->render->DrawRectangle({ c_x + 20, hab_h - 129, 109, 109 }, 0, 0, 255);
-		}
-		else
-		{
-			app->render->DrawRectangle({ c_x + 20, hab_h - 129, 109, 109 }, 255, 0, 0);
-		}
-		
-		app->render->DrawTexture(app->player->hab_tex, c_x + 20, hab_h - 129, &hab_rect);
 	}
 
 	return true;

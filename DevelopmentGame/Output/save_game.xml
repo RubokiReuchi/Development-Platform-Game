@@ -6,27 +6,28 @@
 	<audio />
 	<scene />
 	<renderer>
-		<camera x="-1105" y="0" />
+		<camera x="0" y="0" />
 	</renderer>
 	<player>
 		<position x="47.7081223" y="9.29602814" />
 	</player>
 	<entities>
-		<entities0 x="68.1964951" y="16.3050041" state="0" />
-		<entities1 x="52.2488403" y="9.90500164" state="0" />
-		<entities2 x="66.0327911" y="26.5450058" state="0" />
-		<entities3 x="70.0156479" y="16.3050041" state="0" />
-		<entities4 x="11.5199995" y="3.03665733" state="0" />
-		<entities5 x="95.6298752" y="12.684639" state="0" />
+		<entities0 x="0" y="0" />
+		<entities1 x="68.1964951" y="16.3050041" state="0" />
+		<entities2 x="52.2488403" y="9.90500164" state="0" />
+		<entities3 x="66.0327911" y="26.5450058" state="0" />
+		<entities4 x="70.0156479" y="16.3050041" state="0" />
+		<entities5 x="11.5199995" y="3.03665733" state="0" />
+		<entities6 x="95.6298752" y="12.684639" state="0" />
 	</entities>
 	<coins value="62">
 		<position0 state="0" />
-		<position1 state="1" />
-		<position2 state="1" />
+		<position1 state="0" />
+		<position2 state="0" />
 		<position3 state="0" />
-		<position4 state="1" />
-		<position5 state="1" />
-		<position6 state="1" />
+		<position4 state="0" />
+		<position5 state="0" />
+		<position6 state="0" />
 		<position7 state="0" />
 		<position8 state="0" />
 		<position9 state="0" />

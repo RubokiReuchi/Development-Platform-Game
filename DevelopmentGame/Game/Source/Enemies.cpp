@@ -242,8 +242,10 @@ void Ground_Enemies::MoveGroundEnemy(float dt)
 
 void Ground_Enemies::CheckPlayer()
 {
-	if (position.x + detectionRange > app->player->GetPosition().x && position.x - detectionRange < app->player->GetPosition().x
-		&& position.y + detectionRange > app->player->GetPosition().y && position.y - detectionRange < app->player->GetPosition().y)
+	Entity* player = app->entities->GetPlayer();
+
+	if (position.x + detectionRange > player->GetPlayerPosition().x && position.x - detectionRange < player->GetPlayerPosition().x
+		&& position.y + detectionRange > player->GetPlayerPosition().y && position.y - detectionRange < player->GetPlayerPosition().y)
 	{
 		if (state != ENEMY_STATE::HUNT)
 		{
@@ -264,7 +266,8 @@ void Ground_Enemies::EnemyHunting(float dt)
 	PathFinding* path = new PathFinding();
 	float dist;
 
-	path->CreatePath({ (int)position.x, 0 }, { (int)app->player->GetPosition().x, 0 });
+	Entity* player = app->entities->GetPlayer();
+	path->CreatePath({ (int)position.x, 0 }, { (int)player->GetPlayerPosition().x, 0 });
 	int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
 
 	if ((ob_x - position.x) > 0)
@@ -307,8 +310,7 @@ bool Ground_Enemies::DeleteEntity()
 {
 	state = ENEMY_STATE::DEATH;
 	plan_to_delete = true;
-	app->player->player_body->SetLinearVelocity({ app->player->player_body->GetLinearVelocity().x , 0 });
-	app->player->player_body->ApplyForceToCenter({ 0, -25.0f * app->GetDT() }, true);
+	app->entities->GetPlayer()->ImpulsePlayer();
 
 	return true;
 }
@@ -657,8 +659,10 @@ void Air_Enemies::CheckAirEnemy(float dt)
 
 void Air_Enemies::CheckPlayer()
 {
-	if (position.x + detectionRange > app->player->GetPosition().x && position.x - detectionRange < app->player->GetPosition().x
-		&& position.y + detectionRange > app->player->GetPosition().y && position.y - detectionRange < app->player->GetPosition().y)
+	Entity* player = app->entities->GetPlayer();
+
+	if (position.x + detectionRange > player->GetPlayerPosition().x && position.x - detectionRange < player->GetPlayerPosition().x
+		&& position.y + detectionRange > player->GetPlayerPosition().y && position.y - detectionRange < player->GetPlayerPosition().y)
 	{
 		if (state != ENEMY_STATE::HUNT)
 		{
@@ -680,7 +684,8 @@ void Air_Enemies::EnemyHunting(float dt)
 	float distx;
 	float disty;
 
-	path->CreatePath({ (int)position.x, (int)position.y }, { (int)app->player->GetPosition().x, (int)app->player->GetPosition().y });
+	Entity* player = app->entities->GetPlayer();
+	path->CreatePath({ (int)position.x, (int)position.y }, { (int)player->GetPlayerPosition().x, (int)player->GetPlayerPosition().y });
 	int ob_x = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->x;
 	int ob_y = path->GetLastPath()->At(path->GetLastPath()->Count() - 1)->y;
 
@@ -729,7 +734,7 @@ bool Air_Enemies::DeleteEntity()
 {
 	state = ENEMY_STATE::DEATH;
 	plan_to_delete = true;
-	app->player->player_body->ApplyForceToCenter({ 0, -25.0f * app->GetDT() }, true);
+	app->entities->GetPlayer()->ImpulsePlayer();
 
 	return true;
 }

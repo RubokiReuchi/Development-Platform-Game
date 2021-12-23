@@ -133,9 +133,10 @@ bool Frontground::FadeFromBlack(int dest_level)
 			app->scene->ReturnStartScreen();
 			break;
 		case 1: 
-			app->player->SetPosition(8.2f, 22.5f);
+			//entity->SetPlayerPosition(8.2f, 22.5f);
+			//app->entities->SetPlayerPosition(8.2f, 22.5f);
 			app->SaveGameRequest();
-			app->player->lookLeft = false;
+			//app->player->lookLeft = false;
 			if (app->map->Load("level1.tmx") == true)
 			{
 				int w, h;
@@ -148,9 +149,10 @@ bool Frontground::FadeFromBlack(int dest_level)
 			app->scene->current_level = 1;
 			break;
 		case 2:
-			app->player->SetPosition(48.0f, 4.0f);
+			//entity->SetPlayerPosition(48.0f, 4.0f);
+			//app->entities->SetPlayerPosition(48.0f, 4.0f);
 			app->SaveGameRequest();
-			app->player->lookLeft = true;
+			//app->player->lookLeft = true;
 			if (app->map->Load("level2.tmx") == true)
 			{
 				int w, h;

@@ -35,6 +35,10 @@ public:
 	virtual bool Save(pugi::xml_node&);
 
 	// custom fuctions
+	virtual fPoint GetPlayerPosition();
+	virtual void SetPlayerPosition(int new_x, int new_y);
+	virtual void ImpulsePlayer();
+	virtual void PlayerDeath();
 	virtual void SwitchDirection();
 
 public:
@@ -84,6 +88,9 @@ public:
 	int array_lenght = 0;
 
 	void KillEnemy(fPoint pos);
+
+
+	Entity* GetPlayer();
 	
 };
 

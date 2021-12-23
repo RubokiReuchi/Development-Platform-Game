@@ -2,7 +2,7 @@
 #include "Window.h"
 #include "Render.h"
 #include "Scene.h"
-#include "Player.h"
+#include "Entities.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -72,9 +72,10 @@ bool Render::PreUpdate()
 
 bool Render::Update(float dt)
 {
-	if (!app->scene->godmode)
+	if (!app->scene->godmode && app->entities->entities.start)
 	{
-		camera.x = -METERS_TO_PIXELS(app->player->GetPosition().x) + (2560 / 2);
+		Entity* entity = app->entities->GetPlayer();
+		camera.x = -METERS_TO_PIXELS(entity->GetPlayerPosition().x) + (2560 / 2);
 	}
 
 	if (camera.x > 0)

@@ -37,6 +37,9 @@ public:
 	List<SDL_Texture*> textures;
 
 	// textures
+	SDL_Texture* player_textureR = NULL;
+	SDL_Texture* player_textureL = NULL;
+	SDL_Texture* hab_tex = NULL;
 	SDL_Texture* slime_textureR = NULL;
 	SDL_Texture* slime_textureL = NULL;
 	SDL_Texture* floper_texture = NULL;
