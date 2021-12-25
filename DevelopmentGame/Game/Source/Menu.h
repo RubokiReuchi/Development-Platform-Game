@@ -38,6 +38,7 @@ public:
 
 	bool lose;
 
+
 private:
 	SDL_Rect r;
 	bool paused;
@@ -55,6 +56,9 @@ private:
 	Uint8 inColorR = 255;
 	Uint8 inColorG = 178;
 	Uint8 inColorB = 0;
+	Uint8 pColorR = 255;
+	Uint8 pColorG = 0;
+	Uint8 pColorB = 0;
 
 	int load_cd = 120;
 	bool loading = false;

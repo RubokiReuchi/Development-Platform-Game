@@ -30,7 +30,6 @@ bool Menu::Awake()
 bool Menu::Start()
 {
 	r = { 0, 0, 2560, 1440 };
-
 	paused = false;
 	dead = false;
 	lose = false;
@@ -136,8 +135,8 @@ bool Menu::Update(float dt)
 				return false;
 				break;
 			}
-
-			pause_buttons[chosed].state = 1;
+			
+			pause_buttons[chosed].state = 2;
 		}
 	}
 
@@ -169,8 +168,7 @@ bool Menu::Update(float dt)
 				return false;
 				break;
 			}
-
-			dead_buttons[chosed].state = 1;
+			dead_buttons[chosed].state = 2;
 		}
 	}
 
@@ -187,7 +185,7 @@ bool Menu::Update(float dt)
 				break;
 			}
 
-			dead_buttons[chosed].state = 1;
+			dead_buttons[chosed].state = 2;
 		}
 	}
 
@@ -213,9 +211,13 @@ bool Menu::PostUpdate()
 			{
 				app->render->DrawRectangle(pause_buttons[i].rect, idleColorR, idleColorG, idleColorB);
 			}
-			else
+			else if(pause_buttons[i].state == 1)
 			{
 				app->render->DrawRectangle(pause_buttons[i].rect, inColorR, inColorG, inColorB);
+			}
+			else if (pause_buttons[i].state == 2)
+			{
+				app->render->DrawRectangle(pause_buttons[i].rect, pColorR, pColorG, pColorB);
 			}
 
 			app->render->DrawTexture(pause_buttons[i].tex, pause_buttons[i].rect.x + 10, pause_buttons[i].rect.y + 10);
@@ -237,9 +239,13 @@ bool Menu::PostUpdate()
 			{
 				app->render->DrawRectangle(dead_buttons[i].rect, idleColorR, idleColorG, idleColorB);
 			}
-			else
+			else if(dead_buttons[i].state == 1)
 			{
 				app->render->DrawRectangle(dead_buttons[i].rect, inColorR, inColorG, inColorB);
+			}
+			else if (dead_buttons[i].state == 2)
+			{
+				app->render->DrawRectangle(dead_buttons[i].rect, pColorR, pColorG, pColorB);
 			}
 
 			app->render->DrawTexture(dead_buttons[i].tex, dead_buttons[i].rect.x + 10, dead_buttons[i].rect.y + 10);
