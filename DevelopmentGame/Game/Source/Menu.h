@@ -5,12 +5,13 @@
 
 #define NUM_PAUSE_BUTTONS 4
 #define NUM_DEAD_BUTTONS 2
+#define NUM_SETTINGS_BUTTONS 4
 
 struct Button {
 	SDL_Rect rect = { 0, 0, 220, 70 };
 	SDL_Texture* tex = NULL;
 
-	int state = 0; // 0->idle, 1->above
+	int state = 0; // 0->idle, 1->above, 2->pressed
 };
 
 class Menu : public Module
@@ -42,10 +43,12 @@ public:
 private:
 	SDL_Rect r;
 	bool paused;
+	bool settings;
 
 	int chosed;
 	Button pause_buttons[NUM_PAUSE_BUTTONS];
 	Button dead_buttons[NUM_DEAD_BUTTONS];
+	Button settings_buttons[NUM_SETTINGS_BUTTONS];
 
 	SDL_Texture* gameOver = NULL;
 	SDL_Texture* cat = NULL;
@@ -65,6 +68,9 @@ private:
 
 	uint win_w, win_h;
 	
+	//int x, y;
+	//Uint32 buttons;
+
 };
 
 #endif

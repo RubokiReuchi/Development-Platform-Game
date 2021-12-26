@@ -29,15 +29,25 @@ bool Menu::Awake()
 // Called before the first frame
 bool Menu::Start()
 {
+	
+	//SDL_PumpEvents();  // make sure we have the latest mouse state.
+
+	//buttons = SDL_GetMouseState(&x, &y);
+
+
 	r = { 0, 0, 2560, 1440 };
 	paused = false;
+	settings = false;
 	dead = false;
 	lose = false;
 
 	pause_buttons[0].state = 1;
 	dead_buttons[0].state = 1;
+	settings_buttons[0].state = 1;
 	chosed = 0;
 	app->win->GetWindowSize(win_w, win_h);
+
+	
 
 	for (size_t i = 0; i < NUM_PAUSE_BUTTONS; i++)
 	{
@@ -51,11 +61,23 @@ bool Menu::Start()
 		dead_buttons[i].rect.y = ((int)win_h / (NUM_PAUSE_BUTTONS + 3)) * (i + 2.5f);
 	}
 
-	pause_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // continue
-	pause_buttons[1].tex = app->tex->Load("Assets/textures/Save.png"); // save
-	pause_buttons[2].tex = dead_buttons[0].tex = app->tex->Load("Assets/textures/Load.png"); // load
-	pause_buttons[3].tex = dead_buttons[1].tex = app->tex->Load("Assets/textures/Exit.png"); // quit
-	
+	for (size_t i = 0; i < NUM_SETTINGS_BUTTONS; i++)
+	{
+		settings_buttons[i].rect.x = ((int)win_w / 2) - (pause_buttons[i].rect.w / 2);
+		settings_buttons[i].rect.y = ((int)win_h / (NUM_PAUSE_BUTTONS + 1)) * (i + 1);
+	}
+
+	pause_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // Continue
+	pause_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Settings
+	pause_buttons[2].tex = app->tex->Load("Assets/textures/Back.png"); // Back to Menu
+	pause_buttons[3].tex = dead_buttons[1].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
+	dead_buttons[0].tex = app->tex->Load("Assets/textures/Load.png"); // load
+
+	settings_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // Continue
+	settings_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Settings
+	settings_buttons[2].tex = app->tex->Load("Assets/textures/Back.png"); // Back to Menu
+	settings_buttons[3].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
+
 	gameOver = app->tex->Load("Assets/textures/Game_Over.png"); 
 	cat = app->tex->Load("Assets/textures/Dead_Image.png"); 
 
@@ -76,7 +98,18 @@ bool Menu::PreUpdate()
 		}
 	}
 
-	if (paused && !loading && !dead)
+	if (app->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && paused &&!dead)
+	{
+		settings = !settings;
+
+		settings_buttons[chosed = 0].state = 1;
+		for (size_t i = 1; i < NUM_SETTINGS_BUTTONS; i++)
+		{
+			settings_buttons[i].state = 0;
+		}
+	}
+
+	if (paused && !settings && !loading && !dead)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_PAUSE_BUTTONS - 1))
 		{
@@ -107,6 +140,47 @@ bool Menu::PreUpdate()
 			dead_buttons[chosed].state = 1;
 		}
 	}
+
+	if (dead && !loading)
+	{
+		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_DEAD_BUTTONS - 1))
+		{
+			dead_buttons[chosed].state = 0;
+			chosed++;
+			dead_buttons[chosed].state = 1;
+		}
+		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && chosed > 0)
+		{
+			dead_buttons[chosed].state = 0;
+			chosed--;
+			dead_buttons[chosed].state = 1;
+		}
+	}
+
+	if (settings && paused && !loading && !dead)
+	{
+		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_SETTINGS_BUTTONS - 1))
+		{
+			settings_buttons[chosed].state = 0;
+			chosed++;
+			settings_buttons[chosed].state = 1;
+		}
+		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && chosed > 0)
+		{
+			settings_buttons[chosed].state = 0;
+			chosed--;
+			settings_buttons[chosed].state = 1;
+		}
+	}
+
+	/*
+	for (size_t i = 1; i < NUM_PAUSE_BUTTONS; i++)
+	{
+		if (x > pause_buttons[i].rect.x)
+		{
+			pause_buttons[i].state = 1;
+		}
+	}*/
 
 	return true;
 }
@@ -205,7 +279,7 @@ bool Menu::PostUpdate()
 
 		for (size_t i = 0; i < NUM_PAUSE_BUTTONS; i++)
 		{
-			pause_buttons[i].rect.x = ((int)win_w / 2) - (pause_buttons[i].rect.w / 2) + c_x;
+			pause_buttons[i].rect.x = ((int)win_w / 2) - (pause_buttons[i].rect.w / 2) + c_x -300;
 
 			if (pause_buttons[i].state == 0)
 			{
@@ -221,6 +295,31 @@ bool Menu::PostUpdate()
 			}
 
 			app->render->DrawTexture(pause_buttons[i].tex, pause_buttons[i].rect.x + 10, pause_buttons[i].rect.y + 10);
+		}
+	}
+
+	if (settings)
+	{
+		app->render->DrawRectangle(r, 0, 0, 0, 200);
+
+		for (size_t i = 0; i < NUM_SETTINGS_BUTTONS; i++)
+		{
+			settings_buttons[i].rect.x = ((int)win_w / 2) - (settings_buttons[i].rect.w / 2) + c_x;
+
+			if (settings_buttons[i].state == 0)
+			{
+				app->render->DrawRectangle(settings_buttons[i].rect, idleColorR, idleColorG, idleColorB);
+			}
+			else if (settings_buttons[i].state == 1)
+			{
+				app->render->DrawRectangle(settings_buttons[i].rect, inColorR, inColorG, inColorB);
+			}
+			else if (settings_buttons[i].state == 2)
+			{
+				app->render->DrawRectangle(settings_buttons[i].rect, pColorR, pColorG, pColorB);
+			}
+
+			app->render->DrawTexture(settings_buttons[i].tex, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
 		}
 	}
 
