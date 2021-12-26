@@ -10,6 +10,7 @@
 struct Button {
 	SDL_Rect rect = { 0, 0, 220, 70 };
 	SDL_Texture* tex = NULL;
+	SDL_Texture* tex2 = NULL;
 
 	int state = 0; // 0->idle, 1->above, 2->pressed
 };

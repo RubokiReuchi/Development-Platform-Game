@@ -73,10 +73,12 @@ bool Menu::Start()
 	pause_buttons[3].tex = dead_buttons[1].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
 	dead_buttons[0].tex = app->tex->Load("Assets/textures/Load.png"); // load
 
-	settings_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // Continue
-	settings_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Settings
-	settings_buttons[2].tex = app->tex->Load("Assets/textures/Back.png"); // Back to Menu
-	settings_buttons[3].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
+	settings_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // Audio slider
+	settings_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Fx slider
+	settings_buttons[2].tex = app->tex->Load("Assets/textures/Fullscreen_no.png"); // Fullscreen
+	settings_buttons[2].tex2 = app->tex->Load("Assets/textures/Fullscreen_si.png"); // Fullscreen
+	settings_buttons[3].tex = app->tex->Load("Assets/textures/Vsync_no.png"); // Vsync
+	settings_buttons[3].tex2 = app->tex->Load("Assets/textures/Vsync_si.png"); // Vsync
 
 	gameOver = app->tex->Load("Assets/textures/Game_Over.png"); 
 	cat = app->tex->Load("Assets/textures/Dead_Image.png"); 
@@ -98,7 +100,7 @@ bool Menu::PreUpdate()
 		}
 	}
 
-	if (app->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && paused &&!dead)
+	if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && paused &&!dead && chosed == 1)
 	{
 		settings = !settings;
 
@@ -141,23 +143,8 @@ bool Menu::PreUpdate()
 		}
 	}
 
-	if (dead && !loading)
-	{
-		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_DEAD_BUTTONS - 1))
-		{
-			dead_buttons[chosed].state = 0;
-			chosed++;
-			dead_buttons[chosed].state = 1;
-		}
-		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && chosed > 0)
-		{
-			dead_buttons[chosed].state = 0;
-			chosed--;
-			dead_buttons[chosed].state = 1;
-		}
-	}
 
-	if (settings && paused && !loading && !dead)
+	if (settings && !loading && !dead)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_SETTINGS_BUTTONS - 1))
 		{
@@ -171,6 +158,11 @@ bool Menu::PreUpdate()
 			chosed--;
 			settings_buttons[chosed].state = 1;
 		}
+		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && chosed == 2 || chosed == 3 && app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		{
+			settings_buttons[chosed].state = 2;
+		}
+		
 	}
 
 	/*
@@ -204,12 +196,38 @@ bool Menu::Update(float dt)
 			case 2:
 				app->frontground->FadeToBlack(-1);
 				loading = true;
+				settings = false;
 				break;
 			case 3:
 				return false;
 				break;
 			}
 			
+			pause_buttons[chosed].state = 2;
+		}
+	}
+
+	if (paused && settings && !loading && !dead && !lose)
+	{
+		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		{
+			/*switch (chosed)
+			{
+			case 0:
+				paused = false;
+				break;
+			case 1:
+				app->SaveGameRequest();
+				break;
+			case 2:
+				app->frontground->FadeToBlack(-1);
+				loading = true;
+				break;
+			case 3:
+				return false;
+				break;
+			}*/
+
 			pause_buttons[chosed].state = 2;
 		}
 	}
@@ -317,6 +335,8 @@ bool Menu::PostUpdate()
 			else if (settings_buttons[i].state == 2)
 			{
 				app->render->DrawRectangle(settings_buttons[i].rect, pColorR, pColorG, pColorB);
+				app->render->DrawTexture(settings_buttons[i].tex2, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
+
 			}
 
 			app->render->DrawTexture(settings_buttons[i].tex, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
@@ -345,6 +365,8 @@ bool Menu::PostUpdate()
 			else if (dead_buttons[i].state == 2)
 			{
 				app->render->DrawRectangle(dead_buttons[i].rect, pColorR, pColorG, pColorB);
+
+				app->render->DrawTexture(dead_buttons[i].tex, dead_buttons[i].rect.x + 10, dead_buttons[i].rect.y + 10);
 			}
 
 			app->render->DrawTexture(dead_buttons[i].tex, dead_buttons[i].rect.x + 10, dead_buttons[i].rect.y + 10);

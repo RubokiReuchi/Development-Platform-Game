@@ -12,13 +12,13 @@
 		<position x="47.7081223" y="9.29602814" />
 	</player>
 	<entities>
-		<entities0 x="32.3551865" y="22.7050056" />
-		<entities1 x="48.9951859" y="9.90500164" state="0" />
-		<entities2 x="66.2751846" y="26.5450058" state="0" />
-		<entities3 x="70.755188" y="16.3050041" state="0" />
-		<entities4 x="14.7199993" y="7.50215387" state="0" />
-		<entities5 x="97.7420807" y="12.1599998" state="0" />
-		<entities6 x="7.67999983" y="22.3850269" state="0" />
+		<entities0 x="31.0990963" y="22.7050056" />
+		<entities1 x="47.7390938" y="9.90500164" state="0" />
+		<entities2 x="65.0191803" y="26.5450058" state="0" />
+		<entities3 x="69.4991837" y="16.3050041" state="0" />
+		<entities4 x="14.7199993" y="7.82770157" state="0" />
+		<entities5 x="99.1999969" y="11.0277109" state="0" />
+		<entities6 x="9.09935474" y="22.385006" state="0" />
 	</entities>
 	<coins value="62">
 		<position0 state="0" />
