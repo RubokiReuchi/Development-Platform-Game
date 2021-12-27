@@ -76,9 +76,9 @@ bool Menu::Start()
 	settings_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // Audio slider
 	settings_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Fx slider
 	settings_buttons[2].tex = app->tex->Load("Assets/textures/Fullscreen_no.png"); // Fullscreen
-	settings_buttons[2].tex2 = app->tex->Load("Assets/textures/Fullscreen_si.png"); // Fullscreen
+	settings_buttons[2].texfullscreen = app->tex->Load("Assets/textures/Fullscreen_si.png"); // Fullscreen
 	settings_buttons[3].tex = app->tex->Load("Assets/textures/Vsync_no.png"); // Vsync
-	settings_buttons[3].tex2 = app->tex->Load("Assets/textures/Vsync_si.png"); // Vsync
+	settings_buttons[3].texvsync = app->tex->Load("Assets/textures/Vsync_si.png"); // Vsync
 
 	gameOver = app->tex->Load("Assets/textures/Game_Over.png"); 
 	cat = app->tex->Load("Assets/textures/Dead_Image.png"); 
@@ -92,6 +92,9 @@ bool Menu::PreUpdate()
 	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead )
 	{
 		paused = !paused;
+		settings = false;
+		vsync = false;
+		fullscreen = false;
 
 		pause_buttons[chosed = 0].state = 1;
 		for (size_t i = 1; i < NUM_PAUSE_BUTTONS; i++)
@@ -158,9 +161,17 @@ bool Menu::PreUpdate()
 			chosed--;
 			settings_buttons[chosed].state = 1;
 		}
-		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && chosed == 2 || chosed == 3 && app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && chosed == 3)
 		{
 			settings_buttons[chosed].state = 2;
+			vsync = !vsync;
+
+		}
+		if (chosed == 2 && app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		{
+			settings_buttons[chosed].state = 2;
+			fullscreen = !fullscreen;
+
 		}
 		
 	}
@@ -335,8 +346,14 @@ bool Menu::PostUpdate()
 			else if (settings_buttons[i].state == 2)
 			{
 				app->render->DrawRectangle(settings_buttons[i].rect, pColorR, pColorG, pColorB);
-				app->render->DrawTexture(settings_buttons[i].tex2, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
-
+			}
+			if (vsync)
+			{
+				app->render->DrawTexture(settings_buttons[i].texvsync, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
+			}
+			if (fullscreen)
+			{
+				app->render->DrawTexture(settings_buttons[i].texfullscreen, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
 			}
 
 			app->render->DrawTexture(settings_buttons[i].tex, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
