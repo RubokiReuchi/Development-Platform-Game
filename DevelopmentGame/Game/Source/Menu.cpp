@@ -29,11 +29,6 @@ bool Menu::Awake()
 // Called before the first frame
 bool Menu::Start()
 {
-	
-	//SDL_PumpEvents();  // make sure we have the latest mouse state.
-
-	//buttons = SDL_GetMouseState(&x, &y);
-
 
 	r = { 0, 0, 2560, 1440 };
 	paused = false;
@@ -89,31 +84,34 @@ bool Menu::Start()
 // Called each loop iteration
 bool Menu::PreUpdate()
 {
+
 	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead )
 	{
 		paused = !paused;
 		settings = false;
 		vsync = false;
 		fullscreen = false;
-
+		/*
 		pause_buttons[chosed = 0].state = 1;
 		for (size_t i = 1; i < NUM_PAUSE_BUTTONS; i++)
 		{
 			pause_buttons[i].state = 0;
 		}
+		*/
 	}
 
-	if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && paused &&!dead && chosed == 1)
+	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused &&!dead && chosed == 1)
 	{
 		settings = !settings;
-
+		paused = !paused;
+		/*
 		settings_buttons[chosed = 0].state = 1;
 		for (size_t i = 1; i < NUM_SETTINGS_BUTTONS; i++)
 		{
 			settings_buttons[i].state = 0;
-		}
+		}*/
 	}
-
+	/*
 	if (paused && !settings && !loading && !dead)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_PAUSE_BUTTONS - 1))
@@ -129,7 +127,7 @@ bool Menu::PreUpdate()
 			pause_buttons[chosed].state = 1;
 		}
 	}
-
+	
 	if (dead && !loading)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_DEAD_BUTTONS - 1))
@@ -145,7 +143,7 @@ bool Menu::PreUpdate()
 			dead_buttons[chosed].state = 1;
 		}
 	}
-
+	
 
 	if (settings && !loading && !dead)
 	{
@@ -167,23 +165,54 @@ bool Menu::PreUpdate()
 			vsync = !vsync;
 
 		}
-		if (chosed == 2 && app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
-		{
-			settings_buttons[chosed].state = 2;
-			fullscreen = !fullscreen;
-
-		}
-		
 	}
+	*/
+	
+	int x, y;
+	app->input->GetMousePosition(x, y);
 
-	/*
-	for (size_t i = 1; i < NUM_PAUSE_BUTTONS; i++)
+	for (size_t i = 0; i < NUM_PAUSE_BUTTONS; i++)
 	{
-		if (x > pause_buttons[i].rect.x)
+		SDL_Rect rect = pause_buttons[i].rect;
+		if (x > rect.x && x < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
 		{
+			chosed = i;
 			pause_buttons[i].state = 1;
 		}
-	}*/
+		else 
+		{
+			pause_buttons[i].state = 0;
+		}
+	}
+
+	for (size_t i = 0; i < NUM_SETTINGS_BUTTONS; i++)
+	{
+		SDL_Rect rect = settings_buttons[i].rect;
+		if (x > rect.x && x < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
+		{
+			chosed = i;
+			settings_buttons[i].state = 1;
+		}
+		else
+		{
+			settings_buttons[i].state = 0;
+		}
+	}
+
+	for (size_t i = 0; i < NUM_DEAD_BUTTONS; i++)
+	{
+		SDL_Rect rect = dead_buttons[i].rect;
+		if (x > rect.x && x < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
+		{
+			chosed = i;
+			dead_buttons[i].state = 1;
+		}
+		else
+		{
+			dead_buttons[i].state = 0;
+		}
+	}
+
 
 	return true;
 }
@@ -194,7 +223,7 @@ bool Menu::Update(float dt)
 	// pause buttons
 	if (paused && !loading && !dead && !lose)
 	{
-		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED)
 		{
 			switch (chosed)
 			{
@@ -218,11 +247,11 @@ bool Menu::Update(float dt)
 		}
 	}
 
-	if (paused && settings && !loading && !dead && !lose)
+	if (settings && !loading && !dead && !lose)
 	{
-		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED)
 		{
-			/*switch (chosed)
+			switch (chosed)
 			{
 			case 0:
 				paused = false;
@@ -231,15 +260,22 @@ bool Menu::Update(float dt)
 				app->SaveGameRequest();
 				break;
 			case 2:
-				app->frontground->FadeToBlack(-1);
-				loading = true;
+				fullscreen = !fullscreen;
+				if (fullscreen)
+				{
+					SDL_SetWindowFullscreen(app->win->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				}
+				else
+				{
+					SDL_SetWindowFullscreen(app->win->window, 0);
+				}
 				break;
 			case 3:
-				return false;
+				//return false;
 				break;
-			}*/
+			}
 
-			pause_buttons[chosed].state = 2;
+			settings_buttons[chosed].state = 2;
 		}
 	}
 
