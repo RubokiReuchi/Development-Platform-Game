@@ -44,6 +44,7 @@ public:
 
 private:
 	SDL_Rect r;
+	bool intro;
 	bool paused;
 	bool settings;
 	bool vsync;

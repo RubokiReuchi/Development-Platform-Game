@@ -84,8 +84,8 @@ bool Menu::Start()
 // Called each loop iteration
 bool Menu::PreUpdate()
 {
-
-	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead )
+	intro = app->scene->GetStartScreenState();
+	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead && intro == false)
 	{
 		paused = !paused;
 		settings = false;
@@ -100,7 +100,7 @@ bool Menu::PreUpdate()
 		*/
 	}
 
-	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused &&!dead && chosed == 1)
+	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && intro == false && !dead && chosed == 1)
 	{
 		settings = !settings;
 		paused = !paused;
