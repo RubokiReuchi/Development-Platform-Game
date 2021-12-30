@@ -4,6 +4,7 @@
 #include "Module.h"
 
 #define NUM_PAUSE_BUTTONS 4
+#define NUM_MENU_BUTTONS 5
 #define NUM_DEAD_BUTTONS 2
 #define NUM_SETTINGS_BUTTONS 4
 
@@ -52,6 +53,7 @@ private:
 
 	int chosed;
 	Button pause_buttons[NUM_PAUSE_BUTTONS];
+	Button menu_buttons[NUM_MENU_BUTTONS];
 	Button dead_buttons[NUM_DEAD_BUTTONS];
 	Button settings_buttons[NUM_SETTINGS_BUTTONS];
 
