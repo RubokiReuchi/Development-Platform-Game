@@ -106,14 +106,6 @@ bool Menu::PreUpdate()
 	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead && intro == false)
 	{
 		paused = !paused;
-		settings = false;
-		/*
-		pause_buttons[chosed = 0].state = 1;
-		for (size_t i = 1; i < NUM_PAUSE_BUTTONS; i++)
-		{
-			pause_buttons[i].state = 0;
-		}
-		*/
 	}
 
 	if (intro)
@@ -121,20 +113,26 @@ bool Menu::PreUpdate()
 		paused = true;
 	}
 
-	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && intro && !dead && chosed == 1)
+	if (settings && app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+	{
+		settings = false;
+	}
+
+	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && !intro && !dead && chosed == 1)
 	{
 		settings = !settings;
-		//intro = !intro;
 		paused = !paused;
-		/*
-		settings_buttons[chosed = 0].state = 1;
-		for (size_t i = 1; i < NUM_SETTINGS_BUTTONS; i++)
-		{
-			settings_buttons[i].state = 0;
-		}*/
+	}
+
+	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && intro && !dead && chosed == 2)
+	{
+		settings = true;
+		paused = !paused;
 	}
 
 
+
+	//MOVIMIENTO MANUAL
 	/*
 	if (paused && !settings && !loading && !dead)
 	{
@@ -251,7 +249,6 @@ bool Menu::PreUpdate()
 		}
 	}
 
-
 	return true;
 }
 
@@ -261,7 +258,7 @@ bool Menu::Update(float dt)
 	// pause buttons
 	if (paused && !intro && !settings)
 	{
-		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED)
+		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && pause_buttons[chosed].state == 1)
 		{
 			switch (chosed)
 			{
@@ -272,9 +269,10 @@ bool Menu::Update(float dt)
 				app->SaveGameRequest();
 				break;
 			case 2:
-				app->frontground->FadeToBlack(-1);
-				loading = true;
-				settings = false;
+				//aun aparecen las monedas etc
+				app->scene->PassLevel(0);
+				intro = false;
+				paused = false;
 				break;
 			case 3:
 				return false;
@@ -288,22 +286,25 @@ bool Menu::Update(float dt)
 	//menu buttons
 	if (intro && !settings)
 	{
-		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED)
+		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && menu_buttons[chosed].state == 1)
 		{
 			switch (chosed)
 			{
 			case 0:
+				app->scene->PassLevel(1);
+				intro = false;
 				paused = false;
 				break;
 			case 1:
-				app->SaveGameRequest();
-				break;
-			case 2:
 				app->frontground->FadeToBlack(-1);
 				loading = true;
-				settings = false;
 				break;
+			case 2:
+				settings = true;
 			case 3:
+				//credits
+				break;
+			case 4:
 				return false;
 				break;
 			}
@@ -315,7 +316,7 @@ bool Menu::Update(float dt)
 	//settings buttons
 	if (settings)
 	{
-		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED)
+		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && settings_buttons[chosed].state == 1)
 		{
 			switch (chosed)
 			{
@@ -324,6 +325,7 @@ bool Menu::Update(float dt)
 				break;
 			case 1:
 				app->SaveGameRequest();
+				settings = false;
 				break;
 			case 2:
 				fullscreen = !fullscreen;
