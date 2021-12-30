@@ -74,15 +74,17 @@ bool Menu::Start()
 	pause_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // Continue
 	pause_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Settings
 	pause_buttons[2].tex = app->tex->Load("Assets/textures/Back.png"); // Back to Menu
-	pause_buttons[3].tex = dead_buttons[1].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
+	pause_buttons[3].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
 	
-	dead_buttons[0].tex = app->tex->Load("Assets/textures/Load.png"); // load
 
-	menu_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // Continue
-	menu_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Settings
-	menu_buttons[2].tex = app->tex->Load("Assets/textures/Back.png"); // Back to Menu
-	menu_buttons[3].tex = dead_buttons[1].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
-	menu_buttons[4].tex = app->tex->Load("Assets/textures/Load.png"); // load
+	dead_buttons[0].tex = app->tex->Load("Assets/textures/Load.png"); // Load
+	dead_buttons[1].tex = app->tex->Load("Assets/textures/Exit.png"); //Exit
+
+	menu_buttons[0].tex = app->tex->Load("Assets/textures/Play.png"); // Play
+	menu_buttons[1].tex = app->tex->Load("Assets/textures/Continue.png"); // Continue
+	menu_buttons[2].tex = app->tex->Load("Assets/textures/Settings.png"); // Settings
+	menu_buttons[3].tex = app->tex->Load("Assets/textures/Credits.png"); // Credits
+	menu_buttons[4].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
 
 	settings_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // Audio slider
 	settings_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Fx slider
@@ -119,9 +121,10 @@ bool Menu::PreUpdate()
 		paused = true;
 	}
 
-	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused  && !dead && chosed == 1)
+	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && intro && !dead && chosed == 1)
 	{
 		settings = !settings;
+		//intro = !intro;
 		paused = !paused;
 		/*
 		settings_buttons[chosed = 0].state = 1;
@@ -130,6 +133,8 @@ bool Menu::PreUpdate()
 			settings_buttons[i].state = 0;
 		}*/
 	}
+
+
 	/*
 	if (paused && !settings && !loading && !dead)
 	{
@@ -254,7 +259,7 @@ bool Menu::PreUpdate()
 bool Menu::Update(float dt)
 {
 	// pause buttons
-	if (paused && !settings && !loading && !dead && !lose)
+	if (paused && !intro && !settings)
 	{
 		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED)
 		{
@@ -281,7 +286,7 @@ bool Menu::Update(float dt)
 	}
 
 	//menu buttons
-	if (paused && intro && !settings && !loading && !dead && !lose)
+	if (intro && !settings)
 	{
 		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED)
 		{
@@ -308,7 +313,7 @@ bool Menu::Update(float dt)
 	}
 
 	//settings buttons
-	if (settings && !loading && !dead && !lose)
+	if (settings)
 	{
 		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED)
 		{
@@ -398,7 +403,7 @@ bool Menu::PostUpdate()
 	int c_x = -app->render->camera.x;
 	r.x = c_x;
 
-	if (paused && !intro)
+	if (paused && !intro && !settings)
 	{
 		if (intro == false)
 		{
@@ -426,7 +431,7 @@ bool Menu::PostUpdate()
 		}
 	}
 
-	if (intro)
+	if (intro && !settings)
 	{
 		for (size_t i = 0; i < NUM_MENU_BUTTONS; i++)
 		{
