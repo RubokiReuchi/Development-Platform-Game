@@ -167,5 +167,7 @@ bool Frontground::FadeFromBlack(int dest_level)
 		}
 	}
 
+
 	return true;
 }
+

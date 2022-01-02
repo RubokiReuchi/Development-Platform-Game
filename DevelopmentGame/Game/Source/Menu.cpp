@@ -192,11 +192,11 @@ bool Menu::PreUpdate()
 	
 	int x, y;
 	app->input->GetMousePosition(x, y);
-
+	float c = -app->render->camera.x;
 	for (size_t i = 0; i < NUM_PAUSE_BUTTONS; i++)
 	{
 		SDL_Rect rect = pause_buttons[i].rect;
-		if (x > rect.x && x < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
+		if (x + c > rect.x && x + c < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
 		{
 			chosed = i;
 			pause_buttons[i].state = 1;
@@ -210,7 +210,7 @@ bool Menu::PreUpdate()
 	for (size_t i = 0; i < NUM_MENU_BUTTONS; i++)
 	{
 		SDL_Rect rect = menu_buttons[i].rect;
-		if (x > rect.x && x < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
+		if (x + c > rect.x && x + c < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
 		{
 			chosed = i;
 			menu_buttons[i].state = 1;
@@ -224,7 +224,7 @@ bool Menu::PreUpdate()
 	for (size_t i = 0; i < NUM_SETTINGS_BUTTONS; i++)
 	{
 		SDL_Rect rect = settings_buttons[i].rect;
-		if (x > rect.x && x < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
+		if (x + c > rect.x && x + c < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
 		{
 			chosed = i;
 			settings_buttons[i].state = 1;
@@ -238,7 +238,7 @@ bool Menu::PreUpdate()
 	for (size_t i = 0; i < NUM_DEAD_BUTTONS; i++)
 	{
 		SDL_Rect rect = dead_buttons[i].rect;
-		if (x > rect.x && x < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
+		if (x + c > rect.x && x + c < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
 		{
 			chosed = i;
 			dead_buttons[i].state = 1;
@@ -270,7 +270,7 @@ bool Menu::Update(float dt)
 				break;
 			case 2:
 				//aun aparecen las monedas etc
-				app->scene->PassLevel(0);
+				app->scene->ReturnStartScreen();
 				intro = false;
 				paused = false;
 				break;
@@ -363,7 +363,7 @@ bool Menu::Update(float dt)
 	// dead buttons
 	if (dead && !loading)
 	{
-		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && dead_buttons[chosed].state == 1)
 		{
 			switch (chosed)
 			{
@@ -404,6 +404,11 @@ bool Menu::PostUpdate()
 {
 	int c_x = -app->render->camera.x;
 	r.x = c_x;
+
+	if (app->scene->GetStartScreenState() != NULL)
+	{
+		app->render->DrawTexture(app->tex->Load("Assets/textures/Start_screen.png"), 0, 0);
+	}
 
 	if (paused && !intro && !settings)
 	{
