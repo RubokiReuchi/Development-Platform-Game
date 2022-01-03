@@ -11,6 +11,7 @@
 struct Button {
 	SDL_Rect rect = { 0, 0, 220, 70 };
 	SDL_Texture* tex = NULL;
+	SDL_Texture* texslider = NULL;
 	SDL_Texture* texvsync = NULL;
 	SDL_Texture* texfullscreen = NULL;
 
@@ -50,6 +51,11 @@ private:
 	bool settings;
 	bool vsync;
 	bool fullscreen;
+
+	int xbarra = 540;
+	int xbarra2 = 540;
+	bool slider;
+	bool slider2;
 
 	int chosed;
 	Button pause_buttons[NUM_PAUSE_BUTTONS];

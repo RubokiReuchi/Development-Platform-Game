@@ -35,6 +35,8 @@ bool Menu::Start()
 	settings = false;
 	dead = false;
 	lose = false;
+	slider = false;
+	slider2 = false;
 	fullscreen = false;
 	vsync = false;
 
@@ -86,8 +88,9 @@ bool Menu::Start()
 	menu_buttons[3].tex = app->tex->Load("Assets/textures/Credits.png"); // Credits
 	menu_buttons[4].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
 
-	settings_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // Audio slider
-	settings_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Fx slider
+	settings_buttons[0].texslider = settings_buttons[1].texslider = app->tex->Load("Assets/textures/Slider.png"); // Slider
+	settings_buttons[0].tex = app->tex->Load("Assets/textures/Sound.png"); // Audio
+	settings_buttons[1].tex = app->tex->Load("Assets/textures/Fx.png"); // Fx slider
 	settings_buttons[2].tex = app->tex->Load("Assets/textures/Fullscreen_no.png"); // Fullscreen
 	settings_buttons[2].texfullscreen = app->tex->Load("Assets/textures/Fullscreen_si.png"); // Fullscreen
 	settings_buttons[3].tex = app->tex->Load("Assets/textures/Vsync_no.png"); // Vsync
@@ -224,7 +227,7 @@ bool Menu::PreUpdate()
 	for (size_t i = 0; i < NUM_SETTINGS_BUTTONS; i++)
 	{
 		SDL_Rect rect = settings_buttons[i].rect;
-		if (x + c > rect.x && x + c < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
+		if (x + c > 530 && x + c < 530 + rect.w && y > rect.y && y < rect.y + rect.h)
 		{
 			chosed = i;
 			settings_buttons[i].state = 1;
@@ -321,11 +324,10 @@ bool Menu::Update(float dt)
 			switch (chosed)
 			{
 			case 0:
-				paused = false;
+				slider = !slider;
 				break;
 			case 1:
-				app->SaveGameRequest();
-				settings = false;
+				slider2 = !slider2;
 				break;
 			case 2:
 				fullscreen = !fullscreen;
@@ -463,6 +465,10 @@ bool Menu::PostUpdate()
 
 	if (settings)
 	{
+		
+		int z, w;
+		app->input->GetMousePosition(z, w);
+
 		if (intro == false)
 		{
 			app->render->DrawRectangle(r, 0, 0, 0, 200);
@@ -484,6 +490,43 @@ bool Menu::PostUpdate()
 			{
 				app->render->DrawRectangle(settings_buttons[i].rect, pColorR, pColorG, pColorB);
 			}
+
+			if (slider)
+			{
+				if (z < 540)
+				{
+					z = 540;
+				}
+				else if (z > 729)
+				{
+					z = 729;
+				}
+				xbarra = z;
+				app->render->DrawTexture(settings_buttons[0].texslider, z, settings_buttons[0].rect.y + 10);
+			}
+			else
+			{
+				app->render->DrawTexture(settings_buttons[0].texslider, xbarra, settings_buttons[0].rect.y + 10);
+			}
+
+			if (slider2)
+			{
+				if (z < 540)
+				{
+					z = 540;
+				}
+				else if (z > 729)
+				{
+					z = 729;
+				}
+				xbarra2 = z;
+				app->render->DrawTexture(settings_buttons[1].texslider, z, settings_buttons[1].rect.y + 10);
+			}
+			else
+			{
+				app->render->DrawTexture(settings_buttons[1].texslider, xbarra2, settings_buttons[1].rect.y + 10);
+			}
+
 			if (vsync)
 			{
 				app->render->DrawTexture(settings_buttons[i].texvsync, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
@@ -492,8 +535,10 @@ bool Menu::PostUpdate()
 			{
 				app->render->DrawTexture(settings_buttons[i].texfullscreen, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
 			}
-
+			
+			
 			app->render->DrawTexture(settings_buttons[i].tex, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
+			
 		}
 	}
 
