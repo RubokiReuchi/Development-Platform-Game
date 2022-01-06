@@ -39,7 +39,7 @@ bool Audio::Awake(pugi::xml_node& config)
 	// Load support for the JPG and PNG image formats
 	int flags = MIX_INIT_OGG;
 	int init = Mix_Init(flags);
-
+	
 	if((init & flags) != flags)
 	{
 		LOG("Could not initialize Mixer lib. Mix_Init: %s", Mix_GetError());
@@ -175,4 +175,20 @@ bool Audio::PlayFx(unsigned int id, int repeat)
 	}
 
 	return ret;
+}
+
+
+
+void Audio::SetMusic(int volume)
+{
+	Mix_VolumeMusic(volume);
+}
+
+void Audio::SetFX(int volume)
+{
+	for (size_t i = 0; i < fx.Count(); i++)
+	{
+		Mix_VolumeChunk(fx.At(i)->data, volume);
+	}
+	
 }

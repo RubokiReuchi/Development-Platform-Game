@@ -2,6 +2,7 @@
 #include "Textures.h"
 #include "Render.h"
 #include "Window.h"
+#include "Audio.h"
 #include "Input.h"
 #include "Scene.h"
 #include "Frontground.h"
@@ -39,6 +40,7 @@ bool Menu::Start()
 	slider2 = false;
 	fullscreen = false;
 	vsync = false;
+	credits = false;
 
 	pause_buttons[0].state = 1;
 	menu_buttons[0].state = 1;
@@ -86,6 +88,7 @@ bool Menu::Start()
 	menu_buttons[1].tex = app->tex->Load("Assets/textures/Continue.png"); // Continue
 	menu_buttons[2].tex = app->tex->Load("Assets/textures/Settings.png"); // Settings
 	menu_buttons[3].tex = app->tex->Load("Assets/textures/Credits.png"); // Credits
+	menu_buttons[3].texcredits = app->tex->Load("Assets/textures/CreditsImage.png"); // Credits
 	menu_buttons[4].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
 
 	settings_buttons[0].texslider = settings_buttons[1].texslider = app->tex->Load("Assets/textures/Slider.png"); // Slider
@@ -121,13 +124,13 @@ bool Menu::PreUpdate()
 		settings = false;
 	}
 
-	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && !intro && !dead && chosed == 1)
+	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && !intro && !dead && chosed == 1 && pause_buttons[1].state == 1)
 	{
 		settings = !settings;
 		paused = !paused;
 	}
 
-	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && intro && !dead && chosed == 2)
+	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && intro && !dead && chosed == 2 && menu_buttons[2].state == 1)
 	{
 		settings = true;
 		paused = !paused;
@@ -305,7 +308,7 @@ bool Menu::Update(float dt)
 			case 2:
 				settings = true;
 			case 3:
-				//credits
+				credits = !credits;
 				break;
 			case 4:
 				return false;
@@ -341,7 +344,16 @@ bool Menu::Update(float dt)
 				}
 				break;
 			case 3:
-				//return false;
+				vsync = !vsync;
+				if (vsync)
+				{
+					// 1 to activate, 0 to deactivate
+					SDL_GL_SetSwapInterval(1);
+				}
+				else
+				{
+					SDL_GL_SetSwapInterval(0);
+				}
 				break;
 			}
 
@@ -459,6 +471,11 @@ bool Menu::PostUpdate()
 				app->render->DrawRectangle(menu_buttons[i].rect, pColorR, pColorG, pColorB);
 			}
 
+			if (credits)
+			{
+				app->render->DrawTexture(menu_buttons[i].texcredits, 1000, 500);
+			}
+
 			app->render->DrawTexture(menu_buttons[i].tex, menu_buttons[i].rect.x + 10, menu_buttons[i].rect.y + 10);
 		}
 	}
@@ -503,6 +520,7 @@ bool Menu::PostUpdate()
 				}
 				xbarra = z;
 				app->render->DrawTexture(settings_buttons[0].texslider, z, settings_buttons[0].rect.y + 10);
+				app->audio->SetMusic((z - 540) / 2);
 			}
 			else
 			{
@@ -521,6 +539,7 @@ bool Menu::PostUpdate()
 				}
 				xbarra2 = z;
 				app->render->DrawTexture(settings_buttons[1].texslider, z, settings_buttons[1].rect.y + 10);
+				app->audio->SetFX((z - 540) / 2);
 			}
 			else
 			{

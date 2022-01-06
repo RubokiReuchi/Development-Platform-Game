@@ -14,6 +14,8 @@ struct Button {
 	SDL_Texture* texslider = NULL;
 	SDL_Texture* texvsync = NULL;
 	SDL_Texture* texfullscreen = NULL;
+	SDL_Texture* texcredits = NULL;
+
 
 	int state = 0; // 0->idle, 1->above, 2->pressed
 };
@@ -51,9 +53,10 @@ private:
 	bool settings;
 	bool vsync;
 	bool fullscreen;
+	bool credits;
 
-	int xbarra = 540;
-	int xbarra2 = 540;
+	int xbarra = 635;
+	int xbarra2 = 635;
 	bool slider;
 	bool slider2;
 

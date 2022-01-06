@@ -1,6 +1,6 @@
 # Credits
 Made by Rubén Ayora & Alejandro Giralt  
-Grup name: Tensura_Dev  
+Group name: Tensura_Dev  
 
 # Features
 Two levels  
