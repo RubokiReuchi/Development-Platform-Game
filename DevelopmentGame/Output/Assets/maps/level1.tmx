@@ -194674,7 +194674,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="30" name="GROUND ENEMIES" width="160" height="45" visible="0">
+ <layer id="30" name="GROUND ENEMIES" width="160" height="45">
   <properties>
    <property name="Collision" type="int" value="7"/>
    <property name="Draw" type="int" value="0"/>
@@ -209094,7 +209094,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="35" name="PLAYER" width="160" height="45">
+ <layer id="35" name="PLAYER" width="160" height="45" visible="0">
   <properties>
    <property name="Collision" type="int" value="10"/>
    <property name="Draw" type="int" value="0"/>

@@ -285,7 +285,7 @@ bool Menu::Update(float dt)
 				break;
 			}
 			
-			pause_buttons[chosed].state = 2;
+			pause_buttons[chosed].state = 0;
 		}
 	}
 
@@ -315,7 +315,7 @@ bool Menu::Update(float dt)
 				break;
 			}
 
-			menu_buttons[chosed].state = 2;
+			menu_buttons[chosed].state = 0;
 		}
 	}
 
@@ -357,7 +357,7 @@ bool Menu::Update(float dt)
 				break;
 			}
 
-			settings_buttons[chosed].state = 2;
+			settings_buttons[chosed].state = 0;
 		}
 	}
 
@@ -389,7 +389,8 @@ bool Menu::Update(float dt)
 				return false;
 				break;
 			}
-			dead_buttons[chosed].state = 2;
+
+			dead_buttons[chosed].state = 0;
 		}
 	}
 
@@ -399,14 +400,7 @@ bool Menu::Update(float dt)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
 		{
-			switch (chosed)
-			{
-			case 0:
-				return false;
-				break;
-			}
-
-			dead_buttons[chosed].state = 2;
+			return false;
 		}
 	}
 
