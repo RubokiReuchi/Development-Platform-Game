@@ -374,7 +374,7 @@ void Player::HandleInput(float dt)
 		if (death_cd <= 0)
 		{
 			// death screen
-			if (app->hearts->nlifes <= 0)
+			if (app->entities->nlifes <= 0)
 			{
 				app->menu->lose = true;
 			}
@@ -497,13 +497,8 @@ bool Player::Draw()
 
 bool Player::Load(pugi::xml_node& data)
 {
-	std::string p = "entities";
-	std::string s = std::to_string(p_in_array);
-	std::string t = p + s;
-	const char* c = t.c_str();
-
-	position.x = data.child(c).attribute("x").as_int();
-	position.y = data.child(c).attribute("y").as_int();
+	position.x = data.child("player").child("position").attribute("x").as_int();
+	position.y = data.child("player").child("position").attribute("y").as_int();
 
 	body->SetTransform({ position.x + PIXELS_TO_METERS(w), position.y }, body->GetAngle());
 	body->ApplyForceToCenter({ 0, 1 }, true);
@@ -519,21 +514,16 @@ bool Player::Load(pugi::xml_node& data)
 
 bool Player::Save(pugi::xml_node& data)
 {
-	std::string p = "entities";
-	std::string s = std::to_string(p_in_array);
-	std::string t = p + s;
-	const char* c = t.c_str();
-
-	data.child(c).attribute("x").set_value(position.x);
-	data.child(c).attribute("y").set_value(position.y);
+	data.child("player").child("position").attribute("x").set_value(position.x);
+	data.child("player").child("position").attribute("y").set_value(position.y);
 
 	return true;
 }
 
 void Player::PlayerDeath()
 {
-	app->hearts->nlifes--;
-	sprintf_s(app->hearts->numLifes, 3, "%02d", app->hearts->nlifes);
+	app->entities->nlifes--;
+	sprintf_s(app->entities->numLifes, 3, "%02d", app->entities->nlifes);
 
 	if (lookLeft)
 	{

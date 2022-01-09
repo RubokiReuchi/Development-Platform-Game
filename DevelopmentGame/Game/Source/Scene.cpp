@@ -155,9 +155,9 @@ bool Scene::PostUpdate()
 		app->map->Draw();
 
 		app->fonts->BlitText(c_x + 30, 5, textFont, "MONEDAS: ");
-		app->fonts->BlitText(c_x + 330, 5, textFont, app->coins->numCoins);
+		app->fonts->BlitText(c_x + 330, 5, textFont, app->entities->numCoins);
 		app->fonts->BlitText(c_x + 30, 45, textFont, "VIDAS: ");
-		app->fonts->BlitText(c_x + 250, 45, textFont, app->hearts->numLifes);
+		app->fonts->BlitText(c_x + 250, 45, textFont, app->entities->numLifes);
 	}
 	
 	if (app->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)

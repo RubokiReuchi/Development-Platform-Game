@@ -102,7 +102,7 @@ bool Ground_Enemies::PreUpdate()
 			idleOb_x = origin_x + PIXELS_TO_METERS(32 * 5);
 		}
 	}
-
+	
 	return true;
 }
 
@@ -211,6 +211,7 @@ void Ground_Enemies::ReviveGroundEnemy()
 	sensorFixture->SetUserData((void*)9); // ground sensor
 
 	state = ENEMY_STATE::IDLE;
+	alive = true;
 }
 
 void Ground_Enemies::MoveGroundEnemy(float dt)
@@ -317,23 +318,23 @@ bool Ground_Enemies::DeleteEntity()
 
 bool Ground_Enemies::Load(pugi::xml_node& data)
 {
-	std::string p = "entities";
+	std::string p = "ground";
 	std::string s = std::to_string(p_in_array);
 	std::string t = p + s;
 	const char* c = t.c_str();
 	
-	if (data.child(c).attribute("state").as_int() == 0)
+	if (data.child("enemies").child(c).attribute("state").as_int() == 0)
 	{
 		if (state == ENEMY_STATE::DEATH)
 		{
 			ReviveGroundEnemy();
 		}
 
-		position.x = data.child(c).attribute("x").as_int();
-		position.y = data.child(c).attribute("y").as_int();
+		position.x = data.child("enemies").child(c).attribute("x").as_int();
+		position.y = data.child("enemies").child(c).attribute("y").as_int();
 
 		body->SetTransform({ position.x + PIXELS_TO_METERS(w), position.y }, body->GetAngle());
-		body->ApplyForceToCenter({ 0, 1 }, true);
+		body->ApplyForceToCenter({ 0, 1000 }, true);
 	}
 	else
 	{
@@ -345,21 +346,21 @@ bool Ground_Enemies::Load(pugi::xml_node& data)
 
 bool Ground_Enemies::Save(pugi::xml_node& data)
 {
-	std::string p = "entities";
+	std::string p = "ground";
 	std::string s = std::to_string(p_in_array);
 	std::string t = p + s;
 	const char* c = t.c_str();
 
-	data.child(c).attribute("x").set_value(position.x);
-	data.child(c).attribute("y").set_value(position.y);
+	data.child("enemies").child(c).attribute("x").set_value(position.x);
+	data.child("enemies").child(c).attribute("y").set_value(position.y);
 
 	if (state != ENEMY_STATE::DEATH)
 	{
-		data.child(c).attribute("state").set_value("0");
+		data.child("enemies").child(c).attribute("state").set_value("0");
 	}
 	else
 	{
-		data.child(c).attribute("state").set_value("1");
+		data.child("enemies").child(c).attribute("state").set_value("1");
 	}
 
 	return true;
@@ -548,6 +549,7 @@ void Air_Enemies::ReviveAirEnemy()
 	sensorFixture->SetUserData((void*)9); // ground sensor
 
 	state = ENEMY_STATE::IDLE;
+	alive = true;
 }
 
 void Air_Enemies::MoveAirEnemy(float dt)
@@ -741,20 +743,20 @@ bool Air_Enemies::DeleteEntity()
 
 bool Air_Enemies::Load(pugi::xml_node& data)
 {
-	std::string p = "entities";
+	std::string p = "air";
 	std::string s = std::to_string(p_in_array);
 	std::string t = p + s;
 	const char* c = t.c_str();
 
-	if (data.child(c).attribute("state").as_int() == 0)
+	if (data.child("enemies").child(c).attribute("state").as_int() == 0)
 	{
 		if (state == ENEMY_STATE::DEATH)
 		{
 			ReviveAirEnemy();
 		}
 
-		position.x = data.child(c).attribute("x").as_int();
-		position.y = data.child(c).attribute("y").as_int();
+		position.x = data.child("enemies").child(c).attribute("x").as_int();
+		position.y = data.child("enemies").child(c).attribute("y").as_int();
 
 		body->SetTransform({ position.x + PIXELS_TO_METERS(w), position.y }, body->GetAngle());
 		body->ApplyForceToCenter({ 0, 1 }, true);
@@ -769,21 +771,21 @@ bool Air_Enemies::Load(pugi::xml_node& data)
 
 bool Air_Enemies::Save(pugi::xml_node& data)
 {
-	std::string p = "entities";
+	std::string p = "air";
 	std::string s = std::to_string(p_in_array);
 	std::string t = p + s;
 	const char* c = t.c_str();
 
-	data.child(c).attribute("x").set_value(position.x);
-	data.child(c).attribute("y").set_value(position.y);
+	data.child("enemies").child(c).attribute("x").set_value(position.x);
+	data.child("enemies").child(c).attribute("y").set_value(position.y);
 
 	if (state != ENEMY_STATE::DEATH)
 	{
-		data.child(c).attribute("state").set_value("0");
+		data.child("enemies").child(c).attribute("state").set_value("0");
 	}
 	else
 	{
-		data.child(c).attribute("state").set_value("1");
+		data.child("enemies").child(c).attribute("state").set_value("1");
 	}
 
 	return true;

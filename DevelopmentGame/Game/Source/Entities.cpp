@@ -5,6 +5,8 @@
 
 #include "Player.h"
 #include "Enemies.h"
+#include "Coins.h"
+#include "Hearts.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -63,7 +65,6 @@ bool Entities::PreUpdate()
 		entity = item->data;
 
 		if (entity->alive == false) {
-			DestroyEntity(entity);
 			continue;
 		}
 
@@ -133,6 +134,9 @@ bool Entities::PostUpdate()
 		}
 	}
 
+	sprintf_s(numCoins, 4, "%03d", ncoins);
+	sprintf_s(numLifes, 4, "%03d", nlifes);
+
 	return ret;
 }
 
@@ -154,10 +158,6 @@ bool Entities::LoadState(pugi::xml_node& data)
 	{
 		entity = item->data;
 
-		if (entity->alive == false) {
-			continue;
-		}
-
 		if (entity->init)
 		{
 			ret = item->data->Load(data);
@@ -177,10 +177,6 @@ bool Entities::SaveState(pugi::xml_node& data)
 	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
 		entity = item->data;
-
-		if (entity->alive == false) {
-			continue;
-		}
 
 		if (entity->init)
 		{
@@ -215,14 +211,21 @@ void Entities::CreateEntity(ENTITY_TYPE entity_type, float x, float y)
 		AddEntity(a_enemy, ENTITY_TYPE::AIR_ENEMY, p);
 	}
 		break;
+	case ENTITY_TYPE::COIN:
+	{
+		Coins* coin = new Coins();
+		AddEntity(coin, ENTITY_TYPE::COIN, p);
+	}
+		break;
+	case ENTITY_TYPE::HEART:
+	{
+		Hearts* heart = new Hearts();
+		AddEntity(heart, ENTITY_TYPE::HEART, p);
+	}
+		break;
 	default:
 		break;
 	}
-}
-
-void Entities::DestroyEntity(Entity* entity)
-{
-	entity->~Entity();
 }
 
 void Entities::KillEnemy(fPoint pos)
@@ -242,6 +245,42 @@ void Entities::KillEnemy(fPoint pos)
 
 				break;
 			}
+		}
+	}
+}
+
+void Entities::PickCoin(fPoint pos)
+{
+	ListItem<Entity*>* item;
+	Entity* entity = NULL;
+
+	for (item = entities.start; item != NULL; item = item->next)
+	{
+		entity = item->data;
+
+		if (pos.x + 1.5f > entity->position.x && pos.x - 1.5f < entity->position.x && pos.y + 2.0f > entity->position.y && pos.y - 2.0f < entity->position.y)
+		{
+			entity->DeleteEntity();
+
+			break;
+		}
+	}
+}
+
+void Entities::PickHeart(fPoint pos)
+{
+	ListItem<Entity*>* item;
+	Entity* entity = NULL;
+
+	for (item = entities.start; item != NULL; item = item->next)
+	{
+		entity = item->data;
+
+		if (pos.x + 1.5f > entity->position.x && pos.x - 1.5f < entity->position.x && pos.y + 2.0f > entity->position.y && pos.y - 2.0f < entity->position.y)
+		{
+			entity->DeleteEntity();
+
+			break;
 		}
 	}
 }
@@ -277,8 +316,25 @@ void Entity::Init(ENTITY_TYPE type, fPoint p)
 
 	init = false;
 
-	p_in_array = app->entities->array_lenght;
-	app->entities->array_lenght++;
+	switch (type)
+	{
+	case ENTITY_TYPE::GROUND_ENEMY:
+		p_in_array = app->entities->ground_lenght;
+		app->entities->ground_lenght++;
+		break;
+	case ENTITY_TYPE::AIR_ENEMY:
+		p_in_array = app->entities->air_lenght;
+		app->entities->air_lenght++;
+		break;
+	case ENTITY_TYPE::COIN:
+		p_in_array = app->entities->coins_lenght;
+		app->entities->coins_lenght++;
+		break;
+	case ENTITY_TYPE::HEART:
+		break;
+	default:
+		break;
+	}
 }
 
 void Entity::InitCustomEntity()

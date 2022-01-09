@@ -49,6 +49,8 @@ bool Textures::Start()
 	slime_textureL = Load("Assets/textures/SlimeL.png");
 	floper_texture = Load("Assets/textures/Floper.png");
 	tileX = Load("Assets/textures/x.png");
+	coin_texture = Load("Assets/textures/Coin.png");
+	heart_texture = Load("Assets/textures/Heart.png");
 
 	return ret;
 }

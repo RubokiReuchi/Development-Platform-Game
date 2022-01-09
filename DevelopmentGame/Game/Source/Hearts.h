@@ -2,64 +2,37 @@
 #define __HEARTS_H__
 
 #include "Module.h"
+#include "Entities.h"
 #include "Physics.h"
 #include "Animation.h"
 #include "DynArray.h"
 
-struct SDL_Texture;
-
-struct Heart
-{
-	b2Body* body;
-
-	float x, y;
-
-	bool picked;
-
-	bool plan_to_delete = false;
-};
-
-class Hearts : public Module
+class Hearts : public Entity
 {
 public:
-
 	Hearts();
 
-	// Destructor
 	virtual ~Hearts();
-
-	// Called before render is available
-	bool Awake();
-
-	// Called before the first frame
-	bool Start();
-
-	// Called before all Updates
-	bool PreUpdate();
-
-	// Called each loop iteration
-	bool Update(float dt);
-
-	// Called before all Updates
-	bool PostUpdate();
-
-	// Called before quitting
-	bool CleanUp();
-
-	void CreateHeart(int x, int y);
-
-	void PickHeart(float x, float y);
-
-	int nlifes = 0;
-	char numLifes[3] = { "\0" };
 
 private:
 
-	SDL_Texture* texture = NULL;
+	void InitCustomEntity();
+
+	bool PreUpdate();
+
+	bool Update(float dt);
+
+	bool Draw();
+
+	bool DeleteEntity();
+
+	bool picked = false;
+
+	bool plan_to_delete = false;
+
+private:
 
 	int w = 16, h = 16;
-
-	DynArray<Heart> hearts;
 
 };
 

@@ -12,7 +12,9 @@ enum class ENTITY_TYPE
 {
 	PLAYER = 0,
 	GROUND_ENEMY,
-	AIR_ENEMY
+	AIR_ENEMY,
+	COIN,
+	HEART
 };
 
 class Entity
@@ -81,16 +83,25 @@ public:
 
 public:
 	void CreateEntity(ENTITY_TYPE entity_type, float x, float y);
-	void DestroyEntity(Entity* entity);
 
 	List<Entity*> entities;
 
-	int array_lenght = 0;
+	int ground_lenght = 0;
+	int air_lenght = 0;
+	int coins_lenght = 0;
 
 	void KillEnemy(fPoint pos);
-
+	void PickCoin(fPoint pos);
+	void PickHeart(fPoint pos);
 
 	Entity* GetPlayer();
+
+	//HUD
+	int ncoins = 0;
+	char numCoins[4] = { "\0" };
+
+	int nlifes = 2;
+	char numLifes[3] = { "\0" };
 	
 };
 

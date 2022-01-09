@@ -322,13 +322,13 @@ void Physics::BeginContact(b2Contact* contact)
 		{
 			// coin
 			Entity* entity = app->entities->GetPlayer();
-			app->coins->PickCoin(entity->GetPlayerPosition().x, entity->GetPlayerPosition().y);
+			app->entities->PickCoin(entity->GetPlayerPosition());
 		}
 		else if ((int)fixtureUserDataB == 10)
 		{
 			// hearts
 			Entity* entity = app->entities->GetPlayer();
-			app->hearts->PickHeart(entity->GetPlayerPosition().x, entity->GetPlayerPosition().y);
+			app->entities->PickHeart(entity->GetPlayerPosition());
 		}
 	}
 
@@ -378,13 +378,13 @@ void Physics::BeginContact(b2Contact* contact)
 		{
 			// coin
 			Entity* entity = app->entities->GetPlayer();
-			app->coins->PickCoin(entity->GetPlayerPosition().x, entity->GetPlayerPosition().y);
+			app->entities->PickCoin(entity->GetPlayerPosition());
 		}
 		else if ((int)fixtureUserDataA == 10)
 		{
 			// hearts
 			Entity* entity = app->entities->GetPlayer();
-			app->hearts->PickHeart(entity->GetPlayerPosition().x, entity->GetPlayerPosition().y);
+			app->entities->PickHeart(entity->GetPlayerPosition());
 		}
 	}
 }

@@ -114,7 +114,7 @@ void Map::Draw()
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 6)
 						{
 							// coins
-							app->coins->CreateCoin(pos.x, pos.y);
+							app->entities->CreateEntity(ENTITY_TYPE::COIN, pos.x, pos.y);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 7)
 						{
@@ -129,7 +129,7 @@ void Map::Draw()
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 9)
 						{
 							// hearts
-							app->hearts->CreateHeart(pos.x, pos.y);
+							app->entities->CreateEntity(ENTITY_TYPE::HEART, pos.x, pos.y);
 						}
 						else if (mapLayerItem->data->properties.GetProperty("Collision") == 10)
 						{

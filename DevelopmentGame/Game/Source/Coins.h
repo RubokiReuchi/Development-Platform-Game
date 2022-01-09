@@ -2,72 +2,45 @@
 #define __COINS_H__
 
 #include "Module.h"
+#include "Entities.h"
 #include "Physics.h"
 #include "Animation.h"
 #include "DynArray.h"
 
-struct SDL_Texture;
-
-struct Coin
-{
-	b2Body* body;
-
-	float x, y;
-
-	bool picked;
-
-	bool plan_to_delete = false;
-};
-
-class Coins : public Module
+class Coins : public Entity
 {
 public:
-
 	Coins();
 
-	// Destructor
 	virtual ~Coins();
-
-	// Called before render is available
-	bool Awake();
-
-	// Called before the first frame
-	bool Start();
-
-	// Called before all Updates
-	bool PreUpdate();
-
-	// Called each loop iteration
-	bool Update(float dt);
-
-	// Called before all Updates
-	bool PostUpdate();
-
-	// Called before quitting
-	bool CleanUp();
-
-	bool LoadState(pugi::xml_node&);
-	bool SaveState(pugi::xml_node&);
-
-	void CreateCoin(int x, int y);
-
-	void ReloadCoin(Coin* coin);
-
-	void PickCoin(float x, float y);
-
-	int ncoins = 0;
-	char numCoins[4] = { "\0" };
 
 private:
 
-	SDL_Texture* texture = NULL;
+	void InitCustomEntity();
+
+	bool PreUpdate();
+
+	bool Update(float dt);
+
+	bool Draw();
+
+	bool DeleteEntity();
+
+	bool Load(pugi::xml_node&);
+	bool Save(pugi::xml_node&);
+
+	void ReloadCoin();
+
+	bool picked = false;
+
+	bool plan_to_delete = false;
+
+private:
 	Animation* currentAnimation = NULL;
 
 	Animation idleAnim;
 
 	int w = 16, h = 16;
-
-	DynArray<Coin> coins;
 
 };
 
