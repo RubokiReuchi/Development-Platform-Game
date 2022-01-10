@@ -5,6 +5,7 @@
 #include "Render.h"
 #include "Window.h"
 #include "Scene.h"
+#include "Menu.h"
 #include "Map.h"
 #include "Pathfinding.h"
 #include "Fonts.h"
@@ -198,6 +199,13 @@ bool Scene::PassLevel(int dest_level)
 		app->frontground->FadeToBlack(dest_level);
 	}
 
+	start_screen = NULL;
+
+	return true;
+}
+
+bool Scene::QuitStartScreen()
+{
 	start_screen = NULL;
 
 	return true;

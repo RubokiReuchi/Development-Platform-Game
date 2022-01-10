@@ -117,25 +117,28 @@ bool Entities::PostUpdate()
 {
 	bool ret = true;
 
-	ListItem<Entity*>* item;
-	Entity* entity = NULL;
-
-	for (item = entities.start; item != NULL && ret == true; item = item->next)
+	if (!app->scene->GetStartScreenState())
 	{
-		entity = item->data;
+		ListItem<Entity*>* item;
+		Entity* entity = NULL;
 
-		if (entity->alive == false) {
-			continue;
-		}
-
-		if (entity->init)
+		for (item = entities.start; item != NULL && ret == true; item = item->next)
 		{
-			ret = item->data->Draw();
-		}
-	}
+			entity = item->data;
 
-	sprintf_s(numCoins, 4, "%03d", ncoins);
-	sprintf_s(numLifes, 4, "%03d", nlifes);
+			if (entity->alive == false) {
+				continue;
+			}
+
+			if (entity->init)
+			{
+				ret = item->data->Draw();
+			}
+		}
+
+		sprintf_s(numCoins, 4, "%03d", ncoins);
+		sprintf_s(numLifes, 4, "%03d", nlifes);
+	}
 
 	return ret;
 }
@@ -258,7 +261,7 @@ void Entities::PickCoin(fPoint pos)
 	{
 		entity = item->data;
 
-		if (pos.x + 1.5f > entity->position.x && pos.x - 1.5f < entity->position.x && pos.y + 2.0f > entity->position.y && pos.y - 2.0f < entity->position.y)
+		if (pos.x + 1.5f > entity->position.x && pos.x - 1.5f < entity->position.x && pos.y + 2.0f > entity->position.y && pos.y - 2.0f < entity->position.y && entity->entity_type == ENTITY_TYPE::COIN)
 		{
 			entity->DeleteEntity();
 
@@ -276,7 +279,7 @@ void Entities::PickHeart(fPoint pos)
 	{
 		entity = item->data;
 
-		if (pos.x + 1.5f > entity->position.x && pos.x - 1.5f < entity->position.x && pos.y + 2.0f > entity->position.y && pos.y - 2.0f < entity->position.y)
+		if (pos.x + 1.5f > entity->position.x && pos.x - 1.5f < entity->position.x && pos.y + 2.0f > entity->position.y && pos.y - 2.0f < entity->position.y && entity->entity_type == ENTITY_TYPE::HEART)
 		{
 			entity->DeleteEntity();
 

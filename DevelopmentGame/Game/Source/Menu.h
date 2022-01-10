@@ -4,17 +4,14 @@
 #include "Module.h"
 
 #define NUM_PAUSE_BUTTONS 4
-#define NUM_MENU_BUTTONS 5
+#define NUM_MENU_BUTTONS 4
 #define NUM_DEAD_BUTTONS 2
 #define NUM_SETTINGS_BUTTONS 4
 
 struct Button {
 	SDL_Rect rect = { 0, 0, 220, 70 };
 	SDL_Texture* tex = NULL;
-	SDL_Texture* texslider = NULL;
-	SDL_Texture* texvsync = NULL;
-	SDL_Texture* texfullscreen = NULL;
-	SDL_Texture* texcredits = NULL;
+	SDL_Texture* alt_tex = NULL;
 
 
 	int state = 0; // 0->idle, 1->above, 2->pressed
@@ -45,7 +42,6 @@ public:
 
 	bool lose;
 
-
 private:
 	SDL_Rect r;
 	bool intro;
@@ -65,6 +61,7 @@ private:
 	Button menu_buttons[NUM_MENU_BUTTONS];
 	Button dead_buttons[NUM_DEAD_BUTTONS];
 	Button settings_buttons[NUM_SETTINGS_BUTTONS];
+	Button lose_button;
 
 	SDL_Texture* gameOver = NULL;
 	SDL_Texture* cat = NULL;
@@ -84,8 +81,13 @@ private:
 
 	uint win_w, win_h;
 	
-	//int x, y;
-	//Uint32 buttons;
+	bool started = false;
+	int save_cd = 50;
+	bool saving = false;
+
+	// sound
+	uint click_sound;
+	uint hover_sound;
 
 };
 

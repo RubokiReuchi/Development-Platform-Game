@@ -37,6 +37,8 @@ public:
 
 	bool PassLevel(int dest_level);
 
+	bool QuitStartScreen();
+
 	bool ReturnStartScreen();
 
 	bool godmode;

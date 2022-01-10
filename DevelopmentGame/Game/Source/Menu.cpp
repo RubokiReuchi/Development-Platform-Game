@@ -30,7 +30,6 @@ bool Menu::Awake()
 // Called before the first frame
 bool Menu::Start()
 {
-
 	r = { 0, 0, 2560, 1440 };
 	paused = false;
 	settings = false;
@@ -49,7 +48,8 @@ bool Menu::Start()
 	chosed = 0;
 	app->win->GetWindowSize(win_w, win_h);
 
-	
+	click_sound = app->audio->LoadFx("Assets/audio/fx/pop.wav");
+	hover_sound = app->audio->LoadFx("Assets/audio/fx/water.wav");
 
 	for (size_t i = 0; i < NUM_PAUSE_BUTTONS; i++)
 	{
@@ -75,6 +75,9 @@ bool Menu::Start()
 		settings_buttons[i].rect.y = ((int)win_h / (NUM_PAUSE_BUTTONS + 1)) * (i + 1);
 	}
 
+	lose_button.rect.x = (int)win_w / 2;
+	lose_button.rect.y = (int)win_h / 2;
+
 	pause_buttons[0].tex = app->tex->Load("Assets/textures/Continue.png"); // Continue
 	pause_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Settings
 	pause_buttons[2].tex = app->tex->Load("Assets/textures/Back.png"); // Back to Menu
@@ -85,19 +88,21 @@ bool Menu::Start()
 	dead_buttons[1].tex = app->tex->Load("Assets/textures/Exit.png"); //Exit
 
 	menu_buttons[0].tex = app->tex->Load("Assets/textures/Play.png"); // Play
-	menu_buttons[1].tex = app->tex->Load("Assets/textures/Continue.png"); // Continue
-	menu_buttons[2].tex = app->tex->Load("Assets/textures/Settings.png"); // Settings
-	menu_buttons[3].tex = app->tex->Load("Assets/textures/Credits.png"); // Credits
-	menu_buttons[3].texcredits = app->tex->Load("Assets/textures/CreditsImage.png"); // Credits
-	menu_buttons[4].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
+	menu_buttons[0].alt_tex = app->tex->Load("Assets/textures/Continue.png"); // Continue
+	menu_buttons[1].tex = app->tex->Load("Assets/textures/Settings.png"); // Settings
+	menu_buttons[2].tex = app->tex->Load("Assets/textures/Credits.png"); // Credits
+	menu_buttons[2].alt_tex = app->tex->Load("Assets/textures/CreditsImage.png"); // Credits
+	menu_buttons[3].tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
 
-	settings_buttons[0].texslider = settings_buttons[1].texslider = app->tex->Load("Assets/textures/Slider.png"); // Slider
+	settings_buttons[0].alt_tex = settings_buttons[1].alt_tex = app->tex->Load("Assets/textures/Slider.png"); // Slider
 	settings_buttons[0].tex = app->tex->Load("Assets/textures/Sound.png"); // Audio
 	settings_buttons[1].tex = app->tex->Load("Assets/textures/Fx.png"); // Fx slider
 	settings_buttons[2].tex = app->tex->Load("Assets/textures/Fullscreen_no.png"); // Fullscreen
-	settings_buttons[2].texfullscreen = app->tex->Load("Assets/textures/Fullscreen_si.png"); // Fullscreen
+	settings_buttons[2].alt_tex = app->tex->Load("Assets/textures/Fullscreen_si.png"); // Fullscreen
 	settings_buttons[3].tex = app->tex->Load("Assets/textures/Vsync_no.png"); // Vsync
-	settings_buttons[3].texvsync = app->tex->Load("Assets/textures/Vsync_si.png"); // Vsync
+	settings_buttons[3].alt_tex = app->tex->Load("Assets/textures/Vsync_si.png"); // Vsync
+
+	lose_button.tex = app->tex->Load("Assets/textures/Exit.png"); // Exit
 
 	gameOver = app->tex->Load("Assets/textures/Game_Over.png"); 
 	cat = app->tex->Load("Assets/textures/Dead_Image.png"); 
@@ -109,92 +114,16 @@ bool Menu::Start()
 bool Menu::PreUpdate()
 {
 	intro = app->scene->GetStartScreenState();
+
 	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN  && !dead && intro == false)
 	{
 		paused = !paused;
-	}
-
-	if (intro)
-	{
-		paused = true;
 	}
 
 	if (settings && app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 	{
 		settings = false;
 	}
-
-	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && !intro && !dead && chosed == 1 && pause_buttons[1].state == 1)
-	{
-		settings = !settings;
-		paused = !paused;
-	}
-
-	if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && paused && intro && !dead && chosed == 2 && menu_buttons[2].state == 1)
-	{
-		settings = true;
-		paused = !paused;
-	}
-
-
-
-	//MOVIMIENTO MANUAL
-	/*
-	if (paused && !settings && !loading && !dead)
-	{
-		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_PAUSE_BUTTONS - 1))
-		{
-			pause_buttons[chosed].state = 0;
-			chosed++;
-			pause_buttons[chosed].state = 1;
-		}
-		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && chosed > 0)
-		{
-			pause_buttons[chosed].state = 0;
-			chosed--;
-			pause_buttons[chosed].state = 1;
-		}
-	}
-	
-	if (dead && !loading)
-	{
-		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_DEAD_BUTTONS - 1))
-		{
-			dead_buttons[chosed].state = 0;
-			chosed++;
-			dead_buttons[chosed].state = 1;
-		}
-		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && chosed > 0)
-		{
-			dead_buttons[chosed].state = 0;
-			chosed--;
-			dead_buttons[chosed].state = 1;
-		}
-	}
-	
-
-	if (settings && !loading && !dead)
-	{
-		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN && chosed < (NUM_SETTINGS_BUTTONS - 1))
-		{
-			settings_buttons[chosed].state = 0;
-			chosed++;
-			settings_buttons[chosed].state = 1;
-		}
-		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && chosed > 0)
-		{
-			settings_buttons[chosed].state = 0;
-			chosed--;
-			settings_buttons[chosed].state = 1;
-		}
-		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && chosed == 3)
-		{
-			settings_buttons[chosed].state = 2;
-			vsync = !vsync;
-
-		}
-	}
-	*/
 	
 	int x, y;
 	app->input->GetMousePosition(x, y);
@@ -204,6 +133,10 @@ bool Menu::PreUpdate()
 		SDL_Rect rect = pause_buttons[i].rect;
 		if (x + c > rect.x && x + c < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
 		{
+			if (paused)
+			{
+				app->audio->PlayFx(hover_sound);
+			}
 			chosed = i;
 			pause_buttons[i].state = 1;
 		}
@@ -218,6 +151,10 @@ bool Menu::PreUpdate()
 		SDL_Rect rect = menu_buttons[i].rect;
 		if (x + c > rect.x && x + c < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
 		{
+			if (intro)
+			{
+				app->audio->PlayFx(hover_sound);
+			}
 			chosed = i;
 			menu_buttons[i].state = 1;
 		}
@@ -230,8 +167,12 @@ bool Menu::PreUpdate()
 	for (size_t i = 0; i < NUM_SETTINGS_BUTTONS; i++)
 	{
 		SDL_Rect rect = settings_buttons[i].rect;
-		if (x + c > 530 && x + c < 530 + rect.w && y > rect.y && y < rect.y + rect.h)
+		if (x + c > rect.x && x + c < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
 		{
+			if (settings)
+			{
+				app->audio->PlayFx(hover_sound);
+			}
 			chosed = i;
 			settings_buttons[i].state = 1;
 		}
@@ -246,6 +187,10 @@ bool Menu::PreUpdate()
 		SDL_Rect rect = dead_buttons[i].rect;
 		if (x + c > rect.x && x + c < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
 		{
+			if (dead)
+			{
+				app->audio->PlayFx(hover_sound);
+			}
 			chosed = i;
 			dead_buttons[i].state = 1;
 		}
@@ -253,6 +198,20 @@ bool Menu::PreUpdate()
 		{
 			dead_buttons[i].state = 0;
 		}
+	}
+
+	SDL_Rect rect = lose_button.rect;
+	if (x + c > rect.x && x + c < rect.x + rect.w && y > rect.y && y < rect.y + rect.h)
+	{
+		if (lose)
+		{
+			app->audio->PlayFx(hover_sound);
+		}
+		lose_button.state = 1;
+	}
+	else
+	{
+		lose_button.state = 0;
 	}
 
 	return true;
@@ -266,18 +225,17 @@ bool Menu::Update(float dt)
 	{
 		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && pause_buttons[chosed].state == 1)
 		{
+			app->audio->PlayFx(click_sound);
 			switch (chosed)
 			{
 			case 0: 
 				paused = false;
 				break;
 			case 1:
-				app->SaveGameRequest();
+				settings = true;
 				break;
 			case 2:
-				//aun aparecen las monedas etc
 				app->scene->ReturnStartScreen();
-				intro = false;
 				paused = false;
 				break;
 			case 3:
@@ -285,7 +243,7 @@ bool Menu::Update(float dt)
 				break;
 			}
 			
-			pause_buttons[chosed].state = 0;
+			pause_buttons[chosed].state = 2;
 		}
 	}
 
@@ -294,28 +252,35 @@ bool Menu::Update(float dt)
 	{
 		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && menu_buttons[chosed].state == 1)
 		{
+			app->audio->PlayFx(click_sound);
 			switch (chosed)
 			{
 			case 0:
-				app->scene->PassLevel(1);
-				intro = false;
-				paused = false;
+				if (!started)
+				{
+					app->scene->PassLevel(1);
+					saving = true;
+					intro = false;
+					paused = false;
+					started = true;
+				}
+				else
+				{
+					app->scene->QuitStartScreen();
+					app->LoadGameRequest();
+				}
 				break;
 			case 1:
-				app->frontground->FadeToBlack(-1);
-				loading = true;
-				break;
-			case 2:
 				settings = true;
-			case 3:
+			case 2:
 				credits = !credits;
 				break;
-			case 4:
+			case 3:
 				return false;
 				break;
 			}
 
-			menu_buttons[chosed].state = 0;
+			menu_buttons[chosed].state = 2;
 		}
 	}
 
@@ -324,6 +289,7 @@ bool Menu::Update(float dt)
 	{
 		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && settings_buttons[chosed].state == 1)
 		{
+			app->audio->PlayFx(click_sound);
 			switch (chosed)
 			{
 			case 0:
@@ -357,7 +323,7 @@ bool Menu::Update(float dt)
 				break;
 			}
 
-			settings_buttons[chosed].state = 0;
+			settings_buttons[chosed].state = 2;
 		}
 	}
 
@@ -373,12 +339,25 @@ bool Menu::Update(float dt)
 			paused = false;
 		}
 	}
+
+	if (saving)
+	{
+		save_cd--;
+		if (save_cd <= 0)
+		{
+			app->SaveGameRequest();
+			save_cd = 50;
+			saving = false;
+			paused = false;
+		}
+	}
 	
 	// dead buttons
 	if (dead && !loading)
 	{
 		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && dead_buttons[chosed].state == 1)
 		{
+			app->audio->PlayFx(click_sound);
 			switch (chosed)
 			{
 			case 0:
@@ -390,7 +369,7 @@ bool Menu::Update(float dt)
 				break;
 			}
 
-			dead_buttons[chosed].state = 0;
+			dead_buttons[chosed].state = 2;
 		}
 	}
 
@@ -398,8 +377,10 @@ bool Menu::Update(float dt)
 	//lose
 	if (lose && !loading)
 	{
-		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == SDL_PRESSED && lose_button.state == 1)
 		{
+			app->audio->PlayFx(click_sound);
+			lose_button.state = 2;
 			return false;
 		}
 	}
@@ -415,7 +396,7 @@ bool Menu::PostUpdate()
 
 	if (app->scene->GetStartScreenState() != NULL)
 	{
-		app->render->DrawTexture(app->tex->Load("Assets/textures/Start_screen.png"), 0, 0);
+		app->render->DrawTexture(app->tex->Load("Assets/textures/Start_screen.png"), 0 + c_x, 0);
 	}
 
 	if (paused && !intro && !settings)
@@ -467,10 +448,25 @@ bool Menu::PostUpdate()
 
 			if (credits)
 			{
-				app->render->DrawTexture(menu_buttons[i].texcredits, 1000, 500);
+				app->render->DrawTexture(menu_buttons[i].alt_tex, 1000, 500);
 			}
 
-			app->render->DrawTexture(menu_buttons[i].tex, menu_buttons[i].rect.x + 10, menu_buttons[i].rect.y + 10);
+			if (i == 0)
+			{
+				if (started)
+				{
+					app->render->DrawTexture(menu_buttons[i].alt_tex, menu_buttons[i].rect.x + 10, menu_buttons[i].rect.y + 10);
+				}
+				else
+				{
+					app->render->DrawTexture(menu_buttons[i].tex, menu_buttons[i].rect.x + 10, menu_buttons[i].rect.y + 10);
+				}
+				
+			}
+			else
+			{
+				app->render->DrawTexture(menu_buttons[i].tex, menu_buttons[i].rect.x + 10, menu_buttons[i].rect.y + 10);
+			}
 		}
 	}
 
@@ -513,12 +509,12 @@ bool Menu::PostUpdate()
 					z = 729;
 				}
 				xbarra = z;
-				app->render->DrawTexture(settings_buttons[0].texslider, z, settings_buttons[0].rect.y + 10);
+				app->render->DrawTexture(settings_buttons[0].alt_tex, z + c_x, settings_buttons[0].rect.y + 10);
 				app->audio->SetMusic((z - 540) / 2);
 			}
 			else
 			{
-				app->render->DrawTexture(settings_buttons[0].texslider, xbarra, settings_buttons[0].rect.y + 10);
+				app->render->DrawTexture(settings_buttons[0].alt_tex, xbarra + c_x, settings_buttons[0].rect.y + 10);
 			}
 
 			if (slider2)
@@ -532,23 +528,23 @@ bool Menu::PostUpdate()
 					z = 729;
 				}
 				xbarra2 = z;
-				app->render->DrawTexture(settings_buttons[1].texslider, z, settings_buttons[1].rect.y + 10);
+				app->render->DrawTexture(settings_buttons[1].alt_tex, z + c_x, settings_buttons[1].rect.y + 10);
 				app->audio->SetFX((z - 540) / 2);
 			}
 			else
 			{
-				app->render->DrawTexture(settings_buttons[1].texslider, xbarra2, settings_buttons[1].rect.y + 10);
+				app->render->DrawTexture(settings_buttons[1].alt_tex, xbarra2 + c_x, settings_buttons[1].rect.y + 10);
 			}
 
-			if (vsync)
+			if (vsync && i == 3)
 			{
-				app->render->DrawTexture(settings_buttons[i].texvsync, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
+				app->render->DrawTexture(settings_buttons[i].alt_tex, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
 			}
-			if (fullscreen)
+
+			if (fullscreen && i == 2)
 			{
-				app->render->DrawTexture(settings_buttons[i].texfullscreen, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
+				app->render->DrawTexture(settings_buttons[i].alt_tex, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
 			}
-			
 			
 			app->render->DrawTexture(settings_buttons[i].tex, settings_buttons[i].rect.x + 10, settings_buttons[i].rect.y + 10);
 			
@@ -577,8 +573,6 @@ bool Menu::PostUpdate()
 			else if (dead_buttons[i].state == 2)
 			{
 				app->render->DrawRectangle(dead_buttons[i].rect, pColorR, pColorG, pColorB);
-
-				app->render->DrawTexture(dead_buttons[i].tex, dead_buttons[i].rect.x + 10, dead_buttons[i].rect.y + 10);
 			}
 
 			app->render->DrawTexture(dead_buttons[i].tex, dead_buttons[i].rect.x + 10, dead_buttons[i].rect.y + 10);
@@ -593,11 +587,22 @@ bool Menu::PostUpdate()
 		app->render->DrawTexture(gameOver, 0 + c_x, 75);
 		app->render->DrawTexture(cat, 950 + c_x, 800);
 
-		dead_buttons[1].rect.x = ((int)win_w / 2) - (dead_buttons[1].rect.w / 2) + c_x;
+		lose_button.rect.x = ((int)win_w / 2) - (lose_button.rect.w / 2) + c_x;
 		
-		app->render->DrawRectangle(dead_buttons[1].rect, inColorR, inColorG, inColorB);
+		if (lose_button.state == 0)
+		{
+			app->render->DrawRectangle(lose_button.rect, idleColorR, idleColorG, idleColorB);
+		}
+		else if (lose_button.state == 1)
+		{
+			app->render->DrawRectangle(lose_button.rect, inColorR, inColorG, inColorB);
+		}
+		else if (lose_button.state == 2)
+		{
+			app->render->DrawRectangle(lose_button.rect, pColorR, pColorG, pColorB);
+		}
 
-		app->render->DrawTexture(dead_buttons[1].tex, dead_buttons[1].rect.x + 10, dead_buttons[1].rect.y + 10);
+		app->render->DrawTexture(lose_button.tex, lose_button.rect.x + 10, lose_button.rect.y + 10);
 		
 	}
 
